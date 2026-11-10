@@ -15,11 +15,18 @@ async function main() {
     throw new Error(`Usage: pnpm user:role <email> <${roles.join("|")}>`);
   }
   const db = getDb();
-  const user = await db.user.findUnique({ where: { email: email.toLowerCase() }, select: { id: true } });
+  const user = await db.user.findUnique({
+    where: { email: email.toLowerCase() },
+    select: { id: true },
+  });
   if (!user) throw new Error(`No user with email ${email}.`);
 
   const result = await changeUserRole({ kind: "system", label: "set-role" }, user.id, role);
-  console.warn(result.changed ? `${result.email}: ${result.from} → ${result.to}` : `${result.email} already has role ${role}.`);
+  console.warn(
+    result.changed
+      ? `${result.email}: ${result.from} → ${result.to}`
+      : `${result.email} already has role ${role}.`,
+  );
   await db.$disconnect();
 }
 

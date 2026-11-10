@@ -50,7 +50,9 @@ src/
 e2e/                    Playwright end-to-end tests
 ```
 
-Planned additions: `prisma/` (M3), `src/server/sources/*` archive adapters (M4), `src/server/jobs` and `workers/` (M8), `remotion/` compositions (M11).
+Also: `prisma/` (schema, migrations, seed), `scripts/` (operator tools), `tests/integration/` (real-database tests), `src/app/admin` (AI Studio), `src/server/{db,auth,users,admin}`.
+
+Planned additions: `src/server/sources/*` archive adapters (M4), `src/server/jobs` and `workers/` (M8), `remotion/` compositions (M11).
 
 ## Key decisions
 

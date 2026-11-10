@@ -22,14 +22,14 @@ export const milestones: Milestone[] = [
   {
     number: 2,
     title: "Homepage and Design System",
-    status: "in_review",
+    status: "complete",
     summary: "Branding, cinematic homepage, responsive navigation, dark/light themes.",
   },
   {
     number: 3,
     title: "Database and Authentication",
-    status: "planned",
-    summary: "PostgreSQL, Prisma models, migrations, Auth.js, roles, protected admin routes.",
+    status: "in_review",
+    summary: "PostgreSQL, Prisma models, migrations, Better Auth, roles, protected admin routes.",
   },
   {
     number: 4,

@@ -8,7 +8,8 @@
  */
 import "./_env";
 
-import { getAuth, PASSWORD_MIN_LENGTH } from "@/server/auth/auth";
+import { PASSWORD_MIN_LENGTH } from "@/lib/auth/validation";
+import { getAuth } from "@/server/auth/auth";
 import { getDb } from "@/server/db/client";
 import { changeUserRole } from "@/server/users/roles";
 
@@ -23,7 +24,9 @@ async function main() {
 
   if (!user) {
     if (!password || password.length < PASSWORD_MIN_LENGTH) {
-      throw new Error(`ADMIN_PASSWORD is required and must be at least ${PASSWORD_MIN_LENGTH} characters.`);
+      throw new Error(
+        `ADMIN_PASSWORD is required and must be at least ${PASSWORD_MIN_LENGTH} characters.`,
+      );
     }
     const created = await getAuth().api.signUpEmail({ body: { email, password, name } });
     user = { id: created.user.id };
@@ -32,8 +35,16 @@ async function main() {
     console.warn(`Account ${email} already exists; password left unchanged.`);
   }
 
-  const result = await changeUserRole({ kind: "system", label: "create-admin" }, user.id, "SUPER_ADMINISTRATOR");
-  console.warn(result.changed ? `${email} is now a Super Administrator.` : `${email} was already a Super Administrator.`);
+  const result = await changeUserRole(
+    { kind: "system", label: "create-admin" },
+    user.id,
+    "SUPER_ADMINISTRATOR",
+  );
+  console.warn(
+    result.changed
+      ? `${email} is now a Super Administrator.`
+      : `${email} was already a Super Administrator.`,
+  );
   await db.$disconnect();
 }
 

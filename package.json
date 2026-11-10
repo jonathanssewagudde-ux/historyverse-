@@ -1,6 +1,6 @@
 {
   "name": "historyverse",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -15,7 +15,7 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
-    "check": "pnpm lint && pnpm typecheck && pnpm format:check && pnpm test",
+    "check": "pnpm lint && pnpm typecheck && pnpm format:check && pnpm test && pnpm test:integration",
     "postinstall": "prisma generate",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
@@ -23,7 +23,8 @@
     "db:seed": "tsx prisma/seed.ts",
     "db:studio": "prisma studio",
     "admin:create": "tsx --conditions=react-server scripts/create-admin.ts",
-    "user:role": "tsx --conditions=react-server scripts/set-role.ts"
+    "user:role": "tsx --conditions=react-server scripts/set-role.ts",
+    "test:integration": "vitest run --config vitest.integration.config.mts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "7.10.1",
@@ -71,7 +72,7 @@
     "vitest": "^5.1.0"
   },
   "packageManager": "pnpm@10.28.0",
-  "description": "HISTORYVERSE — AI-powered historical knowledge, research and documentary platform",
+  "description": "HISTORYVERSE \u2014 AI-powered historical knowledge, research and documentary platform",
   "engines": {
     "node": ">=22"
   }

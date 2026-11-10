@@ -6,10 +6,14 @@ test.describe("foundation smoke tests", () => {
     expect(res.status()).toBe(200);
     expect(res.headers()["cache-control"]).toContain("no-store");
     const body = await res.json();
-    expect(body).toMatchObject({ status: "ok", service: "historyverse" });
+    expect(body).toMatchObject({
+      status: "ok",
+      service: "historyverse",
+      checks: { database: "up" },
+    });
     expect(Date.parse(body.time)).not.toBeNaN();
     // The public probe must not leak configuration details.
-    expect(JSON.stringify(body)).not.toMatch(/DATABASE_URL|API_KEY|SECRET/);
+    expect(JSON.stringify(body)).not.toMatch(/DATABASE_URL|API_KEY|SECRET|postgres(ql)?:\/\//);
   });
 
   test("home page renders without errors", async ({ page }) => {

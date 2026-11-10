@@ -1,6 +1,8 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
+import { isRouteAvailable } from "../src/config/navigation";
+
 test.describe("homepage", () => {
   test("renders all fifteen sections in order", async ({ page }) => {
     await page.goto("/");
@@ -53,13 +55,15 @@ test.describe("homepage", () => {
     await expect(page.getByTestId("era-range")).toHaveText("c. 500 – c. 1500");
   });
 
-  test("unavailable routes are never linked", async ({ page }) => {
+  test("every link points to an implemented route", async ({ page }) => {
     await page.goto("/");
+    // Wait for the header's account control so its link is included in the check.
+    await expect(page.getByRole("link", { name: "Sign in" })).toBeVisible();
     const hrefs = await page
       .locator("a[href]")
-      .evaluateAll((as) => as.map((a) => a.getAttribute("href")));
+      .evaluateAll((as) => as.map((a) => a.getAttribute("href")!));
     for (const href of hrefs) {
-      expect(href === "/" || href!.startsWith("/#") || href!.startsWith("#"), href!).toBe(true);
+      expect(href.startsWith("#") || isRouteAvailable(href), `unexpected link: ${href}`).toBe(true);
     }
   });
 

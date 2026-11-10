@@ -34,7 +34,16 @@ export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
 
   const user = await getDb().user.findUnique({
     where: { id: session.user.id },
-    select: { id: true, name: true, email: true, image: true, role: true, bio: true, locale: true, createdAt: true },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      image: true,
+      role: true,
+      bio: true,
+      locale: true,
+      createdAt: true,
+    },
   });
   if (!user || !isRole(user.role)) return null;
   return { ...user, role: user.role };
@@ -52,8 +61,7 @@ export async function requireUser(next?: string): Promise<CurrentUser> {
 }
 
 export type Authorization =
-  | { allowed: true; user: CurrentUser }
-  | { allowed: false; user: CurrentUser; missing: Permission };
+  { allowed: true; user: CurrentUser } | { allowed: false; user: CurrentUser; missing: Permission };
 
 /**
  * Require a signed-in user and report whether they hold `permission`. Pages render an

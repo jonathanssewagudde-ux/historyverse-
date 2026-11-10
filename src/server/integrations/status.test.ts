@@ -58,9 +58,19 @@ describe("resolveIntegrationStates", () => {
     expect(db.missingEnv).toEqual([]);
   });
 
-  it("does not report anything as implemented before its milestone ships", () => {
+  it("only reports integrations as implemented once their milestone has shipped", () => {
     const states = resolveIntegrationStates(parseServerEnv({}));
-    expect(states.every((s) => s.implemented === false)).toBe(true);
+    const implemented = states.filter((s) => s.implemented).map((s) => s.id);
+    expect(implemented.sort()).toEqual(["auth", "google-signin", "postgres"]);
+    for (const s of states.filter((x) => x.implemented)) expect(s.milestone).toBeLessThanOrEqual(3);
+  });
+
+  it("needs both a secret and a database for authentication", () => {
+    expect(stateOf({ AUTH_SECRET: "x".repeat(40) }, "auth").missingEnv).toEqual(["DATABASE_URL"]);
+    expect(
+      stateOf({ AUTH_SECRET: "x".repeat(40), DATABASE_URL: "postgresql://localhost/db" }, "auth")
+        .status,
+    ).toBe("configured");
   });
 
   it("requires credentials for the selected AI provider", () => {

@@ -56,16 +56,32 @@ At the owner's request after review, the UI moved from the original editorial "m
 - **Reconstruction label:** now amber, kept distinct from the brand violet.
 - **Unchanged:** all behaviour, honesty rules and accessibility checks. axe passes in both themes.
 
-## Milestone 3: next steps
+## Milestone 3: Database and Authentication ✅
 
-1. PostgreSQL + pgvector via Docker Compose (and the local Postgres 16 in this container), with Prisma schema and migrations for the models in `DATABASE.md`.
-2. Auth.js with credentials and optional Google sign-in, roles (Super Administrator, Administrator, Editor, Researcher), `proxy.ts` protection for `/admin/**`, and authorization re-checked on the server.
-3. User profiles (`/profile`), seed script for a first super-administrator, audit-log foundation.
-4. Health probe gains a database readiness check.
+- **Database:** PostgreSQL 16 with pgvector and pg_trgm; Prisma 7 schema of 60 models in seven domain files; two migrations (generated tables plus hand-written integrity constraints and triggers); seed of 15 media licences and 11 categories. See `DATABASE.md`.
+- **Authentication:** Better Auth (email and password, optional Google sign-in), database sessions, scrypt password hashing, database-backed rate limiting in production. Auth.js was not used because its own README now recommends Better Auth for new projects.
+- **Roles:** USER, RESEARCHER, EDITOR, ADMINISTRATOR, SUPER_ADMINISTRATOR with a hierarchical permission matrix (`src/lib/auth/roles.ts`). Roles cannot be set through the auth API. The role is re-read from the database on every request, so a demotion applies immediately. The last Super Administrator cannot be demoted.
+- **Protection:** `src/proxy.ts` redirects visitors without a session cookie; every protected page then validates the session and permission on the server (`src/server/auth/session.ts`). A forged cookie gets no access.
+- **Pages:** `/sign-in`, `/sign-up`, `/profile` (edit details, change password, sign out) and the AI Studio shell at `/admin` with real database counts, integration status and recent audit activity, shown according to permission.
+- **Audit log:** append-only table; registrations, sessions and role changes are recorded.
+- **Operator tools:** `pnpm admin:create`, `pnpm user:role`.
+- **Health probe:** `/api/health` now makes a real database round trip and reports `degraded` (503) if it fails.
+- **Tests:** 131 unit/component, 35 integration (real PostgreSQL), 65 end-to-end (1 mobile-only test skipped on desktop).
+
+## Milestone 4: next steps
+
+**Blocker:** this environment's network policy blocks `www.wikidata.org`, `query.wikidata.org`, `*.wikipedia.org` and `commons.wikimedia.org`. They must be allowed before real data can be imported.
+
+1. Source adapter framework: rate limiting, retries, descriptive User-Agent, provenance records.
+2. Wikidata entity import (countries, people, kingdoms, events) mapped to `Entity` + detail rows, dates via `parseWikidataTime`, claims stored as UNVERIFIED imports.
+3. Wikipedia summaries as research inputs with attribution; Wikimedia Commons media with licence mapping to `MediaLicense`.
+4. Duplicate detection through `ExternalIdentifier`; incremental re-import.
+5. Initial dataset centred on Uganda and the Buganda Kingdom.
 
 ## Continuation notes (for the next coding session)
 
 - Project root: `historyverse/`. Run `pnpm install && pnpm check && pnpm build && pnpm test:e2e` to confirm a clean state.
 - Read `AGENTS.md`: Next 16 differs from older versions. Its bundled docs live in `node_modules/next/dist/docs/`.
 - In this environment, Playwright must stay pinned to `@playwright/test@1.63.0` to match the pre-installed Chromium.
+- Local services: start PostgreSQL with `service postgresql start` if the container restarted; the dev database is `historyverse`, the test database `historyverse_test`.
 - Hosts blocked by the current environment's network policy: `ui.shadcn.com`, `*.wikipedia.org`, `www.wikidata.org`, `query.wikidata.org`, `commons.wikimedia.org`. Reachable: npm registry and Google Fonts.

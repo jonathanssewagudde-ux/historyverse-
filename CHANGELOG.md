@@ -2,6 +2,28 @@
 
 All notable changes to HISTORYVERSE are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.3.0] - 2026-11-10: Milestone 3, Database and Authentication
+
+### Added
+
+- PostgreSQL schema (Prisma 7, 60 models) with migrations, integrity constraints and triggers, and reference-data seed
+- Better Auth authentication: sign-up, sign-in, sign-out, profile editing, password change, optional Google sign-in
+- Role and permission system, server-side session data-access layer, `proxy.ts` route gate
+- AI Studio shell and overview at `/admin`; account menu in the header
+- Append-only audit log; `pnpm admin:create` and `pnpm user:role` operator scripts
+- Database readiness in `/api/health`
+- Integration test suite against real PostgreSQL; auth and access-control e2e tests
+- `docker-compose.yml` (PostgreSQL with pgvector, Redis); CI database service
+
+### Changed
+
+- TypeScript target raised to ES2022
+- Authentication library is Better Auth instead of Auth.js (recommended by the Auth.js project for new work)
+
+### Fixed
+
+- Emails with surrounding spaces or capitals were rejected by form validation
+
 ## [0.2.1] - 2026-11-10: Milestone 2 revision, "Neon bento" redesign
 
 ### Changed

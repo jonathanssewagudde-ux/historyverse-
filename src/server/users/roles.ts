@@ -15,7 +15,8 @@ export class RoleChangeError extends Error {
 }
 
 /** `system` is for trusted operator tooling (CLI); everything else must pass a real user. */
-export type RoleActor = { kind: "user"; id: string; email: string; role: Role } | { kind: "system"; label: string };
+export type RoleActor =
+  { kind: "user"; id: string; email: string; role: Role } | { kind: "system"; label: string };
 
 /**
  * Change a user's role. Rules:
@@ -25,7 +26,8 @@ export type RoleActor = { kind: "user"; id: string; email: string; role: Role } 
  * Every change is written to the audit log.
  */
 export async function changeUserRole(actor: RoleActor, targetUserId: string, newRole: Role) {
-  if (!isRole(newRole)) throw new RoleChangeError("INVALID_ROLE", `Unknown role: ${String(newRole)}`);
+  if (!isRole(newRole))
+    throw new RoleChangeError("INVALID_ROLE", `Unknown role: ${String(newRole)}`);
   if (actor.kind === "user" && !canAssignRole(actor, { id: targetUserId }, newRole)) {
     throw new RoleChangeError("FORBIDDEN", "You are not allowed to change this user's role.");
   }
@@ -43,7 +45,9 @@ export async function changeUserRole(actor: RoleActor, targetUserId: string, new
     if (target.role === newRole) return { target, previousRole: target.role, changed: false };
 
     const demotingLastSuperAdmin =
-      target.role === "SUPER_ADMINISTRATOR" && superAdmins.length === 1 && superAdmins[0]!.id === target.id;
+      target.role === "SUPER_ADMINISTRATOR" &&
+      superAdmins.length === 1 &&
+      superAdmins[0]!.id === target.id;
     if (demotingLastSuperAdmin) {
       throw new RoleChangeError(
         "LAST_SUPER_ADMINISTRATOR",
@@ -63,5 +67,11 @@ export async function changeUserRole(actor: RoleActor, targetUserId: string, new
       metadata: { email: result.target.email, from: result.previousRole, to: newRole },
     });
   }
-  return { userId: result.target.id, email: result.target.email, from: result.previousRole, to: newRole, changed: result.changed };
+  return {
+    userId: result.target.id,
+    email: result.target.email,
+    from: result.previousRole,
+    to: newRole,
+    changed: result.changed,
+  };
 }

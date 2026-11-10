@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Search } from "lucide-react";
 
+import { UserMenu } from "@/components/auth/user-menu";
 import { MobileNav } from "@/components/site/mobile-nav";
 import { NavLink } from "@/components/site/nav-link";
 import { Wordmark } from "@/components/site/wordmark";
@@ -35,6 +36,7 @@ export function SiteHeader() {
             </Link>
           </Button>
           <ThemeToggle />
+          <UserMenu />
           <MobileNav />
         </div>
       </div>

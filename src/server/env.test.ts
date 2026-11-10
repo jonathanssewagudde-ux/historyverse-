@@ -9,6 +9,8 @@ describe("parseServerEnv", () => {
     expect(env.STORAGE_DRIVER).toBe("local");
     expect(env.AI_MONTHLY_BUDGET_USD).toBe(0);
     expect(env.INTEGRATIONS_DISABLED).toEqual([]);
+    expect(env.AUTH_RATE_LIMIT_ENABLED).toBe(true);
+    expect(env.AUTH_TRUSTED_ORIGINS).toEqual([]);
     expect(env.DATABASE_URL).toBeUndefined();
   });
 

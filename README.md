@@ -7,7 +7,7 @@ HISTORYVERSE is an AI-assisted historical knowledge platform made of two applica
 - **Public platform:** a sourced historical encyclopedia with articles, archival media, maps, timelines, family trees, documentaries and a grounded AI history assistant.
 - **HISTORYVERSE AI Studio** (`/admin`): a private studio for research, article editing, media licensing, documentary scripting, narration, video rendering and YouTube publishing.
 
-> **Status:** Milestones 1–2 are complete. Milestone 2 (Homepage and Design System) is awaiting review. See [ROADMAP.md](./ROADMAP.md).
+> **Status:** Milestones 1–3 are complete. Milestone 3 (Database and Authentication) is awaiting review. See [ROADMAP.md](./ROADMAP.md).
 > No historical content is published yet. Content arrives from Milestone 4 onward, sourced and reviewed.
 
 ## Requirements
@@ -24,7 +24,10 @@ HISTORYVERSE is an AI-assisted historical knowledge platform made of two applica
 
 ```bash
 pnpm install
-cp .env.example .env.local   # every value is optional for now
+docker compose up -d         # PostgreSQL (pgvector) and Redis
+cp .env.example .env.local   # set DATABASE_URL and AUTH_SECRET (openssl rand -base64 32)
+pnpm db:migrate && pnpm db:seed
+ADMIN_EMAIL=you@example.com ADMIN_PASSWORD='a long passphrase' pnpm admin:create
 pnpm dev                     # http://localhost:3000
 ```
 
@@ -60,7 +63,8 @@ Health probe: `GET /api/health`.
 
 ## Known limitations
 
-- Only the homepage, a 404 page and `/api/health` exist. Navigation shows every other route as unavailable, with the milestone that delivers it.
+- Pages so far: homepage, sign-in, sign-up, profile, the AI Studio overview (`/admin`) and a 404 page. Navigation shows every other route as unavailable, with the milestone that delivers it.
+- No email delivery yet, so there is no email verification or self-service password reset. An operator can promote users with `pnpm user:role`; role management in the UI arrives in Milestone 7.
+- The schema is in place but holds no historical content yet (Milestone 4 onward).
 - Homepage topic cards are planned subjects (name and region only). Search explains that it is not open yet. There are no images yet: licensed archival media arrives with Milestones 4–5.
-- No database, authentication or content yet.
 - The shadcn/ui CLI could not reach `ui.shadcn.com` from the build environment, so the components in `src/components/ui` were written by hand to the shadcn source conventions. `pnpm dlx shadcn add <component>` works on any network that allows that host.

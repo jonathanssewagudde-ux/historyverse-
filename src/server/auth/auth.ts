@@ -4,13 +4,11 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import { nextCookies } from "better-auth/next-js";
 
 import { siteConfig } from "@/config/site";
+import { PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH } from "@/lib/auth/validation";
 import { recordAudit } from "@/server/audit";
 import { getDb } from "@/server/db/client";
 import { getServerEnv } from "@/server/env";
 import { ProviderUnavailableError } from "@/server/providers/contracts";
-
-export const PASSWORD_MIN_LENGTH = 10;
-export const PASSWORD_MAX_LENGTH = 128;
 
 function createAuth() {
   const { env } = getServerEnv();
@@ -25,7 +23,8 @@ function createAuth() {
 
   return betterAuth({
     appName: siteConfig.name,
-    baseURL: siteConfig.url,
+    baseURL: env.AUTH_URL ?? siteConfig.url,
+    trustedOrigins: env.AUTH_TRUSTED_ORIGINS,
     secret: env.AUTH_SECRET,
     database: prismaAdapter(getDb(), { provider: "postgresql" }),
     telemetry: { enabled: false },
@@ -71,7 +70,7 @@ function createAuth() {
 
     advanced: {
       cookiePrefix: "hv",
-      useSecureCookies: production && siteConfig.url.startsWith("https://"),
+      useSecureCookies: production && (env.AUTH_URL ?? siteConfig.url).startsWith("https://"),
     },
 
     databaseHooks: {

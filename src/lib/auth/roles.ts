@@ -5,7 +5,13 @@
  * Roles are hierarchical: each role has every permission of the roles below it.
  */
 
-export const roles = ["USER", "RESEARCHER", "EDITOR", "ADMINISTRATOR", "SUPER_ADMINISTRATOR"] as const;
+export const roles = [
+  "USER",
+  "RESEARCHER",
+  "EDITOR",
+  "ADMINISTRATOR",
+  "SUPER_ADMINISTRATOR",
+] as const;
 export type Role = (typeof roles)[number];
 
 export const roleLabels: Record<Role, string> = {
@@ -53,7 +59,10 @@ const grants = {
 
 export type Permission = (typeof grants)[Role][number];
 
-const rank: Record<Role, number> = Object.fromEntries(roles.map((r, i) => [r, i])) as Record<Role, number>;
+const rank: Record<Role, number> = Object.fromEntries(roles.map((r, i) => [r, i])) as Record<
+  Role,
+  number
+>;
 
 export function isRole(value: unknown): value is Role {
   return typeof value === "string" && (roles as readonly string[]).includes(value);
@@ -76,6 +85,10 @@ export function hasPermission(role: Role, permission: Permission): boolean {
  * Who may assign which role. Only Super Administrators assign roles, nobody changes their own
  * role, and the last Super Administrator can never be demoted (enforced where roles are changed).
  */
-export function canAssignRole(actor: { id: string; role: Role }, target: { id: string }, _newRole: Role): boolean {
+export function canAssignRole(
+  actor: { id: string; role: Role },
+  target: { id: string },
+  _newRole: Role,
+): boolean {
   return actor.role === "SUPER_ADMINISTRATOR" && actor.id !== target.id;
 }

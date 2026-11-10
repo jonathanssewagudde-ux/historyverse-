@@ -3,7 +3,13 @@ import { availableRoutes, footerNav, isRouteAvailable, primaryNav } from "./navi
 
 describe("navigation", () => {
   it("only marks implemented routes as available", () => {
-    expect([...availableRoutes]).toEqual(["/"]);
+    expect([...availableRoutes].sort()).toEqual([
+      "/",
+      "/admin",
+      "/profile",
+      "/sign-in",
+      "/sign-up",
+    ]);
     expect(isRouteAvailable("/")).toBe(true);
     expect(isRouteAvailable("/countries")).toBe(false);
     expect(isRouteAvailable("/search?q=uganda")).toBe(false);

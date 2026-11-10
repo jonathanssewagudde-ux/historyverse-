@@ -17,7 +17,9 @@ Video rendering and narration run only on dedicated workers. Serverless request 
 ## Build and run
 
 ```bash
-pnpm install --frozen-lockfile
+pnpm install --frozen-lockfile   # also generates the Prisma client
+pnpm db:deploy                   # apply migrations
+pnpm db:seed                     # licences and categories (idempotent)
 pnpm build
 pnpm start            # serves on $PORT (default 3000)
 ```
@@ -26,7 +28,7 @@ Liveness: `GET /api/health`. Dependency readiness checks are added as each depen
 
 ## Configuration
 
-Set environment variables from `.env.example` in the host's secret manager. Never bake secrets into images. Only `NEXT_PUBLIC_*` values reach the browser.
+Set environment variables from `.env.example` in the host's secret manager. `AUTH_URL` must be the public https origin (cookies are then marked Secure). If the app sits behind a proxy, make sure the client IP header is forwarded so auth rate limiting works per visitor. Never bake secrets into images. Only `NEXT_PUBLIC_*` values reach the browser.
 
 ## Operations checklist (completed in Milestone 15)
 

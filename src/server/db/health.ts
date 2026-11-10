@@ -24,6 +24,9 @@ export async function checkDatabase(timeoutMs = 3000): Promise<DatabaseHealth> {
     const code = (error as { code?: string }).code;
     const name = error instanceof Error ? error.name : "Error";
     const timedOut = error instanceof Error && error.message.startsWith("timed out");
-    return { status: "down", error: timedOut ? (error as Error).message : code ? `${name} (${code})` : name };
+    return {
+      status: "down",
+      error: timedOut ? (error as Error).message : code ? `${name} (${code})` : name,
+    };
   }
 }

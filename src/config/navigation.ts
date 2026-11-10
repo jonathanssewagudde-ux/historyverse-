@@ -11,7 +11,13 @@ export interface NavItem {
 }
 
 /** Routes that are implemented. Add a route here in the milestone that ships it. */
-export const availableRoutes: ReadonlySet<string> = new Set(["/"]);
+export const availableRoutes: ReadonlySet<string> = new Set([
+  "/",
+  "/sign-in",
+  "/sign-up",
+  "/profile",
+  "/admin",
+]);
 
 export function isRouteAvailable(href: string): boolean {
   const path = href.split(/[?#]/)[0] || "/";

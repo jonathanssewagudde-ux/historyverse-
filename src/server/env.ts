@@ -30,6 +30,18 @@ export const serverEnvSchema = {
 
   // Authentication
   AUTH_SECRET: z.string().min(32, "must be at least 32 characters").optional(),
+  /** Public origin the auth endpoints are served from. Defaults to NEXT_PUBLIC_SITE_URL. */
+  AUTH_URL: optionalUrl,
+  /** Extra origins allowed to call the auth API (comma-separated), e.g. preview deployments. */
+  AUTH_TRUSTED_ORIGINS: z
+    .string()
+    .default("")
+    .transform((v) =>
+      v
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean),
+    ),
   /** Rate limiting of auth endpoints in production. Only switch off for automated tests. */
   AUTH_RATE_LIMIT_ENABLED: z.stringbool().default(true),
   AUTH_GOOGLE_ID: optionalString,
