@@ -1,211 +1,211 @@
 {
- "entities": {
-  "Q473748": {
-   "id": "Q473748",
-   "lastrevid": 2510756281,
-   "modified": "2026-06-26T15:42:35Z",
-   "labels": {
-    "sw": {
-     "language": "sw",
-     "value": "Buganda"
-    },
-    "lg": {
-     "language": "lg",
-     "value": "Buganda"
-    },
-    "en": {
-     "language": "en",
-     "value": "Buganda"
+  "entities": {
+    "Q473748": {
+      "id": "Q473748",
+      "lastrevid": 2510756281,
+      "modified": "2026-06-26T15:42:35Z",
+      "labels": {
+        "sw": {
+          "language": "sw",
+          "value": "Buganda"
+        },
+        "lg": {
+          "language": "lg",
+          "value": "Buganda"
+        },
+        "en": {
+          "language": "en",
+          "value": "Buganda"
+        }
+      },
+      "descriptions": {
+        "en": {
+          "language": "en",
+          "value": "a Bantu kingdom within Uganda, the kingdom of Baganda people"
+        }
+      },
+      "aliases": {
+        "en": [
+          {
+            "language": "en",
+            "value": "Buganda Kingdom"
+          }
+        ]
+      },
+      "claims": {
+        "P17": [
+          {
+            "mainsnak": {
+              "snaktype": "value",
+              "property": "P17",
+              "hash": "699cc8675a2f7196ffa936ed94dbb4a0fbd246f7",
+              "datavalue": {
+                "value": {
+                  "entity-type": "item",
+                  "numeric-id": 1036,
+                  "id": "Q1036"
+                },
+                "type": "wikibase-entityid"
+              },
+              "datatype": "wikibase-item"
+            },
+            "id": "q473748$0C32CD36-8595-463E-9B4B-043BB36A5AD8",
+            "rank": "normal"
+          }
+        ],
+        "P625": [
+          {
+            "mainsnak": {
+              "snaktype": "value",
+              "property": "P625",
+              "hash": "14431cb96a61473d88f5ea2475cccd2fe4505991",
+              "datavalue": {
+                "value": {
+                  "latitude": 0.331944,
+                  "longitude": 32.4181,
+                  "altitude": null,
+                  "precision": 0.0089833036022781,
+                  "globe": "http://www.wikidata.org/entity/Q2"
+                },
+                "type": "globecoordinate"
+              },
+              "datatype": "globe-coordinate"
+            },
+            "id": "Q473748$33D8504E-D1BC-4F40-ADC2-92AE9932549B",
+            "rank": "normal"
+          }
+        ],
+        "P31": [
+          {
+            "mainsnak": {
+              "snaktype": "value",
+              "property": "P31",
+              "hash": "8ef72935bbd0850be07948cbc1801c5af7c1e7a7",
+              "datavalue": {
+                "value": {
+                  "entity-type": "item",
+                  "numeric-id": 3024240,
+                  "id": "Q3024240"
+                },
+                "type": "wikibase-entityid"
+              },
+              "datatype": "wikibase-item"
+            },
+            "id": "Q473748$AC2D9D7A-DDD4-4462-9299-00C7377057CA",
+            "rank": "normal"
+          }
+        ],
+        "P36": [
+          {
+            "mainsnak": {
+              "snaktype": "value",
+              "property": "P36",
+              "hash": "5f426db47a8ad64707744b6fbc205e9f30c1e19d",
+              "datavalue": {
+                "value": {
+                  "entity-type": "item",
+                  "numeric-id": 3894,
+                  "id": "Q3894"
+                },
+                "type": "wikibase-entityid"
+              },
+              "datatype": "wikibase-item"
+            },
+            "id": "Q473748$98049d45-40fe-967f-8e5f-2e03b628f001",
+            "rank": "normal"
+          }
+        ],
+        "P571": [
+          {
+            "mainsnak": {
+              "snaktype": "value",
+              "property": "P571",
+              "hash": "e887d26d6fb73762bdf89167e891a2ab12e9cefa",
+              "datavalue": {
+                "value": {
+                  "time": "+1420-00-00T00:00:00Z",
+                  "timezone": 0,
+                  "before": 0,
+                  "after": 0,
+                  "precision": 9,
+                  "calendarmodel": "http://www.wikidata.org/entity/Q1985786"
+                },
+                "type": "time"
+              },
+              "datatype": "time"
+            },
+            "id": "Q473748$b5dd9831-4c95-1f9f-d8e3-b0aa833174d9",
+            "rank": "normal"
+          }
+        ],
+        "P576": [
+          {
+            "mainsnak": {
+              "snaktype": "value",
+              "property": "P576",
+              "hash": "ccebee0d35ec0b9636555294519d212dda2438fa",
+              "datavalue": {
+                "value": {
+                  "time": "+1966-00-00T00:00:00Z",
+                  "timezone": 0,
+                  "before": 0,
+                  "after": 0,
+                  "precision": 9,
+                  "calendarmodel": "http://www.wikidata.org/entity/Q1985727"
+                },
+                "type": "time"
+              },
+              "datatype": "time"
+            },
+            "id": "Q473748$62704aa9-433d-ada2-540a-29695f3decab",
+            "rank": "normal"
+          }
+        ],
+        "P1366": [
+          {
+            "mainsnak": {
+              "snaktype": "value",
+              "property": "P1366",
+              "hash": "4135260f5a721093af7ce49211d60fec791e9395",
+              "datavalue": {
+                "value": {
+                  "entity-type": "item",
+                  "numeric-id": 101048575,
+                  "id": "Q101048575"
+                },
+                "type": "wikibase-entityid"
+              },
+              "datatype": "wikibase-item"
+            },
+            "id": "Q473748$cf2ab2bf-49ab-4b59-3d4d-6f3492596eb7",
+            "rank": "normal"
+          }
+        ],
+        "P18": [
+          {
+            "mainsnak": {
+              "snaktype": "value",
+              "property": "P18",
+              "hash": "120de2896e670f21514722f658260e490038024b",
+              "datavalue": {
+                "value": "Buganda map.jpg",
+                "type": "string"
+              },
+              "datatype": "commonsMedia"
+            },
+            "id": "Q473748$531b4ec2-4689-d96b-1393-8087a17ca97b",
+            "rank": "normal"
+          }
+        ]
+      },
+      "sitelinks": {
+        "enwiki": {
+          "site": "enwiki",
+          "title": "Buganda",
+          "badges": [],
+          "url": "https://en.wikipedia.org/wiki/Buganda"
+        }
+      }
     }
-   },
-   "descriptions": {
-    "en": {
-     "language": "en",
-     "value": "a Bantu kingdom within Uganda, the kingdom of Baganda people"
-    }
-   },
-   "aliases": {
-    "en": [
-     {
-      "language": "en",
-      "value": "Buganda Kingdom"
-     }
-    ]
-   },
-   "claims": {
-    "P17": [
-     {
-      "mainsnak": {
-       "snaktype": "value",
-       "property": "P17",
-       "hash": "699cc8675a2f7196ffa936ed94dbb4a0fbd246f7",
-       "datavalue": {
-        "value": {
-         "entity-type": "item",
-         "numeric-id": 1036,
-         "id": "Q1036"
-        },
-        "type": "wikibase-entityid"
-       },
-       "datatype": "wikibase-item"
-      },
-      "id": "q473748$0C32CD36-8595-463E-9B4B-043BB36A5AD8",
-      "rank": "normal"
-     }
-    ],
-    "P625": [
-     {
-      "mainsnak": {
-       "snaktype": "value",
-       "property": "P625",
-       "hash": "14431cb96a61473d88f5ea2475cccd2fe4505991",
-       "datavalue": {
-        "value": {
-         "latitude": 0.331944,
-         "longitude": 32.4181,
-         "altitude": null,
-         "precision": 0.0089833036022781,
-         "globe": "http://www.wikidata.org/entity/Q2"
-        },
-        "type": "globecoordinate"
-       },
-       "datatype": "globe-coordinate"
-      },
-      "id": "Q473748$33D8504E-D1BC-4F40-ADC2-92AE9932549B",
-      "rank": "normal"
-     }
-    ],
-    "P31": [
-     {
-      "mainsnak": {
-       "snaktype": "value",
-       "property": "P31",
-       "hash": "8ef72935bbd0850be07948cbc1801c5af7c1e7a7",
-       "datavalue": {
-        "value": {
-         "entity-type": "item",
-         "numeric-id": 3024240,
-         "id": "Q3024240"
-        },
-        "type": "wikibase-entityid"
-       },
-       "datatype": "wikibase-item"
-      },
-      "id": "Q473748$AC2D9D7A-DDD4-4462-9299-00C7377057CA",
-      "rank": "normal"
-     }
-    ],
-    "P36": [
-     {
-      "mainsnak": {
-       "snaktype": "value",
-       "property": "P36",
-       "hash": "5f426db47a8ad64707744b6fbc205e9f30c1e19d",
-       "datavalue": {
-        "value": {
-         "entity-type": "item",
-         "numeric-id": 3894,
-         "id": "Q3894"
-        },
-        "type": "wikibase-entityid"
-       },
-       "datatype": "wikibase-item"
-      },
-      "id": "Q473748$98049d45-40fe-967f-8e5f-2e03b628f001",
-      "rank": "normal"
-     }
-    ],
-    "P571": [
-     {
-      "mainsnak": {
-       "snaktype": "value",
-       "property": "P571",
-       "hash": "e887d26d6fb73762bdf89167e891a2ab12e9cefa",
-       "datavalue": {
-        "value": {
-         "time": "+1420-00-00T00:00:00Z",
-         "timezone": 0,
-         "before": 0,
-         "after": 0,
-         "precision": 9,
-         "calendarmodel": "http://www.wikidata.org/entity/Q1985786"
-        },
-        "type": "time"
-       },
-       "datatype": "time"
-      },
-      "id": "Q473748$b5dd9831-4c95-1f9f-d8e3-b0aa833174d9",
-      "rank": "normal"
-     }
-    ],
-    "P576": [
-     {
-      "mainsnak": {
-       "snaktype": "value",
-       "property": "P576",
-       "hash": "ccebee0d35ec0b9636555294519d212dda2438fa",
-       "datavalue": {
-        "value": {
-         "time": "+1966-00-00T00:00:00Z",
-         "timezone": 0,
-         "before": 0,
-         "after": 0,
-         "precision": 9,
-         "calendarmodel": "http://www.wikidata.org/entity/Q1985727"
-        },
-        "type": "time"
-       },
-       "datatype": "time"
-      },
-      "id": "Q473748$62704aa9-433d-ada2-540a-29695f3decab",
-      "rank": "normal"
-     }
-    ],
-    "P1366": [
-     {
-      "mainsnak": {
-       "snaktype": "value",
-       "property": "P1366",
-       "hash": "4135260f5a721093af7ce49211d60fec791e9395",
-       "datavalue": {
-        "value": {
-         "entity-type": "item",
-         "numeric-id": 101048575,
-         "id": "Q101048575"
-        },
-        "type": "wikibase-entityid"
-       },
-       "datatype": "wikibase-item"
-      },
-      "id": "Q473748$cf2ab2bf-49ab-4b59-3d4d-6f3492596eb7",
-      "rank": "normal"
-     }
-    ],
-    "P18": [
-     {
-      "mainsnak": {
-       "snaktype": "value",
-       "property": "P18",
-       "hash": "120de2896e670f21514722f658260e490038024b",
-       "datavalue": {
-        "value": "Buganda map.jpg",
-        "type": "string"
-       },
-       "datatype": "commonsMedia"
-      },
-      "id": "Q473748$531b4ec2-4689-d96b-1393-8087a17ca97b",
-      "rank": "normal"
-     }
-    ]
-   },
-   "sitelinks": {
-    "enwiki": {
-     "site": "enwiki",
-     "title": "Buganda",
-     "badges": [],
-     "url": "https://en.wikipedia.org/wiki/Buganda"
-    }
-   }
   }
- }
 }

@@ -10,7 +10,11 @@ describe("parseCommonsFiles (real Commons data)", () => {
 
   it("reads licence, creator and dimensions", () => {
     const portrait = files.find((f) => f.title === "File:Mutesa I.jpg")!;
-    expect(portrait.license).toMatchObject({ code: "PD", publishable: true, requiresAttribution: false });
+    expect(portrait.license).toMatchObject({
+      code: "PD",
+      publishable: true,
+      requiresAttribution: false,
+    });
     expect(portrait.creator).toBe("Unknown author");
     expect(portrait.mimeType).toBe("image/jpeg");
     expect(portrait.width).toBeGreaterThan(0);
@@ -24,7 +28,9 @@ describe("parseCommonsFiles (real Commons data)", () => {
   });
 
   it("skips missing files and empty responses", () => {
-    expect(parseCommonsFiles({ query: { pages: [{ title: "File:Nope.jpg", missing: true }] } })).toEqual([]);
+    expect(
+      parseCommonsFiles({ query: { pages: [{ title: "File:Nope.jpg", missing: true }] } }),
+    ).toEqual([]);
     expect(parseCommonsFiles({})).toEqual([]);
   });
 });

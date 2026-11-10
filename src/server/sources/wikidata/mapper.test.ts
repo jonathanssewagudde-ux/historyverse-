@@ -12,9 +12,18 @@ const load = (qid: string): WbEntity =>
 describe("mapWikidataEntity (real Wikidata data)", () => {
   it("maps a person: Muteesa I", () => {
     const m = mapWikidataEntity(load("Q889311"));
-    expect(m).toMatchObject({ qid: "Q889311", kind: "PERSON", kindFromSource: true, name: "Muteesa I" });
+    expect(m).toMatchObject({
+      qid: "Q889311",
+      kind: "PERSON",
+      kindFromSource: true,
+      name: "Muteesa I",
+    });
     expect(m.wikipediaTitle).toBe("Muteesa I of Buganda");
-    expect(m.person).toMatchObject({ gender: "MALE", birthPlaceQid: "Q6933715", deathPlaceQid: "Q309426" });
+    expect(m.person).toMatchObject({
+      gender: "MALE",
+      birthPlaceQid: "Q6933715",
+      deathPlaceQid: "Q309426",
+    });
     expect(m.aliases.map((a) => a.name)).toContain("Muteesa I of Buganda");
     expect(m.imageFile).toBe("Mutesa I.jpg");
   });
@@ -48,7 +57,12 @@ describe("mapWikidataEntity (real Wikidata data)", () => {
   it("maps a country: Uganda", () => {
     const m = mapWikidataEntity(load("Q1036"));
     expect(m.kind).toBe("COUNTRY");
-    expect(m.country).toEqual({ iso2: "UG", iso3: "UGA", continent: "AFRICA", capitalQid: "Q3894" });
+    expect(m.country).toEqual({
+      iso2: "UG",
+      iso3: "UGA",
+      continent: "AFRICA",
+      capitalQid: "Q3894",
+    });
     expect(m.startDate).toEqual({ year: 1962, precision: "year" });
   });
 
@@ -82,14 +96,21 @@ describe("mapWikidataEntity (real Wikidata data)", () => {
 });
 
 describe("bestStatements", () => {
-  const st = (rank: WbStatement["rank"], snaktype: "value" | "somevalue" = "value"): WbStatement => ({
+  const st = (
+    rank: WbStatement["rank"],
+    snaktype: "value" | "somevalue" = "value",
+  ): WbStatement => ({
     rank,
     mainsnak: { snaktype, property: "P1", datavalue: { type: "string", value: rank } },
   });
 
   it("drops deprecated and unknown-value statements, and prefers preferred rank", () => {
-    expect(bestStatements([st("deprecated"), st("normal"), st("normal", "somevalue")])).toHaveLength(1);
-    expect(bestStatements([st("normal"), st("preferred")]).map((s) => s.rank)).toEqual(["preferred"]);
+    expect(
+      bestStatements([st("deprecated"), st("normal"), st("normal", "somevalue")]),
+    ).toHaveLength(1);
+    expect(bestStatements([st("normal"), st("preferred")]).map((s) => s.rank)).toEqual([
+      "preferred",
+    ]);
     expect(bestStatements(undefined)).toEqual([]);
   });
 });

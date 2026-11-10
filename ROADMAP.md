@@ -68,15 +68,33 @@ At the owner's request after review, the UI moved from the original editorial "m
 - **Health probe:** `/api/health` now makes a real database round trip and reports `degraded` (503) if it fails.
 - **Tests:** 131 unit/component, 35 integration (real PostgreSQL), 65 end-to-end (1 mobile-only test skipped on desktop).
 
-## Milestone 4: next steps
+## Milestone 4: Historical Data Integration ✅
 
-**Blocker:** this environment's network policy blocks `www.wikidata.org`, `query.wikidata.org`, `*.wikipedia.org` and `commons.wikimedia.org`. They must be allowed before real data can be imported.
+- **Polite source client** (`src/server/sources/http.ts`): per-host pacing, retries with backoff that honour `Retry-After`, descriptive User-Agent, and no invented responses when retries run out.
+- **Adapters:** Wikidata (entity data and SPARQL), Wikipedia (summaries as research input only), Wikimedia Commons (file metadata, licence and attribution).
+- **Importer** (`src/server/ingestion/wikidata-import.ts`, `pnpm ingest:wikidata`):
+  - creates draft entities with detail rows, structured dates (precision and calendar preserved), aliases and external identifiers;
+  - stores every Wikidata statement as an UNVERIFIED claim citing the exact statement id;
+  - links places, family relationships and terms of office between imported entities;
+  - records image licence and attribution as UNCLASSIFIED, pending-review media (no files downloaded yet);
+  - is idempotent, never overwrites an entity that has entered review, and never touches verified claims;
+  - records each run as an ingestion job and in the audit log.
+- **Initial dataset** (`data/datasets/uganda-buganda.json`): imported live from Wikidata on 2026-11-10: 28 entities (Uganda, Buganda, Kampala and 25 people of the Buganda royal family), 218 claims, 26 family links, 9 terms of office, 10 media records.
+- **Studio page** `/admin/imports`: imported entities with dates, claim counts, review status and source links, plus import runs.
+- **Tests:** 167 unit/component, 44 integration, 67 end-to-end. Mapping tests use real Wikidata and Commons responses saved as fixtures.
 
-1. Source adapter framework: rate limiting, retries, descriptive User-Agent, provenance records.
-2. Wikidata entity import (countries, people, kingdoms, events) mapped to `Entity` + detail rows, dates via `parseWikidataTime`, claims stored as UNVERIFIED imports.
-3. Wikipedia summaries as research inputs with attribution; Wikimedia Commons media with licence mapping to `MediaLicense`.
-4. Duplicate detection through `ExternalIdentifier`; incremental re-import.
-5. Initial dataset centred on Uganda and the Buganda Kingdom.
+### Known limits of the data
+
+- Wikidata's coverage of the Kabakas is incomplete (only some are linked to the office), and several dates are simplifications (for example Buganda "1420 – 1966"). That is why everything is imported as unverified.
+- Wikimedia throttles shared cloud IPs on its action API. The client waits and retries, so imports with media can take minutes.
+- Behind an HTTPS proxy, run the importer with `NODE_USE_ENV_PROXY=1`.
+
+## Milestone 5: next steps
+
+1. Public article system: templates for country, kingdom and biography pages, rendering only PUBLISHED content.
+2. Media storage (local and S3) and image download for approved, publishable media; `MediaFrame` on pages.
+3. Sources and references section, related entities, documentary slot.
+4. Because nothing is published yet, Milestone 5 needs a first reviewed article: the Buganda Kingdom article is drafted from the imported claims plus independent sources, then reviewed by you.
 
 ## Continuation notes (for the next coding session)
 

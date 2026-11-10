@@ -32,7 +32,9 @@ export function createWikidataClient(http: SourceHttpClient): WikidataClient {
     sparql,
     async getEntity(qid) {
       if (!isQid(qid)) throw new Error(`Not a Wikidata item id: ${qid}`);
-      const data = await http.getJson<{ entities: Record<string, WbEntity> }>(`${ENTITY_DATA}/${qid}.json`);
+      const data = await http.getJson<{ entities: Record<string, WbEntity> }>(
+        `${ENTITY_DATA}/${qid}.json`,
+      );
       // A redirected item is returned under its target id.
       const entity = data.entities[qid] ?? Object.values(data.entities)[0];
       if (!entity) throw new Error(`Wikidata returned no entity for ${qid}`);
@@ -42,7 +44,10 @@ export function createWikidataClient(http: SourceHttpClient): WikidataClient {
       const labels = new Map<string, string>();
       const unique = [...new Set(qids.filter(isQid))];
       for (let i = 0; i < unique.length; i += 150) {
-        const values = unique.slice(i, i + 150).map((q) => `wd:${q}`).join(" ");
+        const values = unique
+          .slice(i, i + 150)
+          .map((q) => `wd:${q}`)
+          .join(" ");
         const rows = await sparql<{ i: { value: string }; l: { value: string } }>(
           `SELECT ?i ?l WHERE { VALUES ?i { ${values} } ?i rdfs:label ?l . FILTER(LANG(?l) = "en") }`,
         );

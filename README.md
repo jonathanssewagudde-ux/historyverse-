@@ -7,7 +7,7 @@ HISTORYVERSE is an AI-assisted historical knowledge platform made of two applica
 - **Public platform:** a sourced historical encyclopedia with articles, archival media, maps, timelines, family trees, documentaries and a grounded AI history assistant.
 - **HISTORYVERSE AI Studio** (`/admin`): a private studio for research, article editing, media licensing, documentary scripting, narration, video rendering and YouTube publishing.
 
-> **Status:** Milestones 1–3 are complete. Milestone 3 (Database and Authentication) is awaiting review. See [ROADMAP.md](./ROADMAP.md).
+> **Status:** Milestones 1–4 are complete. Milestone 4 (Historical Data Integration) is awaiting review. See [ROADMAP.md](./ROADMAP.md).
 > No historical content is published yet. Content arrives from Milestone 4 onward, sourced and reviewed.
 
 ## Requirements
@@ -65,6 +65,6 @@ Health probe: `GET /api/health`.
 
 - Pages so far: homepage, sign-in, sign-up, profile, the AI Studio overview (`/admin`) and a 404 page. Navigation shows every other route as unavailable, with the milestone that delivers it.
 - No email delivery yet, so there is no email verification or self-service password reset. An operator can promote users with `pnpm user:role`; role management in the UI arrives in Milestone 7.
-- The schema is in place but holds no historical content yet (Milestone 4 onward).
+- Imported data (Wikidata, Commons) exists only as unreviewed drafts in the Studio. No public article pages yet (Milestone 5).
 - Homepage topic cards are planned subjects (name and region only). Search explains that it is not open yet. There are no images yet: licensed archival media arrives with Milestones 4–5.
 - The shadcn/ui CLI could not reach `ui.shadcn.com` from the build environment, so the components in `src/components/ui` were written by hand to the shadcn source conventions. `pnpm dlx shadcn add <component>` works on any network that allows that host.

@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { StudioLink } from "@/components/admin/studio-link";
 import { UserMenu } from "@/components/auth/user-menu";
 import { Wordmark } from "@/components/site/wordmark";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -47,14 +48,14 @@ export function StudioShell({ children }: { children: React.ReactNode }) {
               const available = isRouteAvailable(item.href);
               const className = cn(
                 "flex items-center justify-between gap-3 rounded-xl px-3 py-2 text-sm font-medium whitespace-nowrap",
-                available ? "bg-accent text-foreground" : "text-muted-foreground",
+                available ? "text-foreground hover:bg-accent" : "text-muted-foreground",
               );
               return (
                 <li key={item.href}>
                   {available ? (
-                    <Link href="/admin" className={className} aria-current="page">
+                    <StudioLink href={item.href} className={className}>
                       {item.title}
-                    </Link>
+                    </StudioLink>
                   ) : (
                     <span
                       className={className}

@@ -54,6 +54,13 @@ Wikimedia requires a descriptive User-Agent with contact information ([policy](h
 | AI video generation     | `VIDEO_GEN_PROVIDER`, `VIDEO_GEN_API_KEY`           | after 11  |
 | Analytics               | `ANALYTICS_PROVIDER`, `ANALYTICS_KEY`               | 15        |
 
+## Wikimedia sources (implemented in Milestone 4)
+
+- Set `WIKIMEDIA_USER_AGENT`; without it the importer refuses to run.
+- Entities are read from `Special:EntityData` and SPARQL, which are less throttled than the action API. Commons metadata uses the action API and may wait on `Retry-After`.
+- Wikidata content is CC0. Wikipedia text is CC BY-SA and is used as a research input only, never copied into articles. Commons files keep their own licence, recorded per file.
+- Behind an HTTPS proxy, set `NODE_USE_ENV_PROXY=1` so Node's `fetch` uses it.
+
 ## Adding a provider
 
 1. Add any new environment variables to `serverEnvSchema` in `src/server/env.ts` and to `.env.example`.

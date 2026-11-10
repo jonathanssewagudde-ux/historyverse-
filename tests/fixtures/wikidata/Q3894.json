@@ -1,181 +1,181 @@
 {
- "entities": {
-  "Q3894": {
-   "id": "Q3894",
-   "lastrevid": 2563641439,
-   "modified": "2026-11-01T23:42:55Z",
-   "labels": {
-    "en": {
-     "language": "en",
-     "value": "Kampala"
-    },
-    "lg": {
-     "language": "lg",
-     "value": "Kampala"
-    },
-    "sw": {
-     "language": "sw",
-     "value": "Kampala"
+  "entities": {
+    "Q3894": {
+      "id": "Q3894",
+      "lastrevid": 2563641439,
+      "modified": "2026-11-01T23:42:55Z",
+      "labels": {
+        "en": {
+          "language": "en",
+          "value": "Kampala"
+        },
+        "lg": {
+          "language": "lg",
+          "value": "Kampala"
+        },
+        "sw": {
+          "language": "sw",
+          "value": "Kampala"
+        }
+      },
+      "descriptions": {
+        "en": {
+          "language": "en",
+          "value": "capital and the largest city of Uganda"
+        }
+      },
+      "aliases": {
+        "en": [
+          {
+            "language": "en",
+            "value": "uganda's Capital city"
+          }
+        ]
+      },
+      "claims": {
+        "P17": [
+          {
+            "mainsnak": {
+              "snaktype": "value",
+              "property": "P17",
+              "hash": "699cc8675a2f7196ffa936ed94dbb4a0fbd246f7",
+              "datavalue": {
+                "value": {
+                  "entity-type": "item",
+                  "numeric-id": 1036,
+                  "id": "Q1036"
+                },
+                "type": "wikibase-entityid"
+              },
+              "datatype": "wikibase-item"
+            },
+            "id": "q3894$DE5627F6-BD07-454D-A921-5990F6E8CAC6",
+            "rank": "normal"
+          }
+        ],
+        "P31": [
+          {
+            "mainsnak": {
+              "snaktype": "value",
+              "property": "P31",
+              "hash": "1d2d976b06b7bb208fadcff54975cc04295b93c0",
+              "datavalue": {
+                "value": {
+                  "entity-type": "item",
+                  "numeric-id": 515,
+                  "id": "Q515"
+                },
+                "type": "wikibase-entityid"
+              },
+              "datatype": "wikibase-item"
+            },
+            "id": "q3894$FA2476A9-061E-49FE-A1E6-F3605F93FBFD",
+            "rank": "normal"
+          },
+          {
+            "mainsnak": {
+              "snaktype": "value",
+              "property": "P31",
+              "hash": "1af62c39c83b583e317a43f838058583f06f38aa",
+              "datavalue": {
+                "value": {
+                  "entity-type": "item",
+                  "numeric-id": 1549591,
+                  "id": "Q1549591"
+                },
+                "type": "wikibase-entityid"
+              },
+              "datatype": "wikibase-item"
+            },
+            "id": "Q3894$1CFD3249-9D59-424B-ADA3-B2C2B87680D6",
+            "rank": "normal"
+          },
+          {
+            "mainsnak": {
+              "snaktype": "value",
+              "property": "P31",
+              "hash": "809aaacfcbdd07816f335ccc32e513853b768e86",
+              "datavalue": {
+                "value": {
+                  "entity-type": "item",
+                  "numeric-id": 56061,
+                  "id": "Q56061"
+                },
+                "type": "wikibase-entityid"
+              },
+              "datatype": "wikibase-item"
+            },
+            "id": "Q3894$45f3b3cf-4ca5-cd48-9e53-c4ed59e9f922",
+            "rank": "normal"
+          }
+        ],
+        "P131": [
+          {
+            "mainsnak": {
+              "snaktype": "value",
+              "property": "P131",
+              "hash": "6d460b0b2ebcd179fb2e0c721ad5942e36ce9885",
+              "datavalue": {
+                "value": {
+                  "entity-type": "item",
+                  "numeric-id": 926417,
+                  "id": "Q926417"
+                },
+                "type": "wikibase-entityid"
+              },
+              "datatype": "wikibase-item"
+            },
+            "id": "q3894$4EB45636-073D-4CDE-9EF7-9DADE55793E7",
+            "rank": "normal"
+          }
+        ],
+        "P625": [
+          {
+            "mainsnak": {
+              "snaktype": "value",
+              "property": "P625",
+              "hash": "00972364b74f66ee9c30b7340062e37e4f8b6975",
+              "datavalue": {
+                "value": {
+                  "latitude": 0.31361111111111,
+                  "longitude": 32.581111111111,
+                  "altitude": null,
+                  "precision": 0.00027777777777778,
+                  "globe": "http://www.wikidata.org/entity/Q2"
+                },
+                "type": "globecoordinate"
+              },
+              "datatype": "globe-coordinate"
+            },
+            "id": "q3894$6CEFCC29-EEB4-4907-A31E-C5F60045B383",
+            "rank": "normal"
+          }
+        ],
+        "P18": [
+          {
+            "mainsnak": {
+              "snaktype": "value",
+              "property": "P18",
+              "hash": "054284161ec4e156968de9bc744e520a51abde48",
+              "datavalue": {
+                "value": "View from 7th floor on Crane Chambers at Kampala road - panoramio.jpg",
+                "type": "string"
+              },
+              "datatype": "commonsMedia"
+            },
+            "id": "Q3894$60430A9D-0E09-493F-B30E-3559E7EEC90C",
+            "rank": "normal"
+          }
+        ]
+      },
+      "sitelinks": {
+        "enwiki": {
+          "site": "enwiki",
+          "title": "Kampala",
+          "badges": [],
+          "url": "https://en.wikipedia.org/wiki/Kampala"
+        }
+      }
     }
-   },
-   "descriptions": {
-    "en": {
-     "language": "en",
-     "value": "capital and the largest city of Uganda"
-    }
-   },
-   "aliases": {
-    "en": [
-     {
-      "language": "en",
-      "value": "uganda's Capital city"
-     }
-    ]
-   },
-   "claims": {
-    "P17": [
-     {
-      "mainsnak": {
-       "snaktype": "value",
-       "property": "P17",
-       "hash": "699cc8675a2f7196ffa936ed94dbb4a0fbd246f7",
-       "datavalue": {
-        "value": {
-         "entity-type": "item",
-         "numeric-id": 1036,
-         "id": "Q1036"
-        },
-        "type": "wikibase-entityid"
-       },
-       "datatype": "wikibase-item"
-      },
-      "id": "q3894$DE5627F6-BD07-454D-A921-5990F6E8CAC6",
-      "rank": "normal"
-     }
-    ],
-    "P31": [
-     {
-      "mainsnak": {
-       "snaktype": "value",
-       "property": "P31",
-       "hash": "1d2d976b06b7bb208fadcff54975cc04295b93c0",
-       "datavalue": {
-        "value": {
-         "entity-type": "item",
-         "numeric-id": 515,
-         "id": "Q515"
-        },
-        "type": "wikibase-entityid"
-       },
-       "datatype": "wikibase-item"
-      },
-      "id": "q3894$FA2476A9-061E-49FE-A1E6-F3605F93FBFD",
-      "rank": "normal"
-     },
-     {
-      "mainsnak": {
-       "snaktype": "value",
-       "property": "P31",
-       "hash": "1af62c39c83b583e317a43f838058583f06f38aa",
-       "datavalue": {
-        "value": {
-         "entity-type": "item",
-         "numeric-id": 1549591,
-         "id": "Q1549591"
-        },
-        "type": "wikibase-entityid"
-       },
-       "datatype": "wikibase-item"
-      },
-      "id": "Q3894$1CFD3249-9D59-424B-ADA3-B2C2B87680D6",
-      "rank": "normal"
-     },
-     {
-      "mainsnak": {
-       "snaktype": "value",
-       "property": "P31",
-       "hash": "809aaacfcbdd07816f335ccc32e513853b768e86",
-       "datavalue": {
-        "value": {
-         "entity-type": "item",
-         "numeric-id": 56061,
-         "id": "Q56061"
-        },
-        "type": "wikibase-entityid"
-       },
-       "datatype": "wikibase-item"
-      },
-      "id": "Q3894$45f3b3cf-4ca5-cd48-9e53-c4ed59e9f922",
-      "rank": "normal"
-     }
-    ],
-    "P131": [
-     {
-      "mainsnak": {
-       "snaktype": "value",
-       "property": "P131",
-       "hash": "6d460b0b2ebcd179fb2e0c721ad5942e36ce9885",
-       "datavalue": {
-        "value": {
-         "entity-type": "item",
-         "numeric-id": 926417,
-         "id": "Q926417"
-        },
-        "type": "wikibase-entityid"
-       },
-       "datatype": "wikibase-item"
-      },
-      "id": "q3894$4EB45636-073D-4CDE-9EF7-9DADE55793E7",
-      "rank": "normal"
-     }
-    ],
-    "P625": [
-     {
-      "mainsnak": {
-       "snaktype": "value",
-       "property": "P625",
-       "hash": "00972364b74f66ee9c30b7340062e37e4f8b6975",
-       "datavalue": {
-        "value": {
-         "latitude": 0.31361111111111,
-         "longitude": 32.581111111111,
-         "altitude": null,
-         "precision": 0.00027777777777778,
-         "globe": "http://www.wikidata.org/entity/Q2"
-        },
-        "type": "globecoordinate"
-       },
-       "datatype": "globe-coordinate"
-      },
-      "id": "q3894$6CEFCC29-EEB4-4907-A31E-C5F60045B383",
-      "rank": "normal"
-     }
-    ],
-    "P18": [
-     {
-      "mainsnak": {
-       "snaktype": "value",
-       "property": "P18",
-       "hash": "054284161ec4e156968de9bc744e520a51abde48",
-       "datavalue": {
-        "value": "View from 7th floor on Crane Chambers at Kampala road - panoramio.jpg",
-        "type": "string"
-       },
-       "datatype": "commonsMedia"
-      },
-      "id": "Q3894$60430A9D-0E09-493F-B30E-3559E7EEC90C",
-      "rank": "normal"
-     }
-    ]
-   },
-   "sitelinks": {
-    "enwiki": {
-     "site": "enwiki",
-     "title": "Kampala",
-     "badges": [],
-     "url": "https://en.wikipedia.org/wiki/Kampala"
-    }
-   }
   }
- }
 }

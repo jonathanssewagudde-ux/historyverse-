@@ -1,0 +1,15 @@
+{
+  "name": "Uganda and the Buganda Kingdom (starter set)",
+  "description": "Seed items for the first HISTORYVERSE project. Every id was looked up on Wikidata; relatives of the listed people are discovered by following Wikidata's own family links.",
+  "followKin": 2,
+  "maxEntities": 40,
+  "seeds": [
+    { "qid": "Q1036", "note": "Uganda" },
+    { "qid": "Q473748", "kind": "KINGDOM", "note": "Buganda (Wikidata class: historical country)" },
+    { "qid": "Q3894", "note": "Kampala" },
+    { "qid": "Q6375953", "note": "Kateregga of Buganda" },
+    { "qid": "Q889311", "note": "Muteesa I" },
+    { "qid": "Q707775", "note": "Mwanga II" },
+    { "qid": "Q630274", "note": "Muwenda Mutebi II" }
+  ]
+}

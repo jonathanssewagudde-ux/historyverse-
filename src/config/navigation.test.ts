@@ -6,6 +6,7 @@ describe("navigation", () => {
     expect([...availableRoutes].sort()).toEqual([
       "/",
       "/admin",
+      "/admin/imports",
       "/profile",
       "/sign-in",
       "/sign-up",

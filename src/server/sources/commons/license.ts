@@ -29,15 +29,39 @@ export const UNKNOWN_LICENSE: ResolvedLicense = {
 
 const CC = "https://creativecommons.org";
 
-export function resolveCommonsLicense(meta: { license?: string; shortName?: string; url?: string }): ResolvedLicense {
+export function resolveCommonsLicense(meta: {
+  license?: string;
+  shortName?: string;
+  url?: string;
+}): ResolvedLicense {
   const raw = (meta.license || meta.shortName || "").trim().toLowerCase().replace(/_/g, "-");
   const short = (meta.shortName || "").trim().toLowerCase();
 
   if (raw === "cc0" || short.startsWith("cc0")) {
-    return { code: "CC0-1.0", name: "CC0 1.0 Universal", family: "CC0", url: `${CC}/publicdomain/zero/1.0/`, requiresAttribution: false, allowsCommercialUse: true, allowsDerivatives: true, requiresShareAlike: false, publishable: true };
+    return {
+      code: "CC0-1.0",
+      name: "CC0 1.0 Universal",
+      family: "CC0",
+      url: `${CC}/publicdomain/zero/1.0/`,
+      requiresAttribution: false,
+      allowsCommercialUse: true,
+      allowsDerivatives: true,
+      requiresShareAlike: false,
+      publishable: true,
+    };
   }
   if (raw === "pd" || raw.startsWith("pd-") || short === "public domain") {
-    return { code: "PD", name: "Public domain", family: "PUBLIC_DOMAIN", url: `${CC}/publicdomain/mark/1.0/`, requiresAttribution: false, allowsCommercialUse: true, allowsDerivatives: true, requiresShareAlike: false, publishable: true };
+    return {
+      code: "PD",
+      name: "Public domain",
+      family: "PUBLIC_DOMAIN",
+      url: `${CC}/publicdomain/mark/1.0/`,
+      requiresAttribution: false,
+      allowsCommercialUse: true,
+      allowsDerivatives: true,
+      requiresShareAlike: false,
+      publishable: true,
+    };
   }
 
   // Creative Commons: "cc-by-sa-4.0", "cc-by-2.5", "cc-by-nc-nd-3.0", optionally with a jurisdiction.
@@ -52,7 +76,9 @@ export function resolveCommonsLicense(meta: { license?: string; shortName?: stri
     code: `CC-${terms.toUpperCase()}-${version}`,
     name: `CC ${terms.toUpperCase()} ${version}`,
     family,
-    url: meta.url?.startsWith("http") ? meta.url.replace(/^http:/, "https:") : `${CC}/licenses/${terms}/${version}/`,
+    url: meta.url?.startsWith("http")
+      ? meta.url.replace(/^http:/, "https:")
+      : `${CC}/licenses/${terms}/${version}/`,
     requiresAttribution: true,
     allowsCommercialUse: !nc,
     allowsDerivatives: !nd,
@@ -65,17 +91,19 @@ export function resolveCommonsLicense(meta: { license?: string; shortName?: stri
 /** Commons metadata fields contain HTML. Reduce to plain text without interpreting any markup. */
 export function stripHtml(html: string | undefined | null): string {
   if (!html) return "";
-  return html
-    .replace(/<(script|style)[\s\S]*?<\/\1>/gi, "")
-    // Commons repeats some values in hidden spans for machine readers; drop them.
-    .replace(/<(\w+)[^>]*display:\s*none[^>]*>[\s\S]*?<\/\1>/gi, "")
-    .replace(/<[^>]*>/g, " ")
-    .replace(/&nbsp;/g, " ")
-    .replace(/&amp;/g, "&")
-    .replace(/&quot;/g, '"')
-    .replace(/&#0?39;/g, "'")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/\s+/g, " ")
-    .trim();
+  return (
+    html
+      .replace(/<(script|style)[\s\S]*?<\/\1>/gi, "")
+      // Commons repeats some values in hidden spans for machine readers; drop them.
+      .replace(/<(\w+)[^>]*display:\s*none[^>]*>[\s\S]*?<\/\1>/gi, "")
+      .replace(/<[^>]*>/g, " ")
+      .replace(/&nbsp;/g, " ")
+      .replace(/&amp;/g, "&")
+      .replace(/&quot;/g, '"')
+      .replace(/&#0?39;/g, "'")
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/\s+/g, " ")
+      .trim()
+  );
 }

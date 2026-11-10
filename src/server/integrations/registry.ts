@@ -150,6 +150,7 @@ export const integrations: IntegrationDefinition[] = [
     envKeys: ["WIKIMEDIA_USER_AGENT"],
     missing: (env) => need(env, "WIKIMEDIA_USER_AGENT"),
     fallback: "Previously imported records stay available; no new imports.",
+    implemented: true,
     docs: "https://meta.wikimedia.org/wiki/User-Agent_policy",
   },
   {
@@ -165,6 +166,7 @@ export const integrations: IntegrationDefinition[] = [
     envKeys: ["WIKIMEDIA_USER_AGENT"],
     missing: (env) => need(env, "WIKIMEDIA_USER_AGENT"),
     fallback: "Previously imported records stay available; no new imports.",
+    implemented: true,
   },
   {
     id: "wikimedia-commons",
@@ -178,6 +180,7 @@ export const integrations: IntegrationDefinition[] = [
     envKeys: ["WIKIMEDIA_USER_AGENT"],
     missing: (env) => need(env, "WIKIMEDIA_USER_AGENT"),
     fallback: "Manual uploads with manually entered licensing.",
+    implemented: true,
   },
   {
     id: "llm",

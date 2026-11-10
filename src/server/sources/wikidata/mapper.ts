@@ -1,4 +1,8 @@
-import { InvalidHistoricalDateError, parseWikidataTime, type HistoricalDate } from "@/lib/history/dates";
+import {
+  InvalidHistoricalDateError,
+  parseWikidataTime,
+  type HistoricalDate,
+} from "@/lib/history/dates";
 import type { WbCoordinate, WbEntity, WbEntityId, WbSnak, WbStatement, WbTime } from "./types";
 
 /**
@@ -97,7 +101,11 @@ export interface ImportedClaim {
   statementId: string | null;
   property: string;
   propertyLabel: string;
-  value: { type: "entity"; id: string } | { type: "time"; raw: WbTime } | { type: "string"; text: string } | { type: "coordinate"; latitude: number; longitude: number };
+  value:
+    | { type: "entity"; id: string }
+    | { type: "time"; raw: WbTime }
+    | { type: "string"; text: string }
+    | { type: "coordinate"; latitude: number; longitude: number };
   date: HistoricalDate | null;
   rank: WbStatement["rank"];
 }
@@ -134,8 +142,18 @@ export interface ImportedEntity {
   claims: ImportedClaim[];
   /** QIDs referenced by this entity (places, relatives, offices) that could be imported next. */
   referencedQids: string[];
-  person?: { gender: "FEMALE" | "MALE" | "OTHER" | "UNKNOWN"; birthPlaceQid: string | null; deathPlaceQid: string | null; occupationQids: string[] };
-  country?: { iso2: string | null; iso3: string | null; continent: string | null; capitalQid: string | null };
+  person?: {
+    gender: "FEMALE" | "MALE" | "OTHER" | "UNKNOWN";
+    birthPlaceQid: string | null;
+    deathPlaceQid: string | null;
+    occupationQids: string[];
+  };
+  country?: {
+    iso2: string | null;
+    iso3: string | null;
+    continent: string | null;
+    capitalQid: string | null;
+  };
   state?: { continent: string | null; capitalQid: string | null };
   location?: { latitude: number; longitude: number } | null;
   countryQid: string | null;
@@ -145,13 +163,18 @@ export interface ImportedEntity {
   warnings: string[];
 }
 
-const isEntityId = (v: unknown): v is WbEntityId => typeof v === "object" && v !== null && "id" in v && typeof (v as WbEntityId).id === "string";
-const isTime = (v: unknown): v is WbTime => typeof v === "object" && v !== null && "time" in v && "precision" in v;
-const isCoordinate = (v: unknown): v is WbCoordinate => typeof v === "object" && v !== null && "latitude" in v && "longitude" in v;
+const isEntityId = (v: unknown): v is WbEntityId =>
+  typeof v === "object" && v !== null && "id" in v && typeof (v as WbEntityId).id === "string";
+const isTime = (v: unknown): v is WbTime =>
+  typeof v === "object" && v !== null && "time" in v && "precision" in v;
+const isCoordinate = (v: unknown): v is WbCoordinate =>
+  typeof v === "object" && v !== null && "latitude" in v && "longitude" in v;
 
 /** Statements worth reading: deprecated ones are ignored; preferred ones win when present. */
 export function bestStatements(statements: WbStatement[] | undefined): WbStatement[] {
-  const usable = (statements ?? []).filter((s) => s.rank !== "deprecated" && s.mainsnak.snaktype === "value");
+  const usable = (statements ?? []).filter(
+    (s) => s.rank !== "deprecated" && s.mainsnak.snaktype === "value",
+  );
   const preferred = usable.filter((s) => s.rank === "preferred");
   return preferred.length > 0 ? preferred : usable;
 }
@@ -163,7 +186,11 @@ function snakValue(snak: WbSnak | undefined) {
 export function mapWikidataEntity(entity: WbEntity, hint?: ImportKind): ImportedEntity {
   const warnings: string[] = [];
   const claimsOf = (p: string) => bestStatements(entity.claims[p]);
-  const entityIds = (p: string) => claimsOf(p).map((s) => snakValue(s.mainsnak)).filter(isEntityId).map((v) => v.id);
+  const entityIds = (p: string) =>
+    claimsOf(p)
+      .map((s) => snakValue(s.mainsnak))
+      .filter(isEntityId)
+      .map((v) => v.id);
   const firstEntity = (p: string) => entityIds(p)[0] ?? null;
   const firstString = (p: string) => {
     const v = snakValue(claimsOf(p)[0]?.mainsnak);
@@ -195,9 +222,14 @@ export function mapWikidataEntity(entity: WbEntity, hint?: ImportKind): Imported
   const sourceKind = classes.map((c) => KIND_BY_CLASS[c]).find(Boolean);
   const kind: ImportKind = hint ?? sourceKind ?? "TOPIC";
   if (hint && sourceKind && hint !== sourceKind) {
-    warnings.push(`Kind hint ${hint} differs from Wikidata class (${sourceKind}); the hint was used.`);
+    warnings.push(
+      `Kind hint ${hint} differs from Wikidata class (${sourceKind}); the hint was used.`,
+    );
   }
-  if (!hint && !sourceKind) warnings.push(`No recognised class in P31 (${classes.join(", ") || "none"}); imported as TOPIC.`);
+  if (!hint && !sourceKind)
+    warnings.push(
+      `No recognised class in P31 (${classes.join(", ") || "none"}); imported as TOPIC.`,
+    );
 
   // --- names
   const name = entity.labels.en?.value;
@@ -215,14 +247,23 @@ export function mapWikidataEntity(entity: WbEntity, hint?: ImportKind): Imported
   for (const [property, propertyLabel] of Object.entries(CLAIM_PROPERTIES)) {
     for (const statement of claimsOf(property)) {
       const raw = snakValue(statement.mainsnak);
-      const base = { statementId: statement.id ?? null, property, propertyLabel, rank: statement.rank };
+      const base = {
+        statementId: statement.id ?? null,
+        property,
+        propertyLabel,
+        rank: statement.rank,
+      };
       if (isEntityId(raw)) {
         referenced.add(raw.id);
         claims.push({ ...base, value: { type: "entity", id: raw.id }, date: null });
       } else if (isTime(raw)) {
         claims.push({ ...base, value: { type: "time", raw }, date: toDate(raw, property) });
       } else if (isCoordinate(raw)) {
-        claims.push({ ...base, value: { type: "coordinate", latitude: raw.latitude, longitude: raw.longitude }, date: null });
+        claims.push({
+          ...base,
+          value: { type: "coordinate", latitude: raw.latitude, longitude: raw.longitude },
+          date: null,
+        });
       } else if (typeof raw === "string") {
         claims.push({ ...base, value: { type: "string", text: raw }, date: null });
       }
@@ -235,7 +276,8 @@ export function mapWikidataEntity(entity: WbEntity, hint?: ImportKind): Imported
     if (!isEntityId(office)) return [];
     const qualifier = (p: string) => snakValue(statement.qualifiers?.[p]?.[0]);
     const ordinalRaw = qualifier("P1545");
-    const ordinal = typeof ordinalRaw === "string" && /^\d+$/.test(ordinalRaw) ? Number(ordinalRaw) : null;
+    const ordinal =
+      typeof ordinalRaw === "string" && /^\d+$/.test(ordinalRaw) ? Number(ordinalRaw) : null;
     return [
       {
         officeQid: office.id,
@@ -252,7 +294,8 @@ export function mapWikidataEntity(entity: WbEntity, hint?: ImportKind): Imported
   const kin = (p: string, build: (other: string) => Omit<ImportedKinship, "statementId">) => {
     for (const statement of claimsOf(p)) {
       const other = snakValue(statement.mainsnak);
-      if (isEntityId(other)) kinship.push({ ...build(other.id), statementId: statement.id ?? null });
+      if (isEntityId(other))
+        kinship.push({ ...build(other.id), statementId: statement.id ?? null });
     }
   };
   kin("P22", (parent) => ({ type: "PARENT_OF", fromQid: parent, toQid: entity.id }));
@@ -288,13 +331,20 @@ export function mapWikidataEntity(entity: WbEntity, hint?: ImportKind): Imported
       : undefined,
     country:
       kind === "COUNTRY"
-        ? { iso2: firstString("P297"), iso3: firstString("P298"), continent, capitalQid: firstEntity("P36") }
+        ? {
+            iso2: firstString("P297"),
+            iso3: firstString("P298"),
+            continent,
+            capitalQid: firstEntity("P36"),
+          }
         : undefined,
     state:
       kind === "HISTORICAL_STATE" || kind === "KINGDOM" || kind === "EMPIRE"
         ? { continent, capitalQid: firstEntity("P36") }
         : undefined,
-    location: isCoordinate(coordinate) ? { latitude: coordinate.latitude, longitude: coordinate.longitude } : null,
+    location: isCoordinate(coordinate)
+      ? { latitude: coordinate.latitude, longitude: coordinate.longitude }
+      : null,
     countryQid: firstEntity("P17"),
     terms,
     kinship,

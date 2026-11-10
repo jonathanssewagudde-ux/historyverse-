@@ -28,13 +28,13 @@ export const milestones: Milestone[] = [
   {
     number: 3,
     title: "Database and Authentication",
-    status: "in_review",
+    status: "complete",
     summary: "PostgreSQL, Prisma models, migrations, Better Auth, roles, protected admin routes.",
   },
   {
     number: 4,
     title: "Historical Data Integration",
-    status: "planned",
+    status: "in_review",
     summary: "Wikidata, Wikipedia, Wikimedia Commons ingestion with provenance and licensing.",
   },
   {

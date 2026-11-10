@@ -1,345 +1,345 @@
 {
- "entities": {
-  "Q889311": {
-   "id": "Q889311",
-   "lastrevid": 2563008222,
-   "modified": "2026-10-31T13:39:50Z",
-   "labels": {
-    "en": {
-     "language": "en",
-     "value": "Muteesa I"
-    },
-    "lg": {
-     "language": "lg",
-     "value": "Muteesa I of Buganda"
+  "entities": {
+    "Q889311": {
+      "id": "Q889311",
+      "lastrevid": 2563008222,
+      "modified": "2026-10-31T13:39:50Z",
+      "labels": {
+        "en": {
+          "language": "en",
+          "value": "Muteesa I"
+        },
+        "lg": {
+          "language": "lg",
+          "value": "Muteesa I of Buganda"
+        }
+      },
+      "descriptions": {
+        "en": {
+          "language": "en",
+          "value": "King of Buganda (1837–1884)"
+        }
+      },
+      "aliases": {
+        "en": [
+          {
+            "language": "en",
+            "value": "Muteesa I Mukaabya Walugembe Kayiira"
+          },
+          {
+            "language": "en",
+            "value": "Walugenbe Muteesa"
+          },
+          {
+            "language": "en",
+            "value": "Muteesa Kayiira"
+          },
+          {
+            "language": "en",
+            "value": "Muteesa I of Buganda"
+          },
+          {
+            "language": "en",
+            "value": "Muteesa I Mukabya Walugembe"
+          },
+          {
+            "language": "en",
+            "value": "Ssekabaka Mutesa I"
+          },
+          {
+            "language": "en",
+            "value": "Walugembe Muteesa"
+          }
+        ]
+      },
+      "claims": {
+        "P21": [
+          {
+            "mainsnak": {
+              "snaktype": "value",
+              "property": "P21",
+              "hash": "85ad4b1c7348f7a5aac521135040d74e91fb5939",
+              "datavalue": {
+                "value": {
+                  "entity-type": "item",
+                  "numeric-id": 6581097,
+                  "id": "Q6581097"
+                },
+                "type": "wikibase-entityid"
+              },
+              "datatype": "wikibase-item"
+            },
+            "id": "q889311$8241162D-C9EB-4146-B551-491F51CA4699",
+            "rank": "normal"
+          }
+        ],
+        "P27": [
+          {
+            "mainsnak": {
+              "snaktype": "value",
+              "property": "P27",
+              "hash": "56bfe2dd69021e555d1a499ee7b11be3e18b4f0b",
+              "datavalue": {
+                "value": {
+                  "entity-type": "item",
+                  "numeric-id": 473748,
+                  "id": "Q473748"
+                },
+                "type": "wikibase-entityid"
+              },
+              "datatype": "wikibase-item"
+            },
+            "id": "q889311$4D4AD6CA-8E3A-462D-B104-14C4891E1AFF",
+            "rank": "normal"
+          }
+        ],
+        "P31": [
+          {
+            "mainsnak": {
+              "snaktype": "value",
+              "property": "P31",
+              "hash": "ad7d38a03cdd40cdc373de0dc4e7b7fcbccb31d9",
+              "datavalue": {
+                "value": {
+                  "entity-type": "item",
+                  "numeric-id": 5,
+                  "id": "Q5"
+                },
+                "type": "wikibase-entityid"
+              },
+              "datatype": "wikibase-item"
+            },
+            "id": "Q889311$860F9F57-D484-478B-8DB3-8833CF0928B0",
+            "rank": "normal"
+          }
+        ],
+        "P569": [
+          {
+            "mainsnak": {
+              "snaktype": "value",
+              "property": "P569",
+              "hash": "a38e31fe551d10615e86fec7e10db32aa790c603",
+              "datavalue": {
+                "value": {
+                  "time": "+1837-01-01T00:00:00Z",
+                  "timezone": 0,
+                  "before": 0,
+                  "after": 0,
+                  "precision": 9,
+                  "calendarmodel": "http://www.wikidata.org/entity/Q1985727"
+                },
+                "type": "time"
+              },
+              "datatype": "time"
+            },
+            "id": "Q889311$6F0823EA-C8BE-48D1-BBEF-B8CB2110B0C1",
+            "rank": "normal"
+          }
+        ],
+        "P570": [
+          {
+            "mainsnak": {
+              "snaktype": "value",
+              "property": "P570",
+              "hash": "19e845244a9b67fe76ebd01d69f481644f985b7d",
+              "datavalue": {
+                "value": {
+                  "time": "+1884-10-19T00:00:00Z",
+                  "timezone": 0,
+                  "before": 0,
+                  "after": 0,
+                  "precision": 11,
+                  "calendarmodel": "http://www.wikidata.org/entity/Q1985727"
+                },
+                "type": "time"
+              },
+              "datatype": "time"
+            },
+            "id": "Q889311$D15FB09B-C06B-48EB-ABE7-D6F7BF453DD9",
+            "rank": "normal"
+          }
+        ],
+        "P18": [
+          {
+            "mainsnak": {
+              "snaktype": "value",
+              "property": "P18",
+              "hash": "fb83cb5bd623627c9786e3bc1add7601da9594c8",
+              "datavalue": {
+                "value": "Mutesa I.jpg",
+                "type": "string"
+              },
+              "datatype": "commonsMedia"
+            },
+            "id": "Q889311$5290ADDD-F4D6-43E0-902E-481CBA59990F",
+            "rank": "normal"
+          }
+        ],
+        "P19": [
+          {
+            "mainsnak": {
+              "snaktype": "value",
+              "property": "P19",
+              "hash": "948bb5b55f99ccce03a3356acfc698d80845b042",
+              "datavalue": {
+                "value": {
+                  "entity-type": "item",
+                  "numeric-id": 6933715,
+                  "id": "Q6933715"
+                },
+                "type": "wikibase-entityid"
+              },
+              "datatype": "wikibase-item"
+            },
+            "id": "Q889311$D606BDB6-FFD4-4AD8-AA11-C64029C55741",
+            "rank": "normal"
+          }
+        ],
+        "P20": [
+          {
+            "mainsnak": {
+              "snaktype": "value",
+              "property": "P20",
+              "hash": "68a0d0dfc9c57e1dbce4b7384c9affd08a77aaaa",
+              "datavalue": {
+                "value": {
+                  "entity-type": "item",
+                  "numeric-id": 309426,
+                  "id": "Q309426"
+                },
+                "type": "wikibase-entityid"
+              },
+              "datatype": "wikibase-item"
+            },
+            "id": "Q889311$A2BB13FD-AB72-46C4-B220-369D9B18A7FE",
+            "rank": "normal"
+          }
+        ],
+        "P22": [
+          {
+            "mainsnak": {
+              "snaktype": "value",
+              "property": "P22",
+              "hash": "209681ccbaa24e07f1875fcb8e182aa07998ed06",
+              "datavalue": {
+                "value": {
+                  "entity-type": "item",
+                  "numeric-id": 7638738,
+                  "id": "Q7638738"
+                },
+                "type": "wikibase-entityid"
+              },
+              "datatype": "wikibase-item"
+            },
+            "id": "Q889311$6DDA61EB-21E6-4C2B-9C65-40A14A61E33E",
+            "rank": "normal"
+          }
+        ],
+        "P40": [
+          {
+            "mainsnak": {
+              "snaktype": "value",
+              "property": "P40",
+              "hash": "7e335b3ecbadb1db9278c7ff80bdefb8d9035626",
+              "datavalue": {
+                "value": {
+                  "entity-type": "item",
+                  "numeric-id": 6352055,
+                  "id": "Q6352055"
+                },
+                "type": "wikibase-entityid"
+              },
+              "datatype": "wikibase-item"
+            },
+            "id": "Q889311$0F69AFEB-6616-4210-85A7-EE740818555F",
+            "rank": "normal"
+          },
+          {
+            "mainsnak": {
+              "snaktype": "value",
+              "property": "P40",
+              "hash": "df9384107d92af4370fbbbf0195b8e0ae465986d",
+              "datavalue": {
+                "value": {
+                  "entity-type": "item",
+                  "numeric-id": 707775,
+                  "id": "Q707775"
+                },
+                "type": "wikibase-entityid"
+              },
+              "datatype": "wikibase-item"
+            },
+            "id": "Q889311$41331D76-1106-469F-82DD-905FACBF8286",
+            "rank": "normal"
+          },
+          {
+            "mainsnak": {
+              "snaktype": "value",
+              "property": "P40",
+              "hash": "6627d2cc0f7ef7558aacddb2669ff89ab8fdc691",
+              "datavalue": {
+                "value": {
+                  "entity-type": "item",
+                  "numeric-id": 16062641,
+                  "id": "Q16062641"
+                },
+                "type": "wikibase-entityid"
+              },
+              "datatype": "wikibase-item"
+            },
+            "id": "Q889311$D3B86832-0910-45F5-BFE1-C5B80095445D",
+            "rank": "normal"
+          }
+        ],
+        "P106": [
+          {
+            "mainsnak": {
+              "snaktype": "value",
+              "property": "P106",
+              "hash": "b864da19341f12f5e95458570118a5cb4a6bcaa1",
+              "datavalue": {
+                "value": {
+                  "entity-type": "item",
+                  "numeric-id": 116,
+                  "id": "Q116"
+                },
+                "type": "wikibase-entityid"
+              },
+              "datatype": "wikibase-item"
+            },
+            "id": "Q889311$99E2536A-6914-4033-983F-52D5081BBE98",
+            "rank": "normal"
+          }
+        ],
+        "P39": [
+          {
+            "mainsnak": {
+              "snaktype": "value",
+              "property": "P39",
+              "hash": "01e162d377df2fa3f34a46cde998814f0667f666",
+              "datavalue": {
+                "value": {
+                  "entity-type": "item",
+                  "numeric-id": 12097,
+                  "id": "Q12097"
+                },
+                "type": "wikibase-entityid"
+              },
+              "datatype": "wikibase-item"
+            },
+            "id": "Q889311$cf2bacd4-a98b-4d8e-aa3a-1d9a0fa31739",
+            "rank": "normal"
+          }
+        ]
+      },
+      "sitelinks": {
+        "enwiki": {
+          "site": "enwiki",
+          "title": "Muteesa I of Buganda",
+          "badges": [],
+          "url": "https://en.wikipedia.org/wiki/Muteesa_I_of_Buganda"
+        }
+      }
     }
-   },
-   "descriptions": {
-    "en": {
-     "language": "en",
-     "value": "King of Buganda (1837–1884)"
-    }
-   },
-   "aliases": {
-    "en": [
-     {
-      "language": "en",
-      "value": "Muteesa I Mukaabya Walugembe Kayiira"
-     },
-     {
-      "language": "en",
-      "value": "Walugenbe Muteesa"
-     },
-     {
-      "language": "en",
-      "value": "Muteesa Kayiira"
-     },
-     {
-      "language": "en",
-      "value": "Muteesa I of Buganda"
-     },
-     {
-      "language": "en",
-      "value": "Muteesa I Mukabya Walugembe"
-     },
-     {
-      "language": "en",
-      "value": "Ssekabaka Mutesa I"
-     },
-     {
-      "language": "en",
-      "value": "Walugembe Muteesa"
-     }
-    ]
-   },
-   "claims": {
-    "P21": [
-     {
-      "mainsnak": {
-       "snaktype": "value",
-       "property": "P21",
-       "hash": "85ad4b1c7348f7a5aac521135040d74e91fb5939",
-       "datavalue": {
-        "value": {
-         "entity-type": "item",
-         "numeric-id": 6581097,
-         "id": "Q6581097"
-        },
-        "type": "wikibase-entityid"
-       },
-       "datatype": "wikibase-item"
-      },
-      "id": "q889311$8241162D-C9EB-4146-B551-491F51CA4699",
-      "rank": "normal"
-     }
-    ],
-    "P27": [
-     {
-      "mainsnak": {
-       "snaktype": "value",
-       "property": "P27",
-       "hash": "56bfe2dd69021e555d1a499ee7b11be3e18b4f0b",
-       "datavalue": {
-        "value": {
-         "entity-type": "item",
-         "numeric-id": 473748,
-         "id": "Q473748"
-        },
-        "type": "wikibase-entityid"
-       },
-       "datatype": "wikibase-item"
-      },
-      "id": "q889311$4D4AD6CA-8E3A-462D-B104-14C4891E1AFF",
-      "rank": "normal"
-     }
-    ],
-    "P31": [
-     {
-      "mainsnak": {
-       "snaktype": "value",
-       "property": "P31",
-       "hash": "ad7d38a03cdd40cdc373de0dc4e7b7fcbccb31d9",
-       "datavalue": {
-        "value": {
-         "entity-type": "item",
-         "numeric-id": 5,
-         "id": "Q5"
-        },
-        "type": "wikibase-entityid"
-       },
-       "datatype": "wikibase-item"
-      },
-      "id": "Q889311$860F9F57-D484-478B-8DB3-8833CF0928B0",
-      "rank": "normal"
-     }
-    ],
-    "P569": [
-     {
-      "mainsnak": {
-       "snaktype": "value",
-       "property": "P569",
-       "hash": "a38e31fe551d10615e86fec7e10db32aa790c603",
-       "datavalue": {
-        "value": {
-         "time": "+1837-01-01T00:00:00Z",
-         "timezone": 0,
-         "before": 0,
-         "after": 0,
-         "precision": 9,
-         "calendarmodel": "http://www.wikidata.org/entity/Q1985727"
-        },
-        "type": "time"
-       },
-       "datatype": "time"
-      },
-      "id": "Q889311$6F0823EA-C8BE-48D1-BBEF-B8CB2110B0C1",
-      "rank": "normal"
-     }
-    ],
-    "P570": [
-     {
-      "mainsnak": {
-       "snaktype": "value",
-       "property": "P570",
-       "hash": "19e845244a9b67fe76ebd01d69f481644f985b7d",
-       "datavalue": {
-        "value": {
-         "time": "+1884-10-19T00:00:00Z",
-         "timezone": 0,
-         "before": 0,
-         "after": 0,
-         "precision": 11,
-         "calendarmodel": "http://www.wikidata.org/entity/Q1985727"
-        },
-        "type": "time"
-       },
-       "datatype": "time"
-      },
-      "id": "Q889311$D15FB09B-C06B-48EB-ABE7-D6F7BF453DD9",
-      "rank": "normal"
-     }
-    ],
-    "P18": [
-     {
-      "mainsnak": {
-       "snaktype": "value",
-       "property": "P18",
-       "hash": "fb83cb5bd623627c9786e3bc1add7601da9594c8",
-       "datavalue": {
-        "value": "Mutesa I.jpg",
-        "type": "string"
-       },
-       "datatype": "commonsMedia"
-      },
-      "id": "Q889311$5290ADDD-F4D6-43E0-902E-481CBA59990F",
-      "rank": "normal"
-     }
-    ],
-    "P19": [
-     {
-      "mainsnak": {
-       "snaktype": "value",
-       "property": "P19",
-       "hash": "948bb5b55f99ccce03a3356acfc698d80845b042",
-       "datavalue": {
-        "value": {
-         "entity-type": "item",
-         "numeric-id": 6933715,
-         "id": "Q6933715"
-        },
-        "type": "wikibase-entityid"
-       },
-       "datatype": "wikibase-item"
-      },
-      "id": "Q889311$D606BDB6-FFD4-4AD8-AA11-C64029C55741",
-      "rank": "normal"
-     }
-    ],
-    "P20": [
-     {
-      "mainsnak": {
-       "snaktype": "value",
-       "property": "P20",
-       "hash": "68a0d0dfc9c57e1dbce4b7384c9affd08a77aaaa",
-       "datavalue": {
-        "value": {
-         "entity-type": "item",
-         "numeric-id": 309426,
-         "id": "Q309426"
-        },
-        "type": "wikibase-entityid"
-       },
-       "datatype": "wikibase-item"
-      },
-      "id": "Q889311$A2BB13FD-AB72-46C4-B220-369D9B18A7FE",
-      "rank": "normal"
-     }
-    ],
-    "P22": [
-     {
-      "mainsnak": {
-       "snaktype": "value",
-       "property": "P22",
-       "hash": "209681ccbaa24e07f1875fcb8e182aa07998ed06",
-       "datavalue": {
-        "value": {
-         "entity-type": "item",
-         "numeric-id": 7638738,
-         "id": "Q7638738"
-        },
-        "type": "wikibase-entityid"
-       },
-       "datatype": "wikibase-item"
-      },
-      "id": "Q889311$6DDA61EB-21E6-4C2B-9C65-40A14A61E33E",
-      "rank": "normal"
-     }
-    ],
-    "P40": [
-     {
-      "mainsnak": {
-       "snaktype": "value",
-       "property": "P40",
-       "hash": "7e335b3ecbadb1db9278c7ff80bdefb8d9035626",
-       "datavalue": {
-        "value": {
-         "entity-type": "item",
-         "numeric-id": 6352055,
-         "id": "Q6352055"
-        },
-        "type": "wikibase-entityid"
-       },
-       "datatype": "wikibase-item"
-      },
-      "id": "Q889311$0F69AFEB-6616-4210-85A7-EE740818555F",
-      "rank": "normal"
-     },
-     {
-      "mainsnak": {
-       "snaktype": "value",
-       "property": "P40",
-       "hash": "df9384107d92af4370fbbbf0195b8e0ae465986d",
-       "datavalue": {
-        "value": {
-         "entity-type": "item",
-         "numeric-id": 707775,
-         "id": "Q707775"
-        },
-        "type": "wikibase-entityid"
-       },
-       "datatype": "wikibase-item"
-      },
-      "id": "Q889311$41331D76-1106-469F-82DD-905FACBF8286",
-      "rank": "normal"
-     },
-     {
-      "mainsnak": {
-       "snaktype": "value",
-       "property": "P40",
-       "hash": "6627d2cc0f7ef7558aacddb2669ff89ab8fdc691",
-       "datavalue": {
-        "value": {
-         "entity-type": "item",
-         "numeric-id": 16062641,
-         "id": "Q16062641"
-        },
-        "type": "wikibase-entityid"
-       },
-       "datatype": "wikibase-item"
-      },
-      "id": "Q889311$D3B86832-0910-45F5-BFE1-C5B80095445D",
-      "rank": "normal"
-     }
-    ],
-    "P106": [
-     {
-      "mainsnak": {
-       "snaktype": "value",
-       "property": "P106",
-       "hash": "b864da19341f12f5e95458570118a5cb4a6bcaa1",
-       "datavalue": {
-        "value": {
-         "entity-type": "item",
-         "numeric-id": 116,
-         "id": "Q116"
-        },
-        "type": "wikibase-entityid"
-       },
-       "datatype": "wikibase-item"
-      },
-      "id": "Q889311$99E2536A-6914-4033-983F-52D5081BBE98",
-      "rank": "normal"
-     }
-    ],
-    "P39": [
-     {
-      "mainsnak": {
-       "snaktype": "value",
-       "property": "P39",
-       "hash": "01e162d377df2fa3f34a46cde998814f0667f666",
-       "datavalue": {
-        "value": {
-         "entity-type": "item",
-         "numeric-id": 12097,
-         "id": "Q12097"
-        },
-        "type": "wikibase-entityid"
-       },
-       "datatype": "wikibase-item"
-      },
-      "id": "Q889311$cf2bacd4-a98b-4d8e-aa3a-1d9a0fa31739",
-      "rank": "normal"
-     }
-    ]
-   },
-   "sitelinks": {
-    "enwiki": {
-     "site": "enwiki",
-     "title": "Muteesa I of Buganda",
-     "badges": [],
-     "url": "https://en.wikipedia.org/wiki/Muteesa_I_of_Buganda"
-    }
-   }
   }
- }
 }

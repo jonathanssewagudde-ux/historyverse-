@@ -2,6 +2,17 @@
 
 All notable changes to HISTORYVERSE are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.4.0] - 2026-11-10: Milestone 4, Historical Data Integration
+
+### Added
+
+- Rate-limited, retrying HTTP client for knowledge sources
+- Wikidata, Wikipedia and Wikimedia Commons adapters; Commons licence mapping
+- Wikidata importer with provenance, idempotency and overwrite protection; `pnpm ingest:wikidata`
+- Starter dataset (Uganda and the Buganda Kingdom), imported live
+- `/admin/imports` Studio page
+- `UNCLASSIFIED` media kind for imported images awaiting editorial classification
+
 ## [0.3.0] - 2026-11-10: Milestone 3, Database and Authentication
 
 ### Added

@@ -64,7 +64,9 @@ export function parseCommonsFiles(response: ImageInfoResponse): CommonsFile[] {
         credit: text("Credit"),
         dateText: text("DateTimeOriginal"),
         license,
-        attribution: [creator ?? "Unknown author", "via Wikimedia Commons", license.name].join(", "),
+        attribution: [creator ?? "Unknown author", "via Wikimedia Commons", license.name].join(
+          ", ",
+        ),
       },
     ];
   });

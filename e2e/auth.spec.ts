@@ -245,12 +245,52 @@ test.describe("AI Studio", () => {
     await setRole(email, "ADMINISTRATOR");
     await page.goto("/admin");
     const nav = page.getByRole("navigation", { name: "Studio" });
-    await expect(nav.getByRole("link")).toHaveCount(1);
+    await expect(nav.getByRole("link")).toHaveCount(2);
     await expect(nav.getByRole("link", { name: "Overview" })).toHaveAttribute(
       "aria-current",
       "page",
     );
     await expect(nav.getByText("Article Studio")).toBeVisible();
+  });
+});
+
+test.describe("data imports", () => {
+  test("readers are refused; researchers see imported data with its source and review status", async ({
+    page,
+  }, testInfo) => {
+    const qid = `Q9${Date.now()}${testInfo.workerIndex}`;
+    await withTestClient(async (client) => {
+      const id = `e2e-${qid}`;
+      await client.query(
+        `INSERT INTO "entities" ("id","kind","slug","name","summary","wikidataId","updatedAt") VALUES ($1,'PERSON',$2,$3,'e2e fixture record',$4,now())`,
+        [id, `e2e-${qid.toLowerCase()}`, `Fixture Person ${qid}`, qid],
+      );
+      await client.query(
+        `INSERT INTO "historical_claims" ("id","statement","origin","verification","entityId","property","updatedAt") VALUES ($1,'fixture claim','IMPORT','UNVERIFIED',$2,'P31',now())`,
+        [`claim-${qid}`, id],
+      );
+    });
+
+    const email = uniqueEmail(testInfo);
+    await signUp(page, email);
+    await page.goto("/admin/imports");
+    await expect(
+      page.getByRole("heading", { name: /don't have access to the Studio/i }),
+    ).toBeVisible();
+
+    await setRole(email, "RESEARCHER");
+    await page.reload();
+    await expect(page.getByRole("heading", { level: 1, name: "Imported data" })).toBeVisible();
+    const row = page
+      .locator("#main")
+      .getByRole("row", { name: new RegExp(`Fixture Person ${qid}`) });
+    await expect(row).toContainText("1 · 1 unverified");
+    await expect(row).toContainText("draft");
+    await expect(row.getByRole("link", { name: qid })).toHaveAttribute(
+      "href",
+      `https://www.wikidata.org/wiki/${qid}`,
+    );
+    await expect(page.locator("#main")).toContainText("unreviewed draft");
   });
 });
 
@@ -280,7 +320,7 @@ test.describe("accessibility", () => {
       const email = uniqueEmail(testInfo);
       await signUp(page, email);
       await setRole(email, "SUPER_ADMINISTRATOR");
-      for (const path of ["/profile", "/admin"]) {
+      for (const path of ["/profile", "/admin", "/admin/imports"]) {
         await page.goto(path);
         await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
         const results = await new AxeBuilder({ page })

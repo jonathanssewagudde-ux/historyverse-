@@ -10,6 +10,7 @@ export interface StudioNavItem {
 
 export const studioNav: StudioNavItem[] = [
   { title: "Overview", href: "/admin", milestone: 3, permission: "studio:access" },
+  { title: "Data Imports", href: "/admin/imports", milestone: 4, permission: "entity:edit" },
   {
     title: "Generate History Project",
     href: "/admin/projects/new",

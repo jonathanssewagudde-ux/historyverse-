@@ -1,7 +1,10 @@
 import { describe, expect, it, vi } from "vitest";
 import { createSourceHttpClient, parseRetryAfter, SourceRequestError } from "./http";
 
-function harness(responses: Array<Response | Error>, opts: { minIntervalMs?: number; maxRetries?: number } = {}) {
+function harness(
+  responses: Array<Response | Error>,
+  opts: { minIntervalMs?: number; maxRetries?: number } = {},
+) {
   let clock = 0;
   const sleeps: number[] = [];
   const calls: { url: string; at: number; ua: string | null }[] = [];
@@ -30,7 +33,9 @@ const json = (body: unknown, init?: ResponseInit) => Response.json(body, init);
 describe("parseRetryAfter", () => {
   it("reads seconds and HTTP dates", () => {
     expect(parseRetryAfter("22", 0)).toBe(22_000);
-    expect(parseRetryAfter("Wed, 21 Oct 2026 07:28:10 GMT", Date.parse("2026-10-21T07:28:00Z"))).toBe(10_000);
+    expect(
+      parseRetryAfter("Wed, 21 Oct 2026 07:28:10 GMT", Date.parse("2026-10-21T07:28:00Z")),
+    ).toBe(10_000);
     expect(parseRetryAfter(null, 0)).toBeNull();
     expect(parseRetryAfter("soon", 0)).toBeNull();
   });
@@ -68,18 +73,24 @@ describe("source HTTP client", () => {
 
   it("gives up after the retry budget and never invents a response", async () => {
     const { client, calls } = harness(
-      [new Response("", { status: 503 }), new Response("", { status: 503 }), new Response("", { status: 503 })],
+      [
+        new Response("", { status: 503 }),
+        new Response("", { status: 503 }),
+        new Response("", { status: 503 }),
+      ],
       { maxRetries: 2, minIntervalMs: 1 },
     );
-    const error = await client.getJson("https://example.org/a").catch((e) => e);
+    const error = await client.getJson("https://example.org/a").catch((e: SourceRequestError) => e);
     expect(error).toBeInstanceOf(SourceRequestError);
-    expect(error.status).toBe(503);
+    expect(error).toMatchObject({ status: 503 });
     expect(calls).toHaveLength(3);
   });
 
   it("does not retry client errors such as 404", async () => {
     const { client, calls } = harness([new Response("", { status: 404 })]);
-    await expect(client.getJson("https://example.org/missing")).rejects.toMatchObject({ status: 404 });
+    await expect(client.getJson("https://example.org/missing")).rejects.toMatchObject({
+      status: 404,
+    });
     expect(calls).toHaveLength(1);
   });
 

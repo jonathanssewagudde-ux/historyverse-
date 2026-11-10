@@ -15,7 +15,8 @@ export interface WbMonolingual {
   text: string;
   language: string;
 }
-export type WbValue = WbTime | WbEntityId | WbCoordinate | WbMonolingual | string | { amount: string };
+export type WbValue =
+  WbTime | WbEntityId | WbCoordinate | WbMonolingual | string | { amount: string };
 
 export interface WbSnak {
   snaktype: "value" | "somevalue" | "novalue";

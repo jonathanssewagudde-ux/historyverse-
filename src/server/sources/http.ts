@@ -63,12 +63,17 @@ export function createSourceHttpClient(options: SourceHttpOptions): SourceHttpCl
     now = Date.now,
   } = options;
 
-  if (!userAgent.trim()) throw new Error("A descriptive User-Agent is required for source requests.");
+  if (!userAgent.trim())
+    throw new Error("A descriptive User-Agent is required for source requests.");
 
   const queues = new Map<string, Promise<unknown>>();
   const lastRequestAt = new Map<string, number>();
 
-  async function attempt<T>(url: string, host: string, headers: Record<string, string>): Promise<T> {
+  async function attempt<T>(
+    url: string,
+    host: string,
+    headers: Record<string, string>,
+  ): Promise<T> {
     for (let tryNumber = 0; ; tryNumber++) {
       const wait = (lastRequestAt.get(host) ?? -Infinity) + minIntervalMs - now();
       if (wait > 0) await sleep(wait);
@@ -99,7 +104,12 @@ export function createSourceHttpClient(options: SourceHttpOptions): SourceHttpCl
 
       const retryAfter = parseRetryAfter(response?.headers.get("retry-after") ?? null, now());
       const backoff = Math.min(maxBackoffMs, retryAfter ?? minIntervalMs * 2 ** (tryNumber + 1));
-      log.warn("retrying source request", { host, status: status ?? failure, waitMs: backoff, try: tryNumber + 1 });
+      log.warn("retrying source request", {
+        host,
+        status: status ?? failure,
+        waitMs: backoff,
+        try: tryNumber + 1,
+      });
       await sleep(backoff);
     }
   }
@@ -108,7 +118,9 @@ export function createSourceHttpClient(options: SourceHttpOptions): SourceHttpCl
     getJson<T>(url: string, init?: { headers?: Record<string, string> }) {
       const host = new URL(url).host;
       const previous = queues.get(host) ?? Promise.resolve();
-      const next = previous.catch(() => undefined).then(() => attempt<T>(url, host, init?.headers ?? {}));
+      const next = previous
+        .catch(() => undefined)
+        .then(() => attempt<T>(url, host, init?.headers ?? {}));
       queues.set(host, next);
       return next;
     },

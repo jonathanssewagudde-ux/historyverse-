@@ -23,7 +23,9 @@ export function createWikipediaClient(http: SourceHttpClient, lang = "en") {
         extract: string;
         revision: string;
         content_urls?: { desktop?: { page?: string } };
-      }>(`https://${lang}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title.replace(/ /g, "_"))}`);
+      }>(
+        `https://${lang}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title.replace(/ /g, "_"))}`,
+      );
       return {
         title: data.title,
         extract: data.extract,

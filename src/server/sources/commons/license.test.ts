@@ -18,7 +18,12 @@ describe("resolveCommonsLicense", () => {
   });
 
   it("treats anything unrecognised as UNKNOWN and not publishable", () => {
-    for (const meta of [{}, { license: "fair use" }, { shortName: "Copyrighted" }, { license: "gfdl" }]) {
+    for (const meta of [
+      {},
+      { license: "fair use" },
+      { shortName: "Copyrighted" },
+      { license: "gfdl" },
+    ]) {
       const license = resolveCommonsLicense(meta);
       expect(license.code).toBe("UNKNOWN");
       expect(license.publishable).toBe(false);
@@ -39,10 +44,14 @@ describe("resolveCommonsLicense", () => {
 
 describe("stripHtml", () => {
   it("reduces Commons HTML fields to plain text", () => {
-    expect(stripHtml('<a href="//commons.wikimedia.org/wiki/User:X" title="User:X">Jane &amp; Co</a>')).toBe("Jane & Co");
+    expect(
+      stripHtml('<a href="//commons.wikimedia.org/wiki/User:X" title="User:X">Jane &amp; Co</a>'),
+    ).toBe("Jane & Co");
     expect(stripHtml("<p>Line one</p>\n<p>Line&nbsp;two</p>")).toBe("Line one Line two");
     expect(stripHtml('<script>alert(1)</script>Safe <b onclick="x()">text</b>')).toBe("Safe text");
-    expect(stripHtml('Unknown author<span style="display: none;">Unknown author</span>')).toBe("Unknown author");
+    expect(stripHtml('Unknown author<span style="display: none;">Unknown author</span>')).toBe(
+      "Unknown author",
+    );
     expect(stripHtml(undefined)).toBe("");
   });
 });

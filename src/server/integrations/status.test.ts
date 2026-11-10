@@ -61,8 +61,15 @@ describe("resolveIntegrationStates", () => {
   it("only reports integrations as implemented once their milestone has shipped", () => {
     const states = resolveIntegrationStates(parseServerEnv({}));
     const implemented = states.filter((s) => s.implemented).map((s) => s.id);
-    expect(implemented.sort()).toEqual(["auth", "google-signin", "postgres"]);
-    for (const s of states.filter((x) => x.implemented)) expect(s.milestone).toBeLessThanOrEqual(3);
+    expect(implemented.sort()).toEqual([
+      "auth",
+      "google-signin",
+      "postgres",
+      "wikidata",
+      "wikimedia-commons",
+      "wikipedia",
+    ]);
+    for (const s of states.filter((x) => x.implemented)) expect(s.milestone).toBeLessThanOrEqual(4);
   });
 
   it("needs both a secret and a database for authentication", () => {
