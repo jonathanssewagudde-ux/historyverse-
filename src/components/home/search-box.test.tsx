@@ -26,7 +26,7 @@ describe("SearchBox", () => {
   it("ignores empty submissions", async () => {
     const user = userEvent.setup();
     render(<SearchBox suggestions={[]} />);
-    await user.click(screen.getByRole("button", { name: "Search" }));
+    await user.click(screen.getByRole("button", { name: /^search/i }));
     expect(screen.getByRole("status")).toBeEmptyDOMElement();
     expect(screen.getByRole("searchbox")).toHaveFocus();
   });

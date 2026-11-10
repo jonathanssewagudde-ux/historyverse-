@@ -36,20 +36,22 @@ export default function HomePage() {
 
       <Section
         id="featured"
-        eyebrow="Featured"
+        eyebrow="featured drops"
+        emoji="✦"
         title="Featured Historical Stories"
         description="Flagship projects, each with a sourced article, archival media and a documentary."
       >
         <FeaturedStories stories={featuredStories} />
       </Section>
 
-      <Section id="today" eyebrow="On this day" title="Today in History">
+      <Section id="today" eyebrow="on this day" emoji="📅" title="Today in History">
         <TodayInHistory />
       </Section>
 
       <Section
         id="explore-world"
-        eyebrow="Atlas"
+        eyebrow="atlas mode"
+        emoji="🗺️"
         title="Explore the World"
         description="Every country and territory, its ancient societies, kingdoms, independence movements and modern history."
       >
@@ -58,7 +60,8 @@ export default function HomePage() {
 
       <Section
         id="ancient-civilizations"
-        eyebrow="Antiquity"
+        eyebrow="the OGs"
+        emoji="🏛️"
         title="Ancient Civilizations"
         action={{ title: "All civilizations", href: "/civilizations", milestone: 5 }}
       >
@@ -67,7 +70,8 @@ export default function HomePage() {
 
       <Section
         id="monarchs"
-        eyebrow="Royalty"
+        eyebrow="crown check"
+        emoji="👑"
         title="Kings and Queens"
         description="Monarchs, emperors, sultans and traditional rulers, with their dynasties and documented family trees."
         action={{ title: "All monarchs", href: "/monarchs", milestone: 5 }}
@@ -77,7 +81,8 @@ export default function HomePage() {
 
       <Section
         id="leaders"
-        eyebrow="Statecraft"
+        eyebrow="heads of state"
+        emoji="🎙️"
         title="Presidents and World Leaders"
         description="Presidents, prime ministers, independence leaders and revolutionaries: their terms, policies and legacies."
         action={{ title: "All presidents", href: "/presidents", milestone: 5 }}
@@ -87,7 +92,8 @@ export default function HomePage() {
 
       <Section
         id="african-kingdoms"
-        eyebrow="Collection"
+        eyebrow="collection"
+        emoji="🌍"
         title="Great African Kingdoms"
         description="Kingdoms and empires across the continent, from the Horn of Africa to the Great Lakes, the Sahel and the south."
         action={{ title: "All kingdoms", href: "/kingdoms", milestone: 5 }}
@@ -97,7 +103,8 @@ export default function HomePage() {
 
       <Section
         id="mysteries"
-        eyebrow="Open questions"
+        eyebrow="unsolved"
+        emoji="👀"
         title="Historical Mysteries"
         description="Unresolved questions, presented with the evidence and the competing interpretations side by side."
       >
@@ -106,7 +113,8 @@ export default function HomePage() {
 
       <Section
         id="figures"
-        eyebrow="Lives"
+        eyebrow="main characters"
+        emoji="⭐"
         title="Famous Historical Figures"
         action={{ title: "All people", href: "/people", milestone: 5 }}
       >
@@ -115,7 +123,8 @@ export default function HomePage() {
 
       <Section
         id="technology"
-        eyebrow="Everyday things"
+        eyebrow="how we got here"
+        emoji="⚡"
         title="History of Technology"
         description="How the inventions around us came to be."
       >
@@ -124,20 +133,22 @@ export default function HomePage() {
 
       <Section
         id="timeline"
-        eyebrow="Chronology"
+        eyebrow="zoom out"
+        emoji="🔭"
         title="Interactive World Timeline"
         action={{ title: "Open the timeline", href: "/timeline", milestone: 13 }}
       >
         <EraTimeline />
       </Section>
 
-      <Section id="continents" eyebrow="Regions" title="Explore by Continent">
+      <Section id="continents" eyebrow="pick a continent" emoji="🧭" title="Explore by Continent">
         <ContinentGrid items={continents} />
       </Section>
 
       <Section
         id="documentaries"
-        eyebrow="Watch"
+        eyebrow="now streaming"
+        emoji="🎬"
         title="Latest Documentaries"
         action={{ title: "All documentaries", href: "/documentaries", milestone: 12 }}
       >
@@ -148,11 +159,11 @@ export default function HomePage() {
         </EmptyState>
       </Section>
 
-      <Section id="popular-searches" eyebrow="Search" title="Popular Searches">
+      <Section id="popular-searches" eyebrow="start here" emoji="🔎" title="Popular Searches">
         <PopularSearches searches={suggestedSearches} />
       </Section>
 
-      <Section id="recent" eyebrow="Newsroom" title="Recently Published Stories">
+      <Section id="recent" eyebrow="fresh drops" emoji="✨" title="Recently Published Stories">
         <EmptyState icon={Newspaper} title="Nothing published yet">
           Stories appear here once they have been sourced, checked in research review and approved
           by an editor.

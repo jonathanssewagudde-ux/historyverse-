@@ -43,8 +43,18 @@ The milestone list in `src/config/milestones.ts` mirrors this file.
 - Search box: labelled search landmark and suggestion chips. Until Milestone 6 it explains that search is not open yet instead of faking results.
 - Interactive era timeline using the WAI-ARIA tabs pattern with arrow-key support. Era boundaries are marked "c." and caveated as conventions.
 - Design system additions: section shell, topic plates (abstract monograms, never imitation imagery), status pills, empty states, a Sheet component, Motion reveal animations respecting `prefers-reduced-motion`, and `MediaFrame`. `MediaFrame` makes the media-kind label and source/licence credit mandatory and always shows _"AI-Generated Historical Reconstruction — Not an Authentic Photograph"_ on reconstructions.
-- Accessibility: axe-core scans (WCAG 2.1 AA) pass in dark and light themes on desktop and mobile. Also covered: skip link, keyboard operation and no horizontal overflow at 320 px. The light-theme gold and reconstruction colours were darkened to pass AA contrast.
+- Accessibility: axe-core scans (WCAG 2.1 AA) pass in dark and light themes on desktop and mobile. Also covered: skip link, keyboard operation and no horizontal overflow at 320 px. Every colour token is checked for AA contrast by these scans.
 - Tests: 108 unit/component (Vitest) and 31 end-to-end (Playwright; 1 mobile-only test skipped on desktop).
+
+### Milestone 2 revision: "Neon bento" redesign
+
+At the owner's request after review, the UI moved from the original editorial "museum" look (navy, gold, serif) to a Gen-Z **neon bento** style. Details:
+
+- **Tokens and type:** new colour tokens (violet, lime, hot pink, cyan on a near-black base) and Bricolage Grotesque, Inter and JetBrains Mono fonts.
+- **Layout:** a floating pill navbar, rounded bento grids, gradient plates, sticker badges and a topic marquee.
+- **Homepage details:** a lime-pill era switcher, a giant gradient footer wordmark, and playful section kickers. Section titles still follow the specification.
+- **Reconstruction label:** now amber, kept distinct from the brand violet.
+- **Unchanged:** all behaviour, honesty rules and accessibility checks. axe passes in both themes.
 
 ## Milestone 3: next steps
 

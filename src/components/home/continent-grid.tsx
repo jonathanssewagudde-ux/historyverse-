@@ -2,6 +2,17 @@ import { ArrowUpRight } from "lucide-react";
 
 import { NavLink } from "@/components/site/nav-link";
 import type { continents } from "@/content/homepage";
+import { cn } from "@/lib/utils";
+
+const emoji: Record<string, string> = {
+  Africa: "🌍",
+  Asia: "🌏",
+  Europe: "🌍",
+  "North America": "🌎",
+  "South America": "🌎",
+  Oceania: "🌏",
+  Antarctica: "🧊",
+};
 
 export function ContinentGrid({ items }: { items: typeof continents }) {
   return (
@@ -17,13 +28,30 @@ export function ContinentGrid({ items }: { items: typeof continents }) {
               href: `/explore?continent=${encodeURIComponent(c.name)}`,
               milestone: 6,
             }}
-            className="group flex h-full min-h-32 flex-col justify-between gap-6 rounded-xl border bg-card p-5 transition-colors hover:border-gold/50"
+            className={cn(
+              "group flex h-full min-h-36 flex-col justify-between gap-6 rounded-3xl border p-5 transition duration-300 hover:-translate-y-1",
+              i === 0
+                ? "bg-gradient-to-br from-primary to-pink text-[oklch(0.99_0_0)]"
+                : "bg-card hover:border-primary/60",
+            )}
           >
             <span className="flex items-start justify-between">
-              <span className="font-serif text-2xl font-semibold">{c.name}</span>
-              <ArrowUpRight className="size-4 text-gold opacity-60" aria-hidden />
+              <span aria-hidden className="text-3xl">
+                {emoji[c.name]}
+              </span>
+              <ArrowUpRight className="size-5 opacity-70" aria-hidden />
             </span>
-            <span className="text-sm text-muted-foreground">{c.examples}</span>
+            <span>
+              <span className="block font-display text-2xl font-extrabold">{c.name}</span>
+              <span
+                className={cn(
+                  "mt-1 block text-sm",
+                  i === 0 ? "opacity-90" : "text-muted-foreground",
+                )}
+              >
+                {c.examples}
+              </span>
+            </span>
           </NavLink>
         </li>
       ))}

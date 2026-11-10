@@ -111,7 +111,7 @@ test.describe("mobile navigation", () => {
     const dialog = page.getByRole("dialog");
     await expect(dialog).toBeVisible();
     await expect(dialog.getByText("Countries")).toBeVisible();
-    await expect(dialog.getByText("Milestone 13").first()).toBeVisible();
+    await expect(dialog.getByText("soon · M13").first()).toBeVisible();
     await page.keyboard.press("Escape");
     await expect(dialog).toBeHidden();
     await expect(page.getByRole("button", { name: "Open menu" })).toBeFocused();

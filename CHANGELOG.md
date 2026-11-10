@@ -2,6 +2,18 @@
 
 All notable changes to HISTORYVERSE are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.2.1] - 2026-11-10: Milestone 2 revision, "Neon bento" redesign
+
+### Changed
+
+- New Gen-Z visual identity (owner request): violet, lime, hot pink and cyan on near-black, rounded bento layouts, Bricolage Grotesque and JetBrains Mono, floating pill navigation, gradient topic plates, sticker status tags, a giant gradient footer wordmark
+- The AI-reconstruction label colour is now amber, distinct from the brand violet
+- On phones, the search button shows an arrow (its accessible name is still "search") so the placeholder has room
+
+### Added
+
+- `Marquee` topic ticker (decorative, static under reduced motion), `lime` button and badge variants, `text-gradient` and `bg-grid` utilities
+
 ## [0.2.0] - 2026-11-10: Milestone 2, Homepage and Design System
 
 ### Added

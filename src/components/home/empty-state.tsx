@@ -10,12 +10,12 @@ export function EmptyState({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-col items-start gap-3 rounded-xl border border-dashed border-border bg-card/40 p-6 sm:flex-row sm:items-center sm:gap-5 sm:p-8">
-      <span className="grid size-12 shrink-0 place-items-center rounded-full border border-gold/40 text-gold">
-        <Icon className="size-5" aria-hidden />
+    <div className="flex flex-col items-start gap-4 rounded-3xl border border-dashed bg-card/60 p-6 sm:flex-row sm:items-center sm:gap-6 sm:p-8">
+      <span className="grid size-14 shrink-0 -rotate-6 place-items-center rounded-2xl bg-lime text-lime-foreground">
+        <Icon className="size-6" aria-hidden />
       </span>
       <div>
-        <h3 className="font-sans text-base font-semibold">{title}</h3>
+        <h3 className="text-xl font-bold">{title}</h3>
         <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{children}</p>
       </div>
     </div>

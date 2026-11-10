@@ -17,21 +17,21 @@ export function TodayInHistory() {
   const today = useSyncExternalStore(noop, todayLabel, () => null);
 
   return (
-    <div className="grid overflow-hidden rounded-2xl border bg-card md:grid-cols-[minmax(0,18rem)_1fr]">
-      <div className="flex flex-col justify-between gap-6 border-b bg-[radial-gradient(120%_100%_at_0%_0%,oklch(0.78_0.11_80/0.16),transparent_60%)] p-6 sm:p-8 md:border-r md:border-b-0">
-        <CalendarDays className="size-6 text-gold" aria-hidden />
+    <div className="grid gap-3 md:grid-cols-[minmax(0,20rem)_1fr]">
+      <div className="flex rotate-[-1.5deg] flex-col justify-between gap-8 rounded-3xl bg-gradient-to-br from-primary to-pink p-6 text-[oklch(0.99_0_0)] shadow-[0_25px_60px_-25px_var(--glow)] sm:p-8">
+        <CalendarDays className="size-7" aria-hidden />
         <div>
-          <p className="text-xs tracking-[0.25em] text-muted-foreground uppercase">On this day</p>
+          <p className="font-mono text-xs">on this day</p>
           <p
-            className="mt-1 font-serif text-4xl font-semibold sm:text-5xl"
+            className="mt-1 font-display text-5xl leading-none font-extrabold tracking-tight"
             data-testid="today-date"
           >
             {today ?? "Today"}
           </p>
         </div>
       </div>
-      <div className="flex flex-col justify-center p-6 sm:p-8">
-        <h3 className="font-sans text-base font-semibold">No events loaded yet</h3>
+      <div className="flex flex-col justify-center rounded-3xl border border-dashed bg-card/60 p-6 sm:p-8">
+        <h3 className="text-xl font-bold">No events loaded yet</h3>
         <p className="mt-2 max-w-xl text-sm text-muted-foreground">
           Events that happened on this date will appear here once the historical database is
           connected. Every entry will come from sourced records with its date precision preserved,

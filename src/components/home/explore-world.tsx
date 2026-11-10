@@ -4,50 +4,51 @@ import { Graticule } from "@/components/home/graticule";
 import { NavLink } from "@/components/site/nav-link";
 import { buttonVariants } from "@/components/ui/button";
 
-const goals = [
-  { figure: "193", label: "UN member states" },
-  { figure: "+", label: "Observer states, territories and historical states" },
-  { figure: "∞", label: "Kingdoms, empires and civilizations, added as they are sourced" },
-];
-
+/** Bento: big globe tile + three coverage-goal tiles. Goals, not counts of published content. */
 export function ExploreWorld() {
   return (
-    <div className="relative isolate grid overflow-hidden rounded-2xl border bg-card lg:grid-cols-[3fr_2fr]">
-      <div className="relative z-10 flex flex-col gap-6 p-6 sm:p-10">
-        <p className="text-sm text-muted-foreground">
+    <div className="grid gap-3 lg:grid-cols-4 lg:grid-rows-2">
+      <div className="relative isolate flex min-h-80 flex-col justify-between overflow-hidden rounded-3xl border bg-card p-6 sm:p-8 lg:col-span-2 lg:row-span-2">
+        <Graticule className="pointer-events-none absolute -right-24 -bottom-24 -z-10 w-[26rem] opacity-80" />
+        <p className="max-w-sm text-muted-foreground">
           The map and country pages will connect every place to its people, events and
-          documentaries. These are HISTORYVERSE&apos;s{" "}
-          <strong className="text-foreground">coverage goals</strong>, not a count of what has been
-          published.
+          documentaries.
         </p>
-        <dl className="grid gap-4 sm:grid-cols-3">
-          {goals.map((g) => (
-            <div
-              key={g.label}
-              className="flex flex-col-reverse justify-end border-l border-gold/40 pl-4"
-            >
-              <dt className="text-sm text-muted-foreground">{g.label}</dt>
-              <dd className="font-serif text-4xl font-semibold text-gold">{g.figure}</dd>
-            </div>
-          ))}
-        </dl>
-        <div className="flex flex-wrap gap-3">
+        <div className="flex flex-wrap gap-2">
           <NavLink
             item={{ title: "Open the map", href: "/map", milestone: 13 }}
-            className={buttonVariants({ variant: "default" })}
+            className={buttonVariants({ variant: "default", size: "lg" })}
           >
             <Map aria-hidden /> Open the map
           </NavLink>
           <NavLink
             item={{ title: "Browse countries", href: "/countries", milestone: 5 }}
-            className={buttonVariants({ variant: "outline" })}
+            className={buttonVariants({ variant: "outline", size: "lg" })}
           >
             <Compass aria-hidden /> Browse countries
           </NavLink>
         </div>
       </div>
-      <div aria-hidden className="relative min-h-64 overflow-hidden lg:min-h-full">
-        <Graticule className="absolute top-1/2 left-1/2 w-[130%] max-w-none -translate-x-1/2 -translate-y-1/2 opacity-80" />
+      <div className="flex flex-col justify-end rounded-3xl bg-lime p-6 text-lime-foreground lg:col-span-2">
+        <p className="font-display text-7xl leading-none font-extrabold tracking-tighter">193</p>
+        <p className="mt-2 font-semibold">UN member states: the coverage goal</p>
+      </div>
+      <div className="flex flex-col justify-end rounded-3xl border bg-card p-6">
+        <p aria-hidden className="text-gradient font-display text-5xl font-extrabold">
+          +
+        </p>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Observer states, territories and historical states
+        </p>
+      </div>
+      <div className="flex flex-col justify-end rounded-3xl border bg-card p-6">
+        <p aria-hidden className="text-gradient font-display text-5xl font-extrabold">
+          ∞
+        </p>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Kingdoms, empires and civilizations, added as they are sourced. These are goals, not a
+          count of published pages.
+        </p>
       </div>
     </div>
   );

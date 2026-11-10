@@ -1,6 +1,14 @@
 import { cn } from "@/lib/utils";
 
-const HUES = [78, 62, 48, 255, 265, 35];
+/** Vivid gradient pairs; picked deterministically per topic so each card keeps its colour. */
+const GRADIENTS = [
+  ["oklch(0.62 0.24 293)", "oklch(0.7 0.22 355)"], // violet → pink
+  ["oklch(0.86 0.2 128)", "oklch(0.8 0.14 200)"], // lime → cyan
+  ["oklch(0.72 0.2 355)", "oklch(0.82 0.16 70)"], // pink → amber
+  ["oklch(0.75 0.15 220)", "oklch(0.6 0.24 293)"], // cyan → violet
+  ["oklch(0.82 0.17 95)", "oklch(0.72 0.21 15)"], // yellow → coral
+  ["oklch(0.55 0.2 270)", "oklch(0.85 0.2 135)"], // indigo → lime
+] as const;
 
 function hash(text: string): number {
   let h = 0;
@@ -22,8 +30,8 @@ export function initials(name: string): string {
 }
 
 /**
- * Decorative typographic plate used where no licensed image exists yet. It is abstract by design
- * (monogram + engraved rings) so it can never be mistaken for historical imagery.
+ * Decorative gradient plate used where no licensed image exists yet. Abstract by design (colour
+ * field + monogram), so it can never be mistaken for historical imagery.
  */
 export function TopicPlate({
   name,
@@ -35,31 +43,19 @@ export function TopicPlate({
   monogram?: boolean;
 }) {
   const h = hash(name);
-  const hue = HUES[h % HUES.length];
-  const rotate = (h % 7) * 13;
+  const [from, to] = GRADIENTS[h % GRADIENTS.length]!;
+  const angle = 110 + (h % 5) * 25;
 
   return (
     <div
       aria-hidden
       className={cn("relative isolate overflow-hidden", className)}
-      style={{
-        background: `radial-gradient(120% 90% at 20% 10%, oklch(0.42 0.07 ${hue} / 0.55), transparent 60%), linear-gradient(160deg, oklch(0.27 0.04 ${hue}), oklch(0.17 0.03 260))`,
-      }}
+      style={{ background: `linear-gradient(${angle}deg, ${from}, ${to})` }}
     >
-      <svg
-        viewBox="0 0 200 150"
-        className="absolute inset-0 size-full text-gold opacity-35"
-        preserveAspectRatio="xMidYMid slice"
-      >
-        <g transform={`rotate(${rotate} 150 75)`} fill="none" stroke="currentColor">
-          <circle cx="150" cy="75" r="70" strokeWidth="0.6" />
-          <circle cx="150" cy="75" r="52" strokeWidth="0.4" strokeDasharray="1 3" />
-          <circle cx="150" cy="75" r="34" strokeWidth="0.6" />
-          <path d="M80 75h140M150 5v140" strokeWidth="0.4" />
-        </g>
-      </svg>
+      <div className="absolute inset-0 bg-grid opacity-40 mix-blend-overlay" />
+      <div className="absolute -right-6 -bottom-10 size-40 rounded-full bg-white/25 blur-2xl" />
       {monogram && (
-        <span className="absolute bottom-3 left-4 font-serif text-5xl leading-none font-semibold text-[oklch(0.92_0.05_85)] opacity-90">
+        <span className="absolute bottom-2 left-4 font-display text-6xl leading-none font-extrabold tracking-tighter text-[oklch(0.15_0.02_285)]/85">
           {initials(name)}
         </span>
       )}

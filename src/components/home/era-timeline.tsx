@@ -36,65 +36,48 @@ export function EraTimeline() {
   }
 
   return (
-    <div className="rounded-2xl border bg-card p-4 sm:p-8">
-      <div className="relative">
-        <div aria-hidden className="absolute top-[1.15rem] right-4 left-4 h-px bg-border" />
-        <motion.div
-          aria-hidden
-          className="absolute top-[1.15rem] left-4 h-px bg-gold"
-          animate={{
-            width: `calc(${(active / (worldEras.length - 1)) * 100}% - ${(active / (worldEras.length - 1)) * 2}rem)`,
-          }}
-          transition={{ type: "spring", stiffness: 140, damping: 22 }}
-        />
-        <div
-          role="tablist"
-          aria-label="Historical eras"
-          onKeyDown={onKeyDown}
-          className="relative grid grid-cols-3 gap-y-4 sm:grid-cols-6"
-        >
-          {worldEras.map((e, i) => (
-            <button
-              key={e.id}
-              ref={(el) => {
-                tabs.current[i] = el;
-              }}
-              role="tab"
-              id={`${baseId}-tab-${e.id}`}
-              aria-selected={i === active}
-              aria-controls={`${baseId}-panel`}
-              tabIndex={i === active ? 0 : -1}
-              onClick={() => setActive(i)}
-              className="group flex flex-col items-center gap-2 rounded-md px-1 py-1 text-center outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              <span
+    <div className="rounded-3xl border bg-card p-3 sm:p-6">
+      <div
+        role="tablist"
+        aria-label="Historical eras"
+        onKeyDown={onKeyDown}
+        className="flex flex-wrap gap-1.5 rounded-[1.75rem] bg-muted p-1.5"
+      >
+        {worldEras.map((e, i) => (
+          <button
+            key={e.id}
+            ref={(el) => {
+              tabs.current[i] = el;
+            }}
+            role="tab"
+            id={`${baseId}-tab-${e.id}`}
+            aria-selected={i === active}
+            aria-controls={`${baseId}-panel`}
+            tabIndex={i === active ? 0 : -1}
+            onClick={() => setActive(i)}
+            className={cn(
+              "relative flex-1 rounded-full px-3 py-2 text-sm font-semibold whitespace-nowrap outline-none focus-visible:ring-2 focus-visible:ring-ring",
+              i === active ? "text-lime-foreground" : "text-muted-foreground hover:text-foreground",
+            )}
+          >
+            {i === active && (
+              <motion.span
+                layoutId="era-pill"
                 aria-hidden
-                className={cn(
-                  "size-3 rounded-full border-2 transition-colors",
-                  i <= active ? "border-gold bg-gold" : "border-muted-foreground/60 bg-card",
-                  i === active && "ring-4 ring-gold/25",
-                )}
+                className="absolute inset-0 rounded-full bg-lime"
+                transition={{ type: "spring", stiffness: 380, damping: 30 }}
               />
-              <span
-                className={cn(
-                  "text-xs font-medium sm:text-sm",
-                  i === active
-                    ? "text-foreground"
-                    : "text-muted-foreground group-hover:text-foreground",
-                )}
-              >
-                {e.name}
-              </span>
-            </button>
-          ))}
-        </div>
+            )}
+            <span className="relative">{e.name}</span>
+          </button>
+        ))}
       </div>
 
       <div
         role="tabpanel"
         id={`${baseId}-panel`}
         aria-labelledby={`${baseId}-tab-${era.id}`}
-        className="mt-8 min-h-36"
+        className="mt-4 min-h-40 p-3 sm:p-4"
       >
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
@@ -104,15 +87,18 @@ export function EraTimeline() {
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.25 }}
           >
-            <p className="text-sm font-medium tracking-wider text-gold" data-testid="era-range">
+            <p
+              className="inline-block rounded-full border px-3 py-1 font-mono text-sm text-primary"
+              data-testid="era-range"
+            >
               {formatEraRange(era)}
             </p>
-            <h3 className="mt-1 text-3xl font-semibold">{era.name}</h3>
+            <h3 className="mt-3 text-4xl font-extrabold sm:text-5xl">{era.name}</h3>
             <p className="mt-3 max-w-2xl text-muted-foreground">{era.summary}</p>
           </motion.div>
         </AnimatePresence>
       </div>
-      <p className="mt-6 border-t pt-4 text-xs text-muted-foreground">
+      <p className="mx-3 mt-2 mb-2 border-t pt-4 text-xs text-muted-foreground sm:mx-4">
         These era boundaries are approximate teaching conventions that come largely from European
         historiography. Their meaning varies by region. The full interactive timeline arrives in
         Milestone 13.

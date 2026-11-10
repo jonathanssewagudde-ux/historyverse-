@@ -27,7 +27,7 @@ export function MobileNav() {
           <Menu className="size-5" />
         </Button>
       </SheetTrigger>
-      <SheetContent side="right" className="w-[85vw] max-w-sm overflow-y-auto">
+      <SheetContent side="right" className="w-[85vw] max-w-sm overflow-y-auto rounded-l-3xl">
         <SheetHeader className="border-b">
           <SheetTitle>
             <Wordmark />
@@ -44,7 +44,7 @@ export function MobileNav() {
         >
           <Link
             href="/#search"
-            className="mb-2 flex items-center gap-3 rounded-md border px-3 py-3 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+            className="mb-3 flex items-center gap-3 rounded-full bg-lime px-4 py-3 font-semibold text-lime-foreground transition-transform active:scale-[0.98]"
           >
             <Search className="size-4" aria-hidden />
             Search history
@@ -54,13 +54,13 @@ export function MobileNav() {
               <li key={item.href}>
                 <NavLink
                   item={item}
-                  className="flex flex-col rounded-md px-3 py-3 transition-colors hover:bg-accent"
+                  className="flex flex-col rounded-2xl px-4 py-3 transition-colors hover:bg-accent"
                 >
-                  <span className="flex items-center justify-between font-serif text-lg">
+                  <span className="flex items-center justify-between font-display text-lg font-bold">
                     {item.title}
                     {!isRouteAvailable(item.href) && (
-                      <span className="font-sans text-[0.65rem] tracking-wider text-muted-foreground uppercase">
-                        Milestone {item.milestone}
+                      <span className="rounded-full border px-2 py-0.5 font-mono text-[0.65rem] font-normal text-muted-foreground">
+                        soon · M{item.milestone}
                       </span>
                     )}
                   </span>

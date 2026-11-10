@@ -1,30 +1,24 @@
 import { cn } from "@/lib/utils";
 
-/** HISTORYVERSE wordmark: a gold astrolabe-like mark with letter-spaced serif type. */
+/** HISTORYVERSE wordmark: a four-point spark in the brand gradient plus lowercase grotesk type. */
 export function Wordmark({ className }: { className?: string }) {
   return (
-    <span className={cn("inline-flex items-center gap-2 sm:gap-2.5", className)}>
-      <svg
-        viewBox="0 0 32 32"
-        className="size-6 shrink-0 text-gold sm:size-7"
-        aria-hidden
-        focusable="false"
-      >
-        <circle cx="16" cy="16" r="14.5" fill="none" stroke="currentColor" strokeWidth="1.5" />
-        <ellipse
-          cx="16"
-          cy="16"
-          rx="6"
-          ry="14.5"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1"
+    <span className={cn("inline-flex items-center gap-1.5", className)}>
+      <svg viewBox="0 0 24 24" className="size-6 shrink-0" aria-hidden focusable="false">
+        <defs>
+          <linearGradient id="hv-spark" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stopColor="var(--primary)" />
+            <stop offset="0.6" stopColor="var(--pink)" />
+            <stop offset="1" stopColor="var(--cyan)" />
+          </linearGradient>
+        </defs>
+        <path
+          d="M12 1.5c.6 5.6 4.9 9.9 10.5 10.5-5.6.6-9.9 4.9-10.5 10.5C11.4 16.9 7.1 12.6 1.5 12 7.1 11.4 11.4 7.1 12 1.5Z"
+          fill="url(#hv-spark)"
         />
-        <path d="M1.5 16h29M4 9h24M4 23h24" stroke="currentColor" strokeWidth="1" opacity="0.7" />
-        <circle cx="16" cy="16" r="2.25" fill="currentColor" />
       </svg>
-      <span className="font-serif text-base font-semibold tracking-[0.12em] whitespace-nowrap text-foreground sm:text-xl sm:tracking-[0.22em]">
-        HISTORY<span className="text-gold">VERSE</span>
+      <span className="font-display text-lg font-extrabold tracking-tight whitespace-nowrap lowercase sm:text-xl">
+        history<span className="text-primary">verse</span>
       </span>
     </span>
   );

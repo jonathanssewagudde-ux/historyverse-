@@ -8,20 +8,21 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { primaryNav } from "@/config/navigation";
 
+/** Floating glass "pill" navigation bar. */
 export function SiteHeader() {
   return (
-    <header className="sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/65">
-      <div className="mx-auto flex h-16 max-w-7xl items-center gap-2 px-4 sm:gap-4 sm:px-6">
-        <Link href="/" aria-label="HISTORYVERSE home" className="shrink-0 rounded-md">
+    <header className="sticky top-0 z-40 px-3 pt-3 sm:px-6 sm:pt-4">
+      <div className="mx-auto flex h-14 max-w-7xl items-center gap-2 rounded-full border border-border/70 bg-background/70 pr-2 pl-4 shadow-[0_10px_40px_-20px_var(--glow)] backdrop-blur-xl sm:gap-4 sm:pl-5">
+        <Link href="/" aria-label="HISTORYVERSE home" className="shrink-0 rounded-full">
           <Wordmark />
         </Link>
-        <nav aria-label="Primary" className="ml-6 hidden lg:block">
-          <ul className="flex items-center gap-1">
+        <nav aria-label="Primary" className="ml-4 hidden lg:block">
+          <ul className="flex items-center gap-0.5">
             {primaryNav.map((item) => (
               <li key={item.href}>
                 <NavLink
                   item={item}
-                  className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                  className="rounded-full px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
                 />
               </li>
             ))}

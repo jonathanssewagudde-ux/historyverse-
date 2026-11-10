@@ -37,7 +37,12 @@ const lights = points(46, 1871);
  */
 export function Graticule({ className }: { className?: string }) {
   return (
-    <svg viewBox="0 0 600 600" className={cn("text-gold", className)} aria-hidden focusable="false">
+    <svg
+      viewBox="0 0 600 600"
+      className={cn("text-primary", className)}
+      aria-hidden
+      focusable="false"
+    >
       <defs>
         <radialGradient id="hv-globe-glow" cx="50%" cy="45%" r="55%">
           <stop offset="0%" stopColor="currentColor" stopOpacity="0.18" />
