@@ -1,0 +1,358 @@
+{
+ "entities": {
+  "Q707775": {
+   "id": "Q707775",
+   "lastrevid": 2562958405,
+   "modified": "2026-10-31T10:47:15Z",
+   "labels": {
+    "en": {
+     "language": "en",
+     "value": "Mwanga II"
+    },
+    "sw": {
+     "language": "sw",
+     "value": "Mwanga II of Buganda"
+    },
+    "lg": {
+     "language": "lg",
+     "value": "Ssekabaka Mwanga II owa  Buganda"
+    }
+   },
+   "descriptions": {
+    "en": {
+     "language": "en",
+     "value": "Kabaka of Uganda"
+    }
+   },
+   "aliases": {
+    "en": [
+     {
+      "language": "en",
+      "value": "Danieri Basammula-Ekkere Mwanga II Mukasa"
+     },
+     {
+      "language": "en",
+      "value": "Daniel Bassamulekkere Mwanga"
+     },
+     {
+      "language": "en",
+      "value": "Kabaka Mwanga"
+     }
+    ]
+   },
+   "claims": {
+    "P21": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "property": "P21",
+       "hash": "85ad4b1c7348f7a5aac521135040d74e91fb5939",
+       "datavalue": {
+        "value": {
+         "entity-type": "item",
+         "numeric-id": 6581097,
+         "id": "Q6581097"
+        },
+        "type": "wikibase-entityid"
+       },
+       "datatype": "wikibase-item"
+      },
+      "id": "q707775$91FD6824-14D4-4ABC-8B72-314BACEFF64F",
+      "rank": "normal"
+     }
+    ],
+    "P27": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "property": "P27",
+       "hash": "a96ba82a0f22d33d00b7a35e1b1fd27d63bd4f55",
+       "datavalue": {
+        "value": {
+         "entity-type": "item",
+         "numeric-id": 1036,
+         "id": "Q1036"
+        },
+        "type": "wikibase-entityid"
+       },
+       "datatype": "wikibase-item"
+      },
+      "id": "q707775$198010A4-63D6-4CA2-A8E4-D9FED436447D",
+      "rank": "normal"
+     }
+    ],
+    "P31": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "property": "P31",
+       "hash": "ad7d38a03cdd40cdc373de0dc4e7b7fcbccb31d9",
+       "datavalue": {
+        "value": {
+         "entity-type": "item",
+         "numeric-id": 5,
+         "id": "Q5"
+        },
+        "type": "wikibase-entityid"
+       },
+       "datatype": "wikibase-item"
+      },
+      "id": "Q707775$93958EC9-E8D2-4163-9FAA-D46B79C2D224",
+      "rank": "normal"
+     }
+    ],
+    "P569": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "property": "P569",
+       "hash": "7eb91ff4ce8f690c8d66f78d0b9d4cdc467b3800",
+       "datavalue": {
+        "value": {
+         "time": "+1868-01-01T00:00:00Z",
+         "timezone": 0,
+         "before": 0,
+         "after": 0,
+         "precision": 9,
+         "calendarmodel": "http://www.wikidata.org/entity/Q1985727"
+        },
+        "type": "time"
+       },
+       "datatype": "time"
+      },
+      "id": "Q707775$A02A1A82-030F-4D85-98BA-14C4101D326F",
+      "rank": "normal"
+     }
+    ],
+    "P570": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "property": "P570",
+       "hash": "1770165d82ebb1828b50b3bf1d634ad212a56f35",
+       "datavalue": {
+        "value": {
+         "time": "+1903-05-08T00:00:00Z",
+         "timezone": 0,
+         "before": 0,
+         "after": 0,
+         "precision": 11,
+         "calendarmodel": "http://www.wikidata.org/entity/Q1985727"
+        },
+        "type": "time"
+       },
+       "datatype": "time"
+      },
+      "id": "Q707775$E4AD21D8-2ADE-4755-BE24-B3CFEAB10A22",
+      "rank": "normal"
+     }
+    ],
+    "P18": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "property": "P18",
+       "hash": "9aced2718223f4d3c751aefc822b108ee768b5dd",
+       "datavalue": {
+        "value": "King Mwanga II Buganda.jpg",
+        "type": "string"
+       },
+       "datatype": "commonsMedia"
+      },
+      "id": "Q707775$B09D4594-0A52-4928-8EB6-562974BDB1AA",
+      "rank": "normal"
+     }
+    ],
+    "P19": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "property": "P19",
+       "hash": "c9bc434dbaa6f8cdf582aea73034a2684a9d42d0",
+       "datavalue": {
+        "value": {
+         "entity-type": "item",
+         "numeric-id": 6960364,
+         "id": "Q6960364"
+        },
+        "type": "wikibase-entityid"
+       },
+       "datatype": "wikibase-item"
+      },
+      "id": "Q707775$f6e919f6-4d51-dc2e-05aa-451ff1860662",
+      "rank": "normal"
+     }
+    ],
+    "P20": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "property": "P20",
+       "hash": "06f3e97906358c56097afedcff2178cfe7e6f858",
+       "datavalue": {
+        "value": {
+         "entity-type": "item",
+         "numeric-id": 1042,
+         "id": "Q1042"
+        },
+        "type": "wikibase-entityid"
+       },
+       "datatype": "wikibase-item"
+      },
+      "qualifiers": {
+       "P580": [
+        {
+         "snaktype": "value",
+         "property": "P580",
+         "hash": "db9c3e5d270ded2b4ba724be9fbafd2c3dab0613",
+         "datavalue": {
+          "value": {
+           "time": "+1899-04-00T00:00:00Z",
+           "timezone": 0,
+           "before": 0,
+           "after": 0,
+           "precision": 10,
+           "calendarmodel": "http://www.wikidata.org/entity/Q1985727"
+          },
+          "type": "time"
+         },
+         "datatype": "time"
+        }
+       ],
+       "P582": [
+        {
+         "snaktype": "value",
+         "property": "P582",
+         "hash": "7d8751876501d6d3a3f72494828623fe5bd5047d",
+         "datavalue": {
+          "value": {
+           "time": "+1903-05-08T00:00:00Z",
+           "timezone": 0,
+           "before": 0,
+           "after": 0,
+           "precision": 11,
+           "calendarmodel": "http://www.wikidata.org/entity/Q1985727"
+          },
+          "type": "time"
+         },
+         "datatype": "time"
+        }
+       ]
+      },
+      "id": "Q707775$153916d8-4dbd-ded5-5a4d-52d3a1a7c517",
+      "rank": "normal"
+     }
+    ],
+    "P106": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "property": "P106",
+       "hash": "cf47fe3492fa63b14d37357d795eb335e86a270c",
+       "datavalue": {
+        "value": {
+         "entity-type": "item",
+         "numeric-id": 938484,
+         "id": "Q938484"
+        },
+        "type": "wikibase-entityid"
+       },
+       "datatype": "wikibase-item"
+      },
+      "id": "Q707775$1c8152eb-4486-4b89-cf87-b8688b0a5138",
+      "rank": "normal"
+     }
+    ],
+    "P22": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "property": "P22",
+       "hash": "cf6ec6f5ae2f3b730ace58e60c5b6163cab4c76e",
+       "datavalue": {
+        "value": {
+         "entity-type": "item",
+         "numeric-id": 889311,
+         "id": "Q889311"
+        },
+        "type": "wikibase-entityid"
+       },
+       "datatype": "wikibase-item"
+      },
+      "id": "Q707775$C9D17062-999A-4DC2-B463-C8E90040F959",
+      "rank": "normal"
+     }
+    ],
+    "P40": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "property": "P40",
+       "hash": "e88222a21348675d2270e79e36da4dc48603e5d1",
+       "datavalue": {
+        "value": {
+         "entity-type": "item",
+         "numeric-id": 708027,
+         "id": "Q708027"
+        },
+        "type": "wikibase-entityid"
+       },
+       "datatype": "wikibase-item"
+      },
+      "id": "Q707775$C8315D60-39A4-4EF1-8C9F-FB58599C09AA",
+      "rank": "normal"
+     }
+    ],
+    "P39": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "property": "P39",
+       "hash": "a6fe339ed40779652f9bad2fba7c71566df09d3c",
+       "datavalue": {
+        "value": {
+         "entity-type": "item",
+         "numeric-id": 938484,
+         "id": "Q938484"
+        },
+        "type": "wikibase-entityid"
+       },
+       "datatype": "wikibase-item"
+      },
+      "qualifiers": {
+       "P580": [
+        {
+         "snaktype": "value",
+         "property": "P580",
+         "hash": "f3941162fd72babf6471bf751b5add3c5c81c00b",
+         "datavalue": {
+          "value": {
+           "time": "+1884-10-18T00:00:00Z",
+           "timezone": 0,
+           "before": 0,
+           "after": 0,
+           "precision": 11,
+           "calendarmodel": "http://www.wikidata.org/entity/Q1985727"
+          },
+          "type": "time"
+         },
+         "datatype": "time"
+        }
+       ]
+      },
+      "id": "Q707775$e6dbe62f-44d6-4f8c-a658-71710d222a2f",
+      "rank": "normal"
+     }
+    ]
+   },
+   "sitelinks": {
+    "enwiki": {
+     "site": "enwiki",
+     "title": "Mwanga II of Buganda",
+     "badges": [],
+     "url": "https://en.wikipedia.org/wiki/Mwanga_II_of_Buganda"
+    }
+   }
+  }
+ }
+}

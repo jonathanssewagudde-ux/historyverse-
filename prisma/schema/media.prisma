@@ -44,6 +44,8 @@ enum MediaKind {
   AI_RECONSTRUCTION
   MODERN_PHOTO
   DIAGRAM
+  /// Imported but not yet classified by a person. Never shown to readers.
+  UNCLASSIFIED
 }
 
 enum MediaType {

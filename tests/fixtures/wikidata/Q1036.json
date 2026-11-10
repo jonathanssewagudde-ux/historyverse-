@@ -1,0 +1,388 @@
+{
+ "entities": {
+  "Q1036": {
+   "id": "Q1036",
+   "lastrevid": 2566960329,
+   "modified": "2026-11-09T06:35:17Z",
+   "labels": {
+    "en": {
+     "language": "en",
+     "value": "Uganda"
+    },
+    "sw": {
+     "language": "sw",
+     "value": "Uganda"
+    },
+    "lg": {
+     "language": "lg",
+     "value": "Uganda"
+    }
+   },
+   "descriptions": {
+    "en": {
+     "language": "en",
+     "value": "country in East Africa"
+    }
+   },
+   "aliases": {
+    "en": [
+     {
+      "language": "en",
+      "value": "Republic of Uganda"
+     },
+     {
+      "language": "en",
+      "value": "ug"
+     },
+     {
+      "language": "en",
+      "value": "The Republic of Uganda"
+     },
+     {
+      "language": "en",
+      "value": "Ugandah"
+     },
+     {
+      "language": "en",
+      "value": "+256"
+     },
+     {
+      "language": "en",
+      "value": "Ouganda"
+     },
+     {
+      "language": "en",
+      "value": "Pearl of Africa"
+     }
+    ]
+   },
+   "claims": {
+    "P31": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "property": "P31",
+       "hash": "c0756f7fedfc54b5b296b7d6dbbcf17a8e134d78",
+       "datavalue": {
+        "value": {
+         "entity-type": "item",
+         "numeric-id": 3624078,
+         "id": "Q3624078"
+        },
+        "type": "wikibase-entityid"
+       },
+       "datatype": "wikibase-item"
+      },
+      "id": "q1036$BC2A5B0E-D37D-4FDA-9964-B7C65663CF03",
+      "rank": "normal"
+     },
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "property": "P31",
+       "hash": "9869bc49218aa213784a44d4025b612b35e7a18e",
+       "datavalue": {
+        "value": {
+         "entity-type": "item",
+         "numeric-id": 7270,
+         "id": "Q7270"
+        },
+        "type": "wikibase-entityid"
+       },
+       "datatype": "wikibase-item"
+      },
+      "id": "q1036$3CB0312D-72B0-4F38-BFE5-4C32A0DF7B5D",
+      "rank": "normal"
+     },
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "property": "P31",
+       "hash": "2402f9b3f58d585a76028023381ba984814a0620",
+       "datavalue": {
+        "value": {
+         "entity-type": "item",
+         "numeric-id": 123480,
+         "id": "Q123480"
+        },
+        "type": "wikibase-entityid"
+       },
+       "datatype": "wikibase-item"
+      },
+      "id": "Q1036$7b1fded6-4bd5-fd58-38a5-39e13e7c513e",
+      "rank": "normal"
+     },
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "property": "P31",
+       "hash": "b44ad788a05b4c1b2915ce0292541c6bdb27d43a",
+       "datavalue": {
+        "value": {
+         "entity-type": "item",
+         "numeric-id": 6256,
+         "id": "Q6256"
+        },
+        "type": "wikibase-entityid"
+       },
+       "datatype": "wikibase-item"
+      },
+      "id": "Q1036$01F663DB-D840-4C3B-A8F3-D579462A42EA",
+      "rank": "normal"
+     }
+    ],
+    "P30": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "property": "P30",
+       "hash": "787850316b4f0871f79724939d054074610d859a",
+       "datavalue": {
+        "value": {
+         "entity-type": "item",
+         "numeric-id": 15,
+         "id": "Q15"
+        },
+        "type": "wikibase-entityid"
+       },
+       "datatype": "wikibase-item"
+      },
+      "id": "q1036$37C7CD27-CD95-4D88-B130-FC2372EE3AF7",
+      "rank": "normal"
+     }
+    ],
+    "P36": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "property": "P36",
+       "hash": "5f426db47a8ad64707744b6fbc205e9f30c1e19d",
+       "datavalue": {
+        "value": {
+         "entity-type": "item",
+         "numeric-id": 3894,
+         "id": "Q3894"
+        },
+        "type": "wikibase-entityid"
+       },
+       "datatype": "wikibase-item"
+      },
+      "id": "q1036$5CF64F6B-B449-4B2B-A3F2-1E72D9FD4CA4",
+      "rank": "normal"
+     }
+    ],
+    "P297": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "property": "P297",
+       "hash": "2ee14ba32caa7ec504cf3aee4db862af33dfa52a",
+       "datavalue": {
+        "value": "UG",
+        "type": "string"
+       },
+       "datatype": "external-id"
+      },
+      "id": "q1036$869B3E47-BDA5-4A7D-A719-6DD4F0424C1C",
+      "rank": "normal"
+     }
+    ],
+    "P298": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "property": "P298",
+       "hash": "b761ceb0862509e20963fb8618cc283660ead022",
+       "datavalue": {
+        "value": "UGA",
+        "type": "string"
+       },
+       "datatype": "external-id"
+      },
+      "id": "q1036$12E3657D-1FDA-4854-9F08-EA6C008407E1",
+      "rank": "normal"
+     }
+    ],
+    "P625": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "property": "P625",
+       "hash": "e830b61acc7d4794cd35330d698dd6099201c15b",
+       "datavalue": {
+        "value": {
+         "latitude": 1.28,
+         "longitude": 32.39,
+         "altitude": null,
+         "precision": 0.1,
+         "globe": "http://www.wikidata.org/entity/Q2"
+        },
+        "type": "globecoordinate"
+       },
+       "datatype": "globe-coordinate"
+      },
+      "id": "q1036$C4519C1E-4FCC-48BB-9E4F-B7B904CA1CA7",
+      "rank": "normal"
+     }
+    ],
+    "P1448": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "property": "P1448",
+       "hash": "8788917b3ff97b061662f4fdd4db51037992e17b",
+       "datavalue": {
+        "value": {
+         "text": "Uganda",
+         "language": "it"
+        },
+        "type": "monolingualtext"
+       },
+       "datatype": "monolingualtext"
+      },
+      "id": "Q1036$15a97230-4091-24ea-2c1d-687a4bf45cb6",
+      "rank": "normal"
+     },
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "property": "P1448",
+       "hash": "cad67b8cca30fa20d0d0ec6f5ca3392b686b1ce4",
+       "datavalue": {
+        "value": {
+         "text": "Uganda",
+         "language": "en"
+        },
+        "type": "monolingualtext"
+       },
+       "datatype": "monolingualtext"
+      },
+      "id": "Q1036$E3CB8EDE-D598-4C5B-815B-003B549AAF12",
+      "rank": "normal"
+     },
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "property": "P1448",
+       "hash": "998ad5bbff4cf6e7c4ef70e020541a93104d4e82",
+       "datavalue": {
+        "value": {
+         "text": "Ouganda",
+         "language": "fr"
+        },
+        "type": "monolingualtext"
+       },
+       "datatype": "monolingualtext"
+      },
+      "id": "Q1036$F8390181-D6DF-4A69-ABE0-DBBC53069116",
+      "rank": "normal"
+     },
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "property": "P1448",
+       "hash": "21b999f630c98442731ed781c24e7cc66b4ba040",
+       "datavalue": {
+        "value": {
+         "text": "Uganda",
+         "language": "gem"
+        },
+        "type": "monolingualtext"
+       },
+       "datatype": "monolingualtext"
+      },
+      "id": "Q1036$560795e7-4f53-1e0f-3d39-e4722a6e7a52",
+      "rank": "normal"
+     }
+    ],
+    "P1365": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "property": "P1365",
+       "hash": "f04d9776eaf17eb143685b71342571b2feae5dcd",
+       "datavalue": {
+        "value": {
+         "entity-type": "item",
+         "numeric-id": 7877575,
+         "id": "Q7877575"
+        },
+        "type": "wikibase-entityid"
+       },
+       "datatype": "wikibase-item"
+      },
+      "id": "Q1036$8025E781-7174-4D90-8204-3AA2C96B6E90",
+      "rank": "normal"
+     }
+    ],
+    "P571": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "property": "P571",
+       "hash": "f10bf9fcf4e2ce5cad73ba4ab4a43dd66d0b1e08",
+       "datavalue": {
+        "value": {
+         "time": "+1962-01-01T00:00:00Z",
+         "timezone": 0,
+         "before": 0,
+         "after": 0,
+         "precision": 9,
+         "calendarmodel": "http://www.wikidata.org/entity/Q1985727"
+        },
+        "type": "time"
+       },
+       "datatype": "time"
+      },
+      "id": "Q1036$EB934408-B7BE-4158-91CF-C4E23D771124",
+      "rank": "normal"
+     }
+    ],
+    "P17": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "property": "P17",
+       "hash": "699cc8675a2f7196ffa936ed94dbb4a0fbd246f7",
+       "datavalue": {
+        "value": {
+         "entity-type": "item",
+         "numeric-id": 1036,
+         "id": "Q1036"
+        },
+        "type": "wikibase-entityid"
+       },
+       "datatype": "wikibase-item"
+      },
+      "id": "Q1036$4040F310-769C-4C6F-AE68-E7DECCF5AE7C",
+      "rank": "normal"
+     }
+    ],
+    "P18": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "property": "P18",
+       "hash": "48593ad34c9d1f1ba43d33f6e6ecf5dfcce6a5d8",
+       "datavalue": {
+        "value": "Uganda - Location Map (2013) - UGA - UNOCHA.svg",
+        "type": "string"
+       },
+       "datatype": "commonsMedia"
+      },
+      "id": "Q1036$4F85CA0A-4620-4F19-9FF3-B8ECA54AAF56",
+      "rank": "normal"
+     }
+    ]
+   },
+   "sitelinks": {
+    "enwiki": {
+     "site": "enwiki",
+     "title": "Uganda",
+     "badges": [],
+     "url": "https://en.wikipedia.org/wiki/Uganda"
+    }
+   }
+  }
+ }
+}
