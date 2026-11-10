@@ -15,14 +15,14 @@ export const milestones: Milestone[] = [
   {
     number: 1,
     title: "Project Foundation",
-    status: "in_review",
+    status: "complete",
     summary:
       "Next.js, TypeScript, Tailwind, component library, architecture, testing, documentation.",
   },
   {
     number: 2,
     title: "Homepage and Design System",
-    status: "planned",
+    status: "in_review",
     summary: "Branding, cinematic homepage, responsive navigation, dark/light themes.",
   },
   {

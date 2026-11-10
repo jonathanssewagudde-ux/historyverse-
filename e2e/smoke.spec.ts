@@ -12,7 +12,7 @@ test.describe("foundation smoke tests", () => {
     expect(JSON.stringify(body)).not.toMatch(/DATABASE_URL|API_KEY|SECRET/);
   });
 
-  test("home page renders with brand and milestones", async ({ page }) => {
+  test("home page renders without errors", async ({ page }) => {
     const errors: string[] = [];
     page.on("pageerror", (e) => errors.push(e.message));
     page.on("console", (m) => m.type() === "error" && errors.push(m.text()));
@@ -20,9 +20,8 @@ test.describe("foundation smoke tests", () => {
     await page.goto("/");
     await expect(page).toHaveTitle(/HISTORYVERSE/);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-      "Every Story. Every Civilization. Every Century.",
+      /discover the story of our world/i,
     );
-    await expect(page.getByRole("listitem")).toHaveCount(15);
     expect(errors).toEqual([]);
   });
 

@@ -30,11 +30,11 @@
   --border: oklch(0.87 0.02 80);
   --input: oklch(0.87 0.02 80);
   --ring: oklch(0.52 0.1 75);
-  --gold: oklch(0.6 0.11 78);
-  --bronze: oklch(0.55 0.09 55);
+  --gold: oklch(0.5 0.1 75); /* darkened for AA contrast as text on parchment */
+  --bronze: oklch(0.5 0.09 55);
   --ivory: oklch(0.96 0.02 88);
   --midnight: oklch(0.18 0.04 260);
-  --reconstruction: oklch(0.55 0.14 300); /* reserved hue: AI-generated reconstruction labels */
+  --reconstruction: oklch(0.45 0.15 300); /* reserved hue: AI-generated reconstruction labels */
 }
 
 .dark {

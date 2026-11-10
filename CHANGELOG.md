@@ -2,6 +2,23 @@
 
 All notable changes to HISTORYVERSE are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.2.0] - 2026-11-10: Milestone 2, Homepage and Design System
+
+### Added
+
+- Public layout (`src/app/(public)`): sticky header, primary navigation, mobile drawer with search, footer with editorial notice and build status
+- Cinematic homepage with hero, search box and all 15 specified sections
+- Navigation availability system: unimplemented routes render as labelled, unavailable items instead of dead links
+- Homepage curation (`src/content/homepage.ts`) restricted to names and regions, enforced by tests
+- Components: `Section`, `TopicRail`, `TopicPlate`, `StatusPill`, `EmptyState`, `FeaturedStories`, `TodayInHistory`, `ExploreWorld`, `EraTimeline`, `ContinentGrid`, `TechGrid`, `PopularSearches`, `Graticule`, `Wordmark`, `Sheet`, `MediaFrame`, Motion `Reveal` and `MotionProvider`
+- World era definitions (`src/lib/history/eras.ts`)
+- axe-core accessibility tests in both themes, plus keyboard, skip-link, 320 px overflow and mobile-menu e2e tests
+
+### Changed
+
+- Light theme `--gold`, `--bronze` and `--reconstruction` darkened for WCAG AA text contrast
+- The milestone tracker moved from the homepage to the footer status line and `ROADMAP.md`
+
 ## [0.1.0] - 2026-11-10: Milestone 1, Project Foundation
 
 ### Added

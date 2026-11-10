@@ -26,14 +26,21 @@ The web app and the workers share one codebase and one database. Long-running wo
 
 ```
 src/
-  app/                  Routes. Public pages at the root; AI Studio under app/admin (Milestone 7).
+  app/                  Routes
+    (public)/           Public site: shared header/footer layout, homepage
     api/health/         Liveness probe
+    not-found.tsx       Branded 404
   components/
     ui/                 shadcn/ui primitives (Radix + Tailwind), owned source
-    *.tsx               Shared app components (theme provider/toggle, …)
-  config/               Public, non-secret configuration (site, locales, milestones)
+    site/               Header, footer, wordmark, navigation (NavLink honours route availability)
+    home/               Homepage sections and building blocks
+    media/              MediaFrame: mandatory media-kind labelling and licence credit
+    motion/             Motion provider (reduced-motion aware) and Reveal
+  config/               Public, non-secret configuration (site, locales, milestones, navigation)
+  content/              Editorial curation used before the database exists (names/regions only)
   lib/                  Isomorphic domain logic, safe for client and server
     history/dates.ts    Historical date model (BCE/CE, precision, circa, uncertainty, Wikidata)
+    history/eras.ts     Conventional world-history eras (approximate, caveated)
   server/               Server-only code (guarded by `import "server-only"`)
     env.ts              Per-variable Zod validation of the environment
     logger.ts           Structured JSON logging with secret redaction

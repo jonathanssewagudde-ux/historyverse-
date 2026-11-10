@@ -7,7 +7,7 @@ HISTORYVERSE is an AI-assisted historical knowledge platform made of two applica
 - **Public platform:** a sourced historical encyclopedia with articles, archival media, maps, timelines, family trees, documentaries and a grounded AI history assistant.
 - **HISTORYVERSE AI Studio** (`/admin`): a private studio for research, article editing, media licensing, documentary scripting, narration, video rendering and YouTube publishing.
 
-> **Status:** Milestone 1 (Project Foundation) is complete and awaiting review. See [ROADMAP.md](./ROADMAP.md).
+> **Status:** Milestones 1–2 are complete. Milestone 2 (Homepage and Design System) is awaiting review. See [ROADMAP.md](./ROADMAP.md).
 > No historical content is published yet. Content arrives from Milestone 4 onward, sourced and reviewed.
 
 ## Requirements
@@ -58,8 +58,9 @@ Health probe: `GET /api/health`.
 | [DEPLOYMENT.md](./DEPLOYMENT.md)             | Hosting topology and environment                      |
 | [.env.example](./.env.example)               | Every configuration variable                          |
 
-## Known limitations (Milestone 1)
+## Known limitations
 
-- Only the foundation landing page, a 404 page and `/api/health` exist. Every other route arrives with its milestone.
+- Only the homepage, a 404 page and `/api/health` exist. Navigation shows every other route as unavailable, with the milestone that delivers it.
+- Homepage topic cards are planned subjects (name and region only). Search explains that it is not open yet. There are no images yet: licensed archival media arrives with Milestones 4–5.
 - No database, authentication or content yet.
 - The shadcn/ui CLI could not reach `ui.shadcn.com` from the build environment, so the components in `src/components/ui` were written by hand to the shadcn source conventions. `pnpm dlx shadcn add <component>` works on any network that allows that host.

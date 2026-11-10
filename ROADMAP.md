@@ -32,12 +32,26 @@ The milestone list in `src/config/milestones.ts` mirrors this file.
 - Structured logger with secret redaction, a health probe and baseline security headers
 - Vitest (59 tests), Playwright (12 tests: 6 scenarios × desktop/mobile), ESLint, Prettier, CI workflow
 
-## Milestone 2: next steps
+## Milestone 2: Homepage and Design System ✅
 
-1. Public layout: header with primary navigation and search entry point, mobile drawer, footer.
-2. Cinematic homepage: hero ("DISCOVER THE STORY OF OUR WORLD"), search bar, and the 15 homepage sections built as real components. Sections without data yet render honest empty states rather than invented content.
-3. Design system: typography scale, motion primitives (Motion, respecting `prefers-reduced-motion`), media frame with mandatory attribution and AI-reconstruction labelling.
-4. Accessibility pass (keyboard, contrast in both themes) and e2e coverage.
+- Public route group `src/app/(public)` with a shared header and footer. The AI Studio gets its own layout in Milestone 7.
+- Sticky header with primary navigation, a theme toggle and a mobile drawer (Radix Dialog sheet) that includes search.
+- **Honest navigation:** routes that do not exist yet render as unavailable items labelled with their milestone, never as links to 404s. A route becomes a link once it is added to `availableRoutes` in `src/config/navigation.ts`.
+- Cinematic homepage: hero ("Discover the story of our world"), a decorative SVG graticule (deliberately without coastlines or borders), and all 15 specified sections in order.
+- Homepage curation in `src/content/homepage.ts` names real subjects by **name and region only**. A test fails if any entry contains a number, so dates cannot slip in uncited.
+- Data-driven sections (Today in History, Latest Documentaries, Recently Published) show honest empty states. Today's date comes from the visitor's browser.
+- Search box: labelled search landmark and suggestion chips. Until Milestone 6 it explains that search is not open yet instead of faking results.
+- Interactive era timeline using the WAI-ARIA tabs pattern with arrow-key support. Era boundaries are marked "c." and caveated as conventions.
+- Design system additions: section shell, topic plates (abstract monograms, never imitation imagery), status pills, empty states, a Sheet component, Motion reveal animations respecting `prefers-reduced-motion`, and `MediaFrame`. `MediaFrame` makes the media-kind label and source/licence credit mandatory and always shows _"AI-Generated Historical Reconstruction — Not an Authentic Photograph"_ on reconstructions.
+- Accessibility: axe-core scans (WCAG 2.1 AA) pass in dark and light themes on desktop and mobile. Also covered: skip link, keyboard operation and no horizontal overflow at 320 px. The light-theme gold and reconstruction colours were darkened to pass AA contrast.
+- Tests: 108 unit/component (Vitest) and 31 end-to-end (Playwright; 1 mobile-only test skipped on desktop).
+
+## Milestone 3: next steps
+
+1. PostgreSQL + pgvector via Docker Compose (and the local Postgres 16 in this container), with Prisma schema and migrations for the models in `DATABASE.md`.
+2. Auth.js with credentials and optional Google sign-in, roles (Super Administrator, Administrator, Editor, Researcher), `proxy.ts` protection for `/admin/**`, and authorization re-checked on the server.
+3. User profiles (`/profile`), seed script for a first super-administrator, audit-log foundation.
+4. Health probe gains a database readiness check.
 
 ## Continuation notes (for the next coding session)
 

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Inter } from "next/font/google";
 
+import { MotionProvider } from "@/components/motion/motion-provider";
 import { ThemeProvider } from "@/components/theme-provider";
 import { siteConfig } from "@/config/site";
 import "./globals.css";
@@ -47,7 +48,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           Skip to content
         </a>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
-          {children}
+          <MotionProvider>{children}</MotionProvider>
         </ThemeProvider>
       </body>
     </html>
