@@ -1,0 +1,93 @@
+// Editorial governance: reviews, reader corrections and the audit trail.
+
+enum ReviewStage {
+  RESEARCH_REVIEW
+  EDITORIAL_APPROVAL
+  ACCURACY_CHECK
+  LICENSING_CHECK
+}
+
+enum ReviewDecision {
+  PENDING
+  APPROVED
+  CHANGES_REQUESTED
+  REJECTED
+}
+
+/// A review of exactly one article, documentary or claim (CHECK constraint).
+model EditorialReview {
+  id            String         @id @default(cuid())
+  stage         ReviewStage
+  decision      ReviewDecision @default(PENDING)
+  articleId     String?
+  article       Article?       @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  documentaryId String?
+  documentary   Documentary?   @relation(fields: [documentaryId], references: [id], onDelete: Cascade)
+  claimId       String?
+  claim         HistoricalClaim? @relation(fields: [claimId], references: [id], onDelete: Cascade)
+  /// Article version under review, so approval cannot silently cover later edits.
+  articleVersion Int?
+  notes         String?
+  requestedById String?
+  requestedBy   User?          @relation("ReviewRequester", fields: [requestedById], references: [id], onDelete: SetNull)
+  reviewerId    String?
+  reviewer      User?          @relation("ReviewReviewer", fields: [reviewerId], references: [id], onDelete: SetNull)
+  decidedAt     DateTime?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@index([decision, stage])
+  @@index([articleId])
+  @@index([reviewerId])
+  @@map("editorial_reviews")
+}
+
+enum CorrectionStatus {
+  OPEN
+  ACCEPTED
+  DECLINED
+  DUPLICATE
+}
+
+/// A reader's report that something is wrong. Feeds the review queue.
+model CorrectionRequest {
+  id          String           @id @default(cuid())
+  articleId   String
+  article     Article          @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  userId      String?
+  user        User?            @relation(fields: [userId], references: [id], onDelete: SetNull)
+  message     String
+  /// Source the reader offers in support.
+  evidenceUrl String?
+  status      CorrectionStatus @default(OPEN)
+  resolution  String?
+  createdAt   DateTime         @default(now())
+  resolvedAt  DateTime?
+
+  @@index([status, createdAt])
+  @@index([articleId])
+  @@map("correction_requests")
+}
+
+/// Append-only record of security- and editorially-relevant actions. Rows cannot be updated or
+/// deleted (trigger-enforced), so actor details are denormalised rather than foreign-keyed.
+model AuditLog {
+  id         String   @id @default(cuid())
+  /// Dotted verb, e.g. "user.role_changed", "article.published", "youtube.upload_started".
+  action     String
+  actorId    String?
+  actorEmail String?
+  actorRole  String?
+  targetType String?
+  targetId   String?
+  /// Structured details. Never contains secrets.
+  metadata   Json?
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+
+  @@index([action, createdAt])
+  @@index([actorId, createdAt])
+  @@index([targetType, targetId])
+  @@map("audit_logs")
+}

@@ -1,0 +1,465 @@
+// AI Studio production pipeline: projects, background jobs, documentaries and YouTube publishing.
+
+enum ProjectStatus {
+  DRAFT
+  IN_PROGRESS
+  AWAITING_REVIEW
+  APPROVED
+  PUBLISHED
+  ARCHIVED
+}
+
+/// One "Generate History Project" run: a topic turned into an article + documentary package.
+model ContentProject {
+  id              String        @id @default(cuid())
+  slug            String        @unique
+  topic           String
+  status          ProjectStatus @default(DRAFT)
+  primaryEntityId String?
+  primaryEntity   Entity?       @relation(fields: [primaryEntityId], references: [id], onDelete: SetNull)
+  articleId       String?
+  article         Article?      @relation(fields: [articleId], references: [id], onDelete: SetNull)
+  /// Spending ceiling for billable providers on this project. 0 = no paid calls.
+  budgetUsd       Decimal       @default(0) @db.Decimal(10, 2)
+  spentUsd        Decimal       @default(0) @db.Decimal(10, 4)
+  createdById     String?
+  createdBy       User?         @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  jobs            ProductionJob[]
+  documentaries   Documentary[]
+  reconstructions AIReconstruction[]
+
+  @@index([status])
+  @@map("content_projects")
+}
+
+enum JobType {
+  INGESTION
+  RESEARCH
+  ARTICLE_DRAFT
+  MEDIA_SEARCH
+  IMAGE_GENERATION
+  SCRIPT
+  SCENE_PLAN
+  NARRATION
+  RENDER
+  THUMBNAIL
+  SUBTITLES
+  METADATA
+  YOUTUBE_UPLOAD
+  PUBLISH
+}
+
+enum JobStatus {
+  QUEUED
+  /// Waiting for a person to approve (e.g. a cost estimate) before it may run.
+  AWAITING_APPROVAL
+  RUNNING
+  SUCCEEDED
+  FAILED
+  CANCELLED
+}
+
+/// Durable record of one background task. The queue (BullMQ) executes it; this row is the
+/// source of truth for status, cost and errors, and survives restarts and page reloads.
+model ProductionJob {
+  id              String     @id @default(cuid())
+  projectId       String?
+  project         ContentProject? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  type            JobType
+  status          JobStatus  @default(QUEUED)
+  /// 0–100.
+  progress        Int        @default(0)
+  attempts        Int        @default(0)
+  maxAttempts     Int        @default(3)
+  input           Json?
+  output          Json?
+  error           String?
+  /// Shown to the administrator before a billable job is approved.
+  costEstimateUsd Decimal?   @db.Decimal(10, 4)
+  actualCostUsd   Decimal?   @db.Decimal(10, 4)
+  /// Id of the job in the queue backend.
+  queueJobId      String?
+  requestedById   String?
+  requestedBy     User?      @relation("JobRequester", fields: [requestedById], references: [id], onDelete: SetNull)
+  approvedById    String?
+  approvedBy      User?      @relation("JobApprover", fields: [approvedById], references: [id], onDelete: SetNull)
+  approvedAt      DateTime?
+  startedAt       DateTime?
+  finishedAt      DateTime?
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  renders VideoRender[]
+
+  @@index([projectId, type])
+  @@index([status, createdAt])
+  @@map("production_jobs")
+}
+
+// ----------------------------------------------------------------------------- documentaries
+
+/// Draft → Review → Approved → Rendered → Ready for Upload → Private Upload → Scheduled/Published.
+enum DocumentaryStatus {
+  DRAFT
+  REVIEW
+  APPROVED
+  RENDERED
+  READY_FOR_UPLOAD
+  PRIVATE_UPLOADED
+  SCHEDULED
+  PUBLISHED
+  ARCHIVED
+}
+
+enum VideoFormat {
+  LANDSCAPE_1080P
+  VERTICAL_1080P
+}
+
+model Documentary {
+  id              String            @id @default(cuid())
+  slug            String            @unique
+  title           String
+  description     String?
+  status          DocumentaryStatus @default(DRAFT)
+  language        String            @default("en")
+  primaryEntityId String?
+  primaryEntity   Entity?           @relation(fields: [primaryEntityId], references: [id], onDelete: SetNull)
+  articleId       String?
+  article         Article?          @relation(fields: [articleId], references: [id], onDelete: SetNull)
+  projectId       String?
+  project         ContentProject?   @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  /// Contains realistic AI-generated imagery; drives labelling and YouTube disclosure.
+  containsSyntheticMedia Boolean    @default(false)
+  /// Sources and licences of everything used, generated at render time.
+  manifest        Json?
+  publishedAt     DateTime?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  scripts       DocumentaryScript[]
+  videoAssets   VideoAsset[]
+  renders       VideoRender[]
+  thumbnails    Thumbnail[]
+  youtubeVideos YouTubeVideo[]
+  reviews       EditorialReview[]
+  schedules     PublicationSchedule[]
+
+  @@index([status])
+  @@index([articleId])
+  @@map("documentaries")
+}
+
+enum ScriptStatus {
+  DRAFT
+  REVIEW
+  APPROVED
+  SUPERSEDED
+}
+
+model DocumentaryScript {
+  id                    String       @id @default(cuid())
+  documentaryId         String
+  documentary           Documentary  @relation(fields: [documentaryId], references: [id], onDelete: Cascade)
+  version               Int          @default(1)
+  status                ScriptStatus @default(DRAFT)
+  language              String       @default("en")
+  targetDurationSeconds Int
+  narrationStyle        String?
+  detailLevel           String?
+  audience              String?
+  approvedById          String?
+  approvedBy            User?        @relation(fields: [approvedById], references: [id], onDelete: SetNull)
+  approvedAt            DateTime?
+  createdAt             DateTime     @default(now())
+  updatedAt             DateTime     @updatedAt
+
+  scenes     DocumentaryScene[]
+  voiceovers Voiceover[]
+  renders    VideoRender[]
+
+  @@unique([documentaryId, version])
+  @@map("documentary_scripts")
+}
+
+enum SceneStatus {
+  DRAFT
+  ASSETS_NEEDED
+  READY
+  NARRATED
+  APPROVED
+}
+
+model DocumentaryScene {
+  id                String            @id @default(cuid())
+  scriptId          String
+  script            DocumentaryScript @relation(fields: [scriptId], references: [id], onDelete: Cascade)
+  position          Int
+  narration         String
+  visualDescription String?
+  /// Title, date or location label shown on screen.
+  onScreenText      String?
+  durationSeconds   Decimal           @db.Decimal(7, 2)
+  transition        String?
+  status            SceneStatus       @default(DRAFT)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  assets     SceneAsset[]
+  citations  SceneCitation[]
+  voiceovers Voiceover[]
+
+  @@unique([scriptId, position])
+  @@map("documentary_scenes")
+}
+
+model SceneAsset {
+  sceneId  String
+  scene    DocumentaryScene @relation(fields: [sceneId], references: [id], onDelete: Cascade)
+  mediaId  String
+  media    MediaAsset       @relation(fields: [mediaId], references: [id], onDelete: Restrict)
+  position Int              @default(0)
+  /// Camera move, e.g. "push-in", "pan-left".
+  motion   String?
+
+  @@id([sceneId, mediaId])
+  @@index([mediaId])
+  @@map("scene_assets")
+}
+
+model SceneCitation {
+  sceneId    String
+  scene      DocumentaryScene @relation(fields: [sceneId], references: [id], onDelete: Cascade)
+  citationId String
+  citation   Citation         @relation(fields: [citationId], references: [id], onDelete: Cascade)
+
+  @@id([sceneId, citationId])
+  @@map("scene_citations")
+}
+
+enum VoiceoverSource {
+  SYNTHESIZED
+  UPLOADED_RECORDING
+}
+
+enum AssetStatus {
+  PENDING
+  PROCESSING
+  READY
+  FAILED
+}
+
+model Voiceover {
+  id         String            @id @default(cuid())
+  scriptId   String
+  script     DocumentaryScript @relation(fields: [scriptId], references: [id], onDelete: Cascade)
+  /// Null for a single full-length narration track.
+  sceneId    String?
+  scene      DocumentaryScene? @relation(fields: [sceneId], references: [id], onDelete: Cascade)
+  source     VoiceoverSource   @default(SYNTHESIZED)
+  provider   String?
+  voiceId    String?
+  language   String            @default("en")
+  speed      Decimal           @default(1) @db.Decimal(3, 2)
+  storageKey String?
+  durationMs Int?
+  status     AssetStatus       @default(PENDING)
+  costUsd    Decimal?          @db.Decimal(10, 4)
+  /// Superseded takes are kept for narration history.
+  isCurrent  Boolean           @default(true)
+  createdAt  DateTime          @default(now())
+
+  @@index([scriptId, sceneId])
+  @@map("voiceovers")
+}
+
+enum VideoAssetKind {
+  MUSIC
+  CLIP
+  INTRO
+  OUTRO
+  SUBTITLES
+  SOUND_EFFECT
+}
+
+/// Non-image production assets (music, clips, subtitle files) with their own licensing.
+model VideoAsset {
+  id            String         @id @default(cuid())
+  documentaryId String?
+  documentary   Documentary?   @relation(fields: [documentaryId], references: [id], onDelete: Cascade)
+  kind          VideoAssetKind
+  title         String
+  storageKey    String
+  mimeType      String?
+  durationMs    Int?
+  language      String?
+  licenseId     String?
+  license       MediaLicense?  @relation(fields: [licenseId], references: [id], onDelete: Restrict)
+  attribution   String?
+  /// AI-generated footage must be flagged so it is labelled in the video.
+  isSynthetic   Boolean        @default(false)
+  createdAt     DateTime       @default(now())
+
+  @@index([documentaryId, kind])
+  @@map("video_assets")
+}
+
+enum RenderStatus {
+  QUEUED
+  RENDERING
+  SUCCEEDED
+  FAILED
+  CANCELLED
+}
+
+model VideoRender {
+  id              String            @id @default(cuid())
+  documentaryId   String
+  documentary     Documentary       @relation(fields: [documentaryId], references: [id], onDelete: Cascade)
+  scriptId        String?
+  script          DocumentaryScript? @relation(fields: [scriptId], references: [id], onDelete: SetNull)
+  jobId           String?
+  job             ProductionJob?    @relation(fields: [jobId], references: [id], onDelete: SetNull)
+  format          VideoFormat
+  width           Int
+  height          Int
+  fps             Int               @default(30)
+  status          RenderStatus      @default(QUEUED)
+  progress        Int               @default(0)
+  storageKey      String?
+  bytes           BigInt?
+  durationSeconds Decimal?          @db.Decimal(9, 2)
+  error           String?
+  startedAt       DateTime?
+  finishedAt      DateTime?
+  createdAt       DateTime          @default(now())
+
+  youtubeVideos YouTubeVideo[]
+
+  @@index([documentaryId, status])
+  @@map("video_renders")
+}
+
+model Thumbnail {
+  id            String      @id @default(cuid())
+  documentaryId String
+  documentary   Documentary @relation(fields: [documentaryId], references: [id], onDelete: Cascade)
+  /// Background image used, if it came from the media library.
+  mediaId       String?
+  media         MediaAsset? @relation(fields: [mediaId], references: [id], onDelete: SetNull)
+  storageKey    String?
+  headline      String?
+  isSelected    Boolean     @default(false)
+  /// Thumbnail shows AI imagery and must carry the reconstruction label.
+  usesSyntheticMedia Boolean @default(false)
+  createdAt     DateTime    @default(now())
+
+  @@index([documentaryId])
+  @@map("thumbnails")
+}
+
+// ----------------------------------------------------------------------------- YouTube
+
+model YouTubeChannel {
+  id                String    @id @default(cuid())
+  /// YouTube channel id (UC…).
+  channelId         String    @unique
+  title             String
+  /// OAuth tokens, encrypted at rest with a key derived from AUTH_SECRET. Never logged.
+  accessTokenEnc    String?
+  refreshTokenEnc   String?
+  tokenExpiresAt    DateTime?
+  scopes            String[]
+  verifiedAt        DateTime?
+  connectedById     String?
+  connectedBy       User?     @relation(fields: [connectedById], references: [id], onDelete: SetNull)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  videos YouTubeVideo[]
+
+  @@map("youtube_channels")
+}
+
+enum YouTubePrivacy {
+  PRIVATE
+  UNLISTED
+  PUBLIC
+}
+
+enum UploadStatus {
+  PENDING
+  UPLOADING
+  PROCESSING
+  UPLOADED
+  FAILED
+}
+
+model YouTubeVideo {
+  id             String         @id @default(cuid())
+  documentaryId  String
+  documentary    Documentary    @relation(fields: [documentaryId], references: [id], onDelete: Cascade)
+  channelId      String
+  channel        YouTubeChannel @relation(fields: [channelId], references: [id], onDelete: Restrict)
+  renderId       String?
+  render         VideoRender?   @relation(fields: [renderId], references: [id], onDelete: SetNull)
+  /// Set only after YouTube confirms the upload; never guessed.
+  videoId        String?        @unique
+  /// Uploads always start PRIVATE; changing it requires an approved PublicationSchedule.
+  privacy        YouTubePrivacy @default(PRIVATE)
+  uploadStatus   UploadStatus   @default(PENDING)
+  uploadProgress Int            @default(0)
+  title          String
+  description    String
+  tags           String[]
+  chapters       Json?
+  playlistId     String?
+  publishAt      DateTime?
+  /// YouTube "altered or synthetic content" disclosure was set.
+  syntheticMediaDisclosed Boolean @default(false)
+  error          String?
+  verifiedAt     DateTime?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  schedules PublicationSchedule[]
+
+  @@index([documentaryId])
+  @@map("youtube_videos")
+}
+
+enum ScheduleStatus {
+  PENDING_APPROVAL
+  APPROVED
+  PUBLISHED
+  CANCELLED
+  FAILED
+}
+
+/// A planned publication of exactly one thing (CHECK constraint). Nothing goes public without
+/// an approver recorded here.
+model PublicationSchedule {
+  id             String         @id @default(cuid())
+  articleId      String?
+  article        Article?       @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  documentaryId  String?
+  documentary    Documentary?   @relation(fields: [documentaryId], references: [id], onDelete: Cascade)
+  youtubeVideoId String?
+  youtubeVideo   YouTubeVideo?  @relation(fields: [youtubeVideoId], references: [id], onDelete: Cascade)
+  scheduledFor   DateTime
+  status         ScheduleStatus @default(PENDING_APPROVAL)
+  createdById    String?
+  createdBy      User?          @relation("ScheduleCreator", fields: [createdById], references: [id], onDelete: SetNull)
+  approvedById   String?
+  approvedBy     User?          @relation("ScheduleApprover", fields: [approvedById], references: [id], onDelete: SetNull)
+  approvedAt     DateTime?
+  publishedAt    DateTime?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  @@index([status, scheduledFor])
+  @@map("publication_schedules")
+}

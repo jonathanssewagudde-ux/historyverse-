@@ -1,0 +1,346 @@
+// Editorial content: articles, the claims they make, and the sources that support them.
+
+enum ArticleTemplate {
+  COUNTRY
+  PRESIDENT
+  MONARCH
+  BIOGRAPHY
+  KINGDOM
+  CIVILIZATION
+  EVENT
+  INVENTION
+  GENERAL
+}
+
+model Article {
+  id              String          @id @default(cuid())
+  slug            String          @unique
+  title           String
+  subtitle        String?
+  /// Plain-text standfirst used in listings, search results and meta description.
+  summary         String?
+  template        ArticleTemplate @default(GENERAL)
+  status          EditorialStatus @default(DRAFT)
+  /// Language the article was written in (BCP 47). Translations hang off Translation.
+  locale          String          @default("en")
+  primaryEntityId String?
+  primaryEntity   Entity?         @relation("ArticlePrimaryEntity", fields: [primaryEntityId], references: [id], onDelete: SetNull)
+  heroMediaId     String?
+  heroMedia       MediaAsset?     @relation("ArticleHero", fields: [heroMediaId], references: [id], onDelete: SetNull)
+  authorId        String?
+  author          User?           @relation("ArticleAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+  lastEditedById  String?
+  lastEditedBy    User?           @relation("ArticleLastEditor", fields: [lastEditedById], references: [id], onDelete: SetNull)
+  /// Incremented on every saved revision.
+  version         Int             @default(1)
+  /// True while any part of the text is an unreviewed AI draft. Blocks publication.
+  containsUnreviewedAi Boolean    @default(false)
+  readingMinutes  Int?
+  publishedAt     DateTime?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  deletedAt       DateTime?
+
+  sections       ArticleSection[]
+  revisions      ArticleRevision[]
+  entities       ArticleEntity[]
+  media          ArticleMedia[]
+  claims         HistoricalClaim[]
+  citations      Citation[]
+  categories     Category[]
+  tags           Tag[]
+  relatedFrom    Article[]            @relation("RelatedArticles")
+  relatedTo      Article[]            @relation("RelatedArticles")
+  bookmarks      Bookmark[]
+  readingHistory ReadingHistory[]
+  reviews        EditorialReview[]
+  corrections    CorrectionRequest[]
+  translations   Translation[]
+  documentaries  Documentary[]
+  projects       ContentProject[]
+  schedules      PublicationSchedule[]
+  collectionItems CollectionItem[]
+
+  @@index([status, publishedAt])
+  @@index([primaryEntityId])
+  @@index([template])
+  @@map("articles")
+}
+
+enum SectionKind {
+  INTRODUCTION
+  OVERVIEW
+  CHRONOLOGY
+  PEOPLE
+  EVENTS
+  CULTURE
+  LEGACY
+  FURTHER_READING
+  CUSTOM
+}
+
+model ArticleSection {
+  id        String      @id @default(cuid())
+  articleId String
+  article   Article     @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  position  Int
+  kind      SectionKind @default(CUSTOM)
+  heading   String?
+  /// Markdown body. Citation markers reference Citation rows of this section.
+  body      String
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  citations    Citation[]
+  claims       HistoricalClaim[]
+  translations Translation[]
+
+  @@unique([articleId, position])
+  @@map("article_sections")
+}
+
+/// Immutable snapshot of an article at a version, for revision history and rollback.
+model ArticleRevision {
+  id         String   @id @default(cuid())
+  articleId  String
+  article    Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  version    Int
+  /// Full article + sections as JSON at this version.
+  snapshot   Json
+  note       String?
+  status     EditorialStatus
+  editedById String?
+  editedBy   User?    @relation(fields: [editedById], references: [id], onDelete: SetNull)
+  createdAt  DateTime @default(now())
+
+  @@unique([articleId, version])
+  @@map("article_revisions")
+}
+
+/// Entities an article discusses besides its primary subject ("Important people", "Major events").
+model ArticleEntity {
+  articleId String
+  article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  entityId  String
+  entity    Entity  @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  /// Editorial grouping, e.g. "people", "events", "locations".
+  role      String  @default("related")
+  position  Int     @default(0)
+
+  @@id([articleId, entityId])
+  @@index([entityId])
+  @@map("article_entities")
+}
+
+// ----------------------------------------------------------------------------- claims & sources
+
+enum ClaimType {
+  /// A statement the sources agree on.
+  FACT
+  /// A historian's reading of the evidence.
+  INTERPRETATION
+  /// Oral or received tradition, presented as such.
+  TRADITION
+  /// Sources conflict; competing claims coexist and are shown together.
+  DISPUTED
+}
+
+enum ClaimOrigin {
+  HUMAN
+  IMPORT
+  AI_DRAFT
+}
+
+enum VerificationStatus {
+  UNVERIFIED
+  VERIFIED
+  REJECTED
+}
+
+/// A single checkable statement with provenance. AI- and import-originated claims start
+/// UNVERIFIED and cannot be published as fact until a person verifies them.
+model HistoricalClaim {
+  id           String             @id @default(cuid())
+  statement    String
+  type         ClaimType          @default(FACT)
+  certainty    Certainty          @default(DOCUMENTED)
+  origin       ClaimOrigin        @default(HUMAN)
+  verification VerificationStatus @default(UNVERIFIED)
+  entityId     String?
+  entity       Entity?            @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  articleId    String?
+  article      Article?           @relation(fields: [articleId], references: [id], onDelete: SetNull)
+  sectionId    String?
+  section      ArticleSection?    @relation(fields: [sectionId], references: [id], onDelete: SetNull)
+  /// Machine-readable form for imported facts, e.g. property "P569" with a structured value.
+  property     String?
+  value        Json?
+  dateId       String?
+  date         HistoricalDate?    @relation(fields: [dateId], references: [id], onDelete: SetNull)
+  /// Claims that contradict each other share a group so the UI can present them side by side.
+  disputeGroup String?
+  verifiedById String?
+  verifiedBy   User?              @relation(fields: [verifiedById], references: [id], onDelete: SetNull)
+  verifiedAt   DateTime?
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+
+  citations       Citation[]
+  entityRelations EntityRelation[]
+  leadershipTerms LeadershipTerm[]
+  royalRelations  RoyalRelationship[]
+  reviews         EditorialReview[]
+
+  @@index([entityId])
+  @@index([articleId])
+  @@index([verification, origin])
+  @@index([disputeGroup])
+  @@map("historical_claims")
+}
+
+enum SourceType {
+  BOOK
+  JOURNAL_ARTICLE
+  THESIS
+  ARCHIVE_DOCUMENT
+  PRIMARY_SOURCE
+  NEWSPAPER
+  WEBSITE
+  ENCYCLOPEDIA
+  DATASET
+  ORAL_TRADITION
+  MUSEUM_RECORD
+  OTHER
+}
+
+model Source {
+  id            String     @id @default(cuid())
+  type          SourceType
+  title         String
+  authors       String[]
+  publisher     String?
+  /// Publication year (historical numbering allows ancient primary sources).
+  publishedYear Int?
+  url           String?
+  archiveUrl    String?
+  isbn          String?
+  doi           String?    @unique
+  language      String?
+  /// Lowercase key of the repository it was retrieved from, e.g. "wikidata", "wikipedia".
+  repository    String?
+  /// License of the source text itself, when it constrains quoting or reuse.
+  licenseNote   String?
+  accessedAt    DateTime?
+  /// Editorial note on reliability or bias.
+  reliabilityNote String?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  citations Citation[]
+
+  @@index([title])
+  @@index([repository])
+  @@map("sources")
+}
+
+/// Links a source to what it supports: a claim, an article section, or an article as a whole.
+model Citation {
+  id        String           @id @default(cuid())
+  sourceId  String
+  source    Source           @relation(fields: [sourceId], references: [id], onDelete: Restrict)
+  claimId   String?
+  claim     HistoricalClaim? @relation(fields: [claimId], references: [id], onDelete: Cascade)
+  articleId String?
+  article   Article?         @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  sectionId String?
+  section   ArticleSection?  @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  /// Page, chapter, folio or timestamp within the source.
+  locator   String?
+  /// Short verbatim quotation, only ever copied from the source.
+  quote     String?
+  note      String?
+  position  Int              @default(0)
+  createdAt DateTime         @default(now())
+
+  sceneCitations SceneCitation[]
+
+  @@index([sourceId])
+  @@index([claimId])
+  @@index([articleId])
+  @@index([sectionId])
+  @@map("citations")
+}
+
+// ----------------------------------------------------------------------------- taxonomy
+
+model Category {
+  id          String     @id @default(cuid())
+  slug        String     @unique
+  name        String
+  description String?
+  parentId    String?
+  parent      Category?  @relation("CategoryTree", fields: [parentId], references: [id], onDelete: SetNull)
+  children    Category[] @relation("CategoryTree")
+  position    Int        @default(0)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  entities     Entity[]
+  articles     Article[]
+  followers    CategoryFollow[]
+  translations Translation[]
+
+  @@index([parentId])
+  @@map("categories")
+}
+
+model Tag {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  name      String
+  createdAt DateTime @default(now())
+
+  entities Entity[]
+  articles Article[]
+
+  @@map("tags")
+}
+
+// ----------------------------------------------------------------------------- translations
+
+enum TranslationStatus {
+  DRAFT
+  MACHINE
+  REVIEWED
+  PUBLISHED
+}
+
+/// A translated field of exactly one target (CHECK constraint enforces "exactly one").
+/// Historical terms and citations are preserved, never translated away.
+model Translation {
+  id         String            @id @default(cuid())
+  locale     String
+  /// Field of the target being translated, e.g. "title", "summary", "body", "name".
+  field      String
+  value      String
+  status     TranslationStatus @default(DRAFT)
+  articleId  String?
+  article    Article?          @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  sectionId  String?
+  section    ArticleSection?   @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  entityId   String?
+  entity     Entity?           @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  categoryId String?
+  category   Category?         @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  translatedById String?
+  translatedBy   User?         @relation(fields: [translatedById], references: [id], onDelete: SetNull)
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
+
+  @@unique([articleId, locale, field])
+  @@unique([sectionId, locale, field])
+  @@unique([entityId, locale, field])
+  @@unique([categoryId, locale, field])
+  @@index([locale])
+  @@map("translations")
+}

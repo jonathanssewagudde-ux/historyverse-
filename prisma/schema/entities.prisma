@@ -1,0 +1,597 @@
+// Historical knowledge graph.
+//
+// Every historical subject is an `Entity` (the supertype) with exactly one detail row of its kind
+// (Country, HistoricalPerson, Kingdom, …). Relationships, external identifiers, media, claims,
+// categories and bookmarks all attach to Entity, so every subject behaves the same way.
+
+// ----------------------------------------------------------------------------- dates
+
+enum DatePrecision {
+  MILLENNIUM
+  CENTURY
+  DECADE
+  YEAR
+  MONTH
+  DAY
+}
+
+enum CalendarModel {
+  GREGORIAN
+  JULIAN
+}
+
+/// A historical date, mirroring src/lib/history/dates.ts. JS/SQL date types cannot express
+/// precision, "circa", uncertainty or the absence of a year 0.
+model HistoricalDate {
+  id          String        @id @default(cuid())
+  /// Historical numbering: negative = BCE, never 0 (CHECK constraint).
+  year        Int
+  month       Int?
+  day         Int?
+  precision   DatePrecision
+  approximate Boolean       @default(false)
+  uncertain   Boolean       @default(false)
+  calendar    CalendarModel @default(GREGORIAN)
+  /// chronologicalSortKey(): astronomical year * 10000 + month * 100 + day.
+  sortKey     BigInt
+
+  entitiesStarted     Entity[]             @relation("EntityStartDate")
+  entitiesEnded       Entity[]             @relation("EntityEndDate")
+  relationsStarted    EntityRelation[]     @relation("RelationStartDate")
+  relationsEnded      EntityRelation[]     @relation("RelationEndDate")
+  termsStarted        LeadershipTerm[]     @relation("TermStartDate")
+  termsEnded          LeadershipTerm[]     @relation("TermEndDate")
+  royalStarted        RoyalRelationship[]  @relation("RoyalStartDate")
+  royalEnded          RoyalRelationship[]  @relation("RoyalEndDate")
+  claims              HistoricalClaim[]
+  mediaAssets         MediaAsset[]
+  countriesIndependent Country[]
+
+  @@index([sortKey])
+  @@index([year])
+  @@index([month, day])
+  @@map("historical_dates")
+}
+
+// ----------------------------------------------------------------------------- entity supertype
+
+enum EntityKind {
+  COUNTRY
+  TERRITORY
+  HISTORICAL_STATE
+  KINGDOM
+  EMPIRE
+  CIVILIZATION
+  DYNASTY
+  PERSON
+  EVENT
+  PERIOD
+  LOCATION
+  TOPIC
+}
+
+/// Editorial lifecycle shared by entities, articles and other reviewable content.
+enum EditorialStatus {
+  DRAFT
+  RESEARCH_REVIEW
+  EDITORIAL_APPROVAL
+  PUBLISHED
+  UPDATED
+  ARCHIVED
+}
+
+model Entity {
+  id          String          @id @default(cuid())
+  kind        EntityKind
+  slug        String
+  name        String
+  /// Short neutral description (one or two sentences).
+  summary     String?
+  status      EditorialStatus @default(DRAFT)
+  /// Start/end of existence: founding–dissolution, birth–death, start–end of an event.
+  startDateId String?
+  startDate   HistoricalDate? @relation("EntityStartDate", fields: [startDateId], references: [id], onDelete: SetNull)
+  endDateId   String?
+  endDate     HistoricalDate? @relation("EntityEndDate", fields: [endDateId], references: [id], onDelete: SetNull)
+  /// Convenience copy of the Wikidata QID; ExternalIdentifier is the general mechanism.
+  wikidataId  String?         @unique
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  deletedAt   DateTime?
+
+  aliases         EntityAlias[]
+  externalIds     ExternalIdentifier[]
+  relationsFrom   EntityRelation[]     @relation("RelationFrom")
+  relationsTo     EntityRelation[]     @relation("RelationTo")
+  claims          HistoricalClaim[]
+  media           EntityMedia[]
+  categories      Category[]
+  tags            Tag[]
+  translations    Translation[]
+
+  country         Country?
+  territory       Territory?
+  historicalState HistoricalState?
+  civilization    Civilization?
+  dynasty         Dynasty?
+  person          HistoricalPerson?
+  event           HistoricalEvent?
+  period          HistoricalPeriod?
+  location        Location?
+
+  articlesPrimary     Article[]            @relation("ArticlePrimaryEntity")
+  articlesRelated     ArticleEntity[]
+  officesJurisdiction PoliticalOffice[]
+  territoriesAdmin    Territory[]          @relation("TerritoryAdministrator")
+  dynastiesRuling     Dynasty[]            @relation("DynastyRealm")
+  locationsWithin     Location[]           @relation("LocationModernCountry")
+  eventsAtLocation    HistoricalEvent[]    @relation("EventLocation")
+  peopleBornAt        HistoricalPerson[]   @relation("PersonBirthPlace")
+  peopleDiedAt        HistoricalPerson[]   @relation("PersonDeathPlace")
+  capitalsOf          HistoricalState[]    @relation("StateCapital")
+  countryCapitals     Country[]            @relation("CountryCapital")
+  documentaries       Documentary[]
+  projects            ContentProject[]
+  reconstructions     AIReconstruction[]
+  collectionItems     CollectionItem[]
+
+  @@unique([kind, slug])
+  @@index([kind, status])
+  @@index([name])
+  @@index([startDateId])
+  @@index([endDateId])
+  @@map("entities")
+}
+
+enum AliasType {
+  ALTERNATIVE
+  NATIVE
+  FORMER
+  REGNAL
+  BIRTH_NAME
+  ABBREVIATION
+  TRANSLITERATION
+}
+
+model EntityAlias {
+  id       String    @id @default(cuid())
+  entityId String
+  entity   Entity    @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  name     String
+  type     AliasType @default(ALTERNATIVE)
+  /// BCP 47 language tag of the alias, when known.
+  language String?
+
+  @@unique([entityId, name, type])
+  @@index([name])
+  @@map("entity_aliases")
+}
+
+/// Identifier of an entity in an external system (Wikidata, VIAF, GeoNames, …).
+/// Unique per source so re-imports update rather than duplicate.
+model ExternalIdentifier {
+  id        String   @id @default(cuid())
+  entityId  String
+  entity    Entity   @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  /// Lowercase source key, e.g. "wikidata", "geonames", "viaf", "loc".
+  source    String
+  value     String
+  url       String?
+  createdAt DateTime @default(now())
+
+  @@unique([source, value])
+  @@index([entityId])
+  @@map("external_identifiers")
+}
+
+/// How well a statement is supported. Used wherever history is uncertain or contested.
+enum Certainty {
+  DOCUMENTED
+  TRADITIONAL
+  PROBABLE
+  UNCERTAIN
+  DISPUTED
+}
+
+enum RelationType {
+  PART_OF
+  LOCATED_IN
+  CAPITAL_OF
+  PRECEDED_BY
+  SUCCEEDED_BY
+  FOUNDED_BY
+  RULED_BY
+  MEMBER_OF
+  PARTICIPANT_IN
+  ALLY_OF
+  ENEMY_OF
+  VASSAL_OF
+  COLONY_OF
+  INFLUENCED_BY
+  CONTEMPORARY_OF
+  RELATED_TO
+}
+
+/// Directed, typed link between two entities, optionally bounded in time.
+model EntityRelation {
+  id          String          @id @default(cuid())
+  fromId      String
+  from        Entity          @relation("RelationFrom", fields: [fromId], references: [id], onDelete: Cascade)
+  toId        String
+  to          Entity          @relation("RelationTo", fields: [toId], references: [id], onDelete: Cascade)
+  type        RelationType
+  certainty   Certainty       @default(DOCUMENTED)
+  startDateId String?
+  startDate   HistoricalDate? @relation("RelationStartDate", fields: [startDateId], references: [id], onDelete: SetNull)
+  endDateId   String?
+  endDate     HistoricalDate? @relation("RelationEndDate", fields: [endDateId], references: [id], onDelete: SetNull)
+  note        String?
+  claimId     String?
+  claim       HistoricalClaim? @relation(fields: [claimId], references: [id], onDelete: SetNull)
+  createdAt   DateTime        @default(now())
+
+  @@unique([fromId, toId, type])
+  @@index([toId, type])
+  @@map("entity_relations")
+}
+
+// ----------------------------------------------------------------------------- places & polities
+
+enum Continent {
+  AFRICA
+  ASIA
+  EUROPE
+  NORTH_AMERICA
+  SOUTH_AMERICA
+  OCEANIA
+  ANTARCTICA
+}
+
+enum UnStatus {
+  MEMBER
+  OBSERVER
+  NON_MEMBER
+}
+
+/// A present-day sovereign state.
+model Country {
+  entityId           String          @id
+  entity             Entity          @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  iso2               String?         @unique @db.Char(2)
+  iso3               String?         @unique @db.Char(3)
+  unStatus           UnStatus        @default(NON_MEMBER)
+  continent          Continent?
+  /// Sovereignty is contested (shown with a disclaimer; never silently resolved).
+  isDisputed         Boolean         @default(false)
+  capitalId          String?
+  capital            Entity?         @relation("CountryCapital", fields: [capitalId], references: [id], onDelete: SetNull)
+  independenceDateId String?
+  independenceDate   HistoricalDate? @relation(fields: [independenceDateId], references: [id], onDelete: SetNull)
+
+  @@index([continent])
+  @@map("countries")
+}
+
+enum TerritoryStatus {
+  DEPENDENT
+  AUTONOMOUS
+  OVERSEAS
+  DISPUTED
+  OCCUPIED
+  OTHER
+}
+
+/// A non-sovereign or contested territory.
+model Territory {
+  entityId        String          @id
+  entity          Entity          @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  status          TerritoryStatus
+  continent       Continent?
+  administeredById String?
+  administeredBy  Entity?         @relation("TerritoryAdministrator", fields: [administeredById], references: [id], onDelete: SetNull)
+
+  @@map("territories")
+}
+
+enum PolityType {
+  STATE
+  KINGDOM
+  EMPIRE
+  SULTANATE
+  CALIPHATE
+  CHIEFDOM
+  CITY_STATE
+  REPUBLIC
+  CONFEDERATION
+  COLONY
+  PROTECTORATE
+  OTHER
+}
+
+/// A state that no longer exists in its historical form (or a historical phase of one).
+/// Kingdoms and empires are HistoricalStates with an additional specialisation row.
+model HistoricalState {
+  entityId       String     @id
+  entity         Entity     @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  polityType     PolityType
+  continent      Continent?
+  capitalId      String?
+  capital        Entity?    @relation("StateCapital", fields: [capitalId], references: [id], onDelete: SetNull)
+  governmentForm String?
+  /// Borders are approximate or contested; maps must say so.
+  bordersUncertain Boolean  @default(true)
+
+  kingdom Kingdom?
+  empire  Empire?
+
+  @@index([polityType])
+  @@index([continent])
+  @@map("historical_states")
+}
+
+enum MonarchyStatus {
+  REIGNING
+  CEREMONIAL
+  ABOLISHED
+  RESTORED
+  DEFUNCT
+  UNKNOWN
+}
+
+model Kingdom {
+  stateId          String          @id
+  state            HistoricalState @relation(fields: [stateId], references: [entityId], onDelete: Cascade)
+  /// Title of the ruler, e.g. "Kabaka", "Mansa", "Oba".
+  rulerTitle       String?
+  successionSystem String?
+  monarchyStatus   MonarchyStatus  @default(UNKNOWN)
+
+  @@map("kingdoms")
+}
+
+model Empire {
+  stateId       String          @id
+  state         HistoricalState @relation(fields: [stateId], references: [entityId], onDelete: Cascade)
+  rulerTitle    String?
+  /// Approximate greatest extent in km², when a sourced estimate exists.
+  peakAreaKm2   Int?
+  peakAreaNote  String?
+
+  @@map("empires")
+}
+
+model Civilization {
+  entityId       String  @id
+  entity         Entity  @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  /// Free-text region, e.g. "Nile Valley"; precise extents come from sourced geodata.
+  region         String?
+  continent      Continent?
+  writingSystems String[]
+
+  @@map("civilizations")
+}
+
+model Dynasty {
+  entityId  String  @id
+  entity    Entity  @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  /// The kingdom, empire or state the dynasty ruled.
+  realmId   String?
+  realm     Entity? @relation("DynastyRealm", fields: [realmId], references: [id], onDelete: SetNull)
+  founderId String?
+  founder   HistoricalPerson? @relation("DynastyFounder", fields: [founderId], references: [entityId], onDelete: SetNull)
+
+  members        HistoricalPerson[]  @relation("PersonDynasty")
+  royalRelations RoyalRelationship[]
+
+  @@index([realmId])
+  @@map("dynasties")
+}
+
+enum LocationType {
+  CITY
+  SETTLEMENT
+  ARCHAEOLOGICAL_SITE
+  BATTLEFIELD
+  MONUMENT
+  PALACE
+  RELIGIOUS_SITE
+  REGION
+  NATURAL_FEATURE
+  TRADE_ROUTE
+  OTHER
+}
+
+model Location {
+  entityId        String       @id
+  entity          Entity       @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  type            LocationType
+  latitude        Decimal?     @db.Decimal(9, 6)
+  longitude       Decimal?     @db.Decimal(9, 6)
+  /// The position is an estimate (e.g. a lost city).
+  positionUncertain Boolean    @default(false)
+  /// GeoJSON geometry from a sourced dataset (routes, extents). Never hand-drawn.
+  geometry        Json?
+  geometrySource  String?
+  modernCountryId String?
+  modernCountry   Entity?      @relation("LocationModernCountry", fields: [modernCountryId], references: [id], onDelete: SetNull)
+
+  @@index([type])
+  @@index([latitude, longitude])
+  @@map("locations")
+}
+
+// ----------------------------------------------------------------------------- people & power
+
+enum Gender {
+  FEMALE
+  MALE
+  OTHER
+  UNKNOWN
+}
+
+model HistoricalPerson {
+  entityId     String   @id
+  entity       Entity   @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  fullName     String?
+  honorific    String?
+  gender       Gender   @default(UNKNOWN)
+  occupations  String[]
+  birthPlaceId String?
+  birthPlace   Entity?  @relation("PersonBirthPlace", fields: [birthPlaceId], references: [id], onDelete: SetNull)
+  deathPlaceId String?
+  deathPlace   Entity?  @relation("PersonDeathPlace", fields: [deathPlaceId], references: [id], onDelete: SetNull)
+  dynastyId    String?
+  dynasty      Dynasty? @relation("PersonDynasty", fields: [dynastyId], references: [entityId], onDelete: SetNull)
+  /// Still living: enables stricter editorial rules for biographies of living people.
+  isLiving     Boolean  @default(false)
+
+  terms            LeadershipTerm[]
+  dynastiesFounded Dynasty[]           @relation("DynastyFounder")
+  relationsFrom    RoyalRelationship[] @relation("RoyalFrom")
+  relationsTo      RoyalRelationship[] @relation("RoyalTo")
+
+  @@index([dynastyId])
+  @@map("historical_people")
+}
+
+enum OfficeType {
+  HEAD_OF_STATE
+  HEAD_OF_GOVERNMENT
+  MONARCH
+  REGENT
+  PRIME_MINISTER
+  GOVERNOR
+  TRADITIONAL_RULER
+  RELIGIOUS_LEADER
+  MILITARY_LEADER
+  OTHER
+}
+
+/// An office that people hold in succession, e.g. "President of Ghana", "Kabaka of Buganda".
+model PoliticalOffice {
+  id             String     @id @default(cuid())
+  slug           String     @unique
+  name           String
+  type           OfficeType
+  jurisdictionId String?
+  jurisdiction   Entity?    @relation(fields: [jurisdictionId], references: [id], onDelete: SetNull)
+  wikidataId     String?    @unique
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  terms LeadershipTerm[]
+
+  @@index([jurisdictionId])
+  @@map("political_offices")
+}
+
+/// One person's tenure in one office. Predecessor/successor are derived by ordering terms of
+/// the same office; `ordinal` records a traditional numbering (e.g. "35th Kabaka") when sourced.
+model LeadershipTerm {
+  id          String           @id @default(cuid())
+  personId    String
+  person      HistoricalPerson @relation(fields: [personId], references: [entityId], onDelete: Cascade)
+  officeId    String
+  office      PoliticalOffice  @relation(fields: [officeId], references: [id], onDelete: Cascade)
+  startDateId String?
+  startDate   HistoricalDate?  @relation("TermStartDate", fields: [startDateId], references: [id], onDelete: SetNull)
+  endDateId   String?
+  endDate     HistoricalDate?  @relation("TermEndDate", fields: [endDateId], references: [id], onDelete: SetNull)
+  ordinal     Int?
+  /// Acting, interim, disputed claimant, in exile, etc.
+  qualifier   String?
+  endReason   String?
+  certainty   Certainty        @default(DOCUMENTED)
+  claimId     String?
+  claim       HistoricalClaim? @relation(fields: [claimId], references: [id], onDelete: SetNull)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@index([officeId, ordinal])
+  @@index([personId])
+  @@map("leadership_terms")
+}
+
+enum KinshipType {
+  PARENT_OF
+  SPOUSE_OF
+  SIBLING_OF
+  ADOPTIVE_PARENT_OF
+  GUARDIAN_OF
+  CONSORT_OF
+}
+
+/// A family relationship used for genealogies. Direction: `from` PARENT_OF `to`.
+/// Symmetric types (SPOUSE_OF, SIBLING_OF) are stored once.
+model RoyalRelationship {
+  id          String           @id @default(cuid())
+  fromId      String
+  from        HistoricalPerson @relation("RoyalFrom", fields: [fromId], references: [entityId], onDelete: Cascade)
+  toId        String
+  to          HistoricalPerson @relation("RoyalTo", fields: [toId], references: [entityId], onDelete: Cascade)
+  type        KinshipType
+  certainty   Certainty        @default(DOCUMENTED)
+  dynastyId   String?
+  dynasty     Dynasty?         @relation(fields: [dynastyId], references: [entityId], onDelete: SetNull)
+  startDateId String?
+  startDate   HistoricalDate?  @relation("RoyalStartDate", fields: [startDateId], references: [id], onDelete: SetNull)
+  endDateId   String?
+  endDate     HistoricalDate?  @relation("RoyalEndDate", fields: [endDateId], references: [id], onDelete: SetNull)
+  note        String?
+  claimId     String?
+  claim       HistoricalClaim? @relation(fields: [claimId], references: [id], onDelete: SetNull)
+  createdAt   DateTime         @default(now())
+
+  @@unique([fromId, toId, type])
+  @@index([toId])
+  @@index([dynastyId])
+  @@map("royal_relationships")
+}
+
+// ----------------------------------------------------------------------------- events & periods
+
+enum EventType {
+  WAR
+  BATTLE
+  REVOLUTION
+  INDEPENDENCE
+  POLITICAL
+  TREATY
+  CORONATION
+  SUCCESSION
+  DISCOVERY
+  INVENTION
+  ARCHAEOLOGICAL
+  ECONOMIC
+  CULTURAL
+  RELIGIOUS
+  DISASTER
+  MIGRATION
+  EXPLORATION
+  OTHER
+}
+
+model HistoricalEvent {
+  entityId   String    @id
+  entity     Entity    @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  type       EventType
+  locationId String?
+  location   Entity?   @relation("EventLocation", fields: [locationId], references: [id], onDelete: SetNull)
+
+  @@index([type])
+  @@map("historical_events")
+}
+
+model HistoricalPeriod {
+  entityId String  @id
+  entity   Entity  @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  /// Null for global periods; otherwise the region the periodisation applies to.
+  region   String?
+  parentId String?
+  parent   HistoricalPeriod?  @relation("PeriodHierarchy", fields: [parentId], references: [entityId], onDelete: SetNull)
+  children HistoricalPeriod[] @relation("PeriodHierarchy")
+  /// Periodisations are conventions; this note explains whose convention it is.
+  conventionNote String?
+
+  @@map("historical_periods")
+}

@@ -30,6 +30,8 @@ export const serverEnvSchema = {
 
   // Authentication
   AUTH_SECRET: z.string().min(32, "must be at least 32 characters").optional(),
+  /** Rate limiting of auth endpoints in production. Only switch off for automated tests. */
+  AUTH_RATE_LIMIT_ENABLED: z.stringbool().default(true),
   AUTH_GOOGLE_ID: optionalString,
   AUTH_GOOGLE_SECRET: optionalString,
 

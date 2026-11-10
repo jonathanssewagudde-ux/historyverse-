@@ -1,0 +1,178 @@
+// Media library shared by the website and the documentary studio.
+// Every asset MUST carry a license and say what kind of record of the past it is.
+
+enum LicenseFamily {
+  PUBLIC_DOMAIN
+  CC0
+  CC_BY
+  CC_BY_SA
+  CC_BY_NC
+  CC_BY_ND
+  OTHER_FREE
+  RIGHTS_RESERVED
+  /// Generated or produced by HISTORYVERSE itself.
+  OWN_WORK
+  UNKNOWN
+}
+
+model MediaLicense {
+  id                 String        @id @default(cuid())
+  /// Stable code, e.g. "PD", "CC0-1.0", "CC-BY-SA-4.0".
+  code               String        @unique
+  name               String
+  family             LicenseFamily
+  url                String?
+  requiresAttribution Boolean      @default(true)
+  allowsCommercialUse Boolean      @default(false)
+  allowsDerivatives  Boolean       @default(false)
+  requiresShareAlike Boolean       @default(false)
+  /// Whether assets under this license may be published on the site and in videos.
+  publishable        Boolean       @default(false)
+
+  assets      MediaAsset[]
+  videoAssets VideoAsset[]
+
+  @@map("media_licenses")
+}
+
+/// What the asset IS in relation to the past. Drives mandatory on-screen labelling.
+enum MediaKind {
+  AUTHENTIC_PHOTO
+  AUTHENTIC_DOCUMENT
+  ARTWORK
+  MAP
+  AI_RECONSTRUCTION
+  MODERN_PHOTO
+  DIAGRAM
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+  AUDIO
+  DOCUMENT
+}
+
+enum MediaReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model MediaAsset {
+  id           String            @id @default(cuid())
+  type         MediaType         @default(IMAGE)
+  kind         MediaKind
+  title        String
+  description  String?
+  /// Required for images shown to readers.
+  altText      String?
+  creator      String?
+  dateId       String?
+  date         HistoricalDate?   @relation(fields: [dateId], references: [id], onDelete: SetNull)
+  /// Holding institution or repository, e.g. "Wikimedia Commons".
+  sourceName   String
+  sourceUrl    String?
+  /// Identifier in the source repository, for de-duplication on re-import.
+  sourceRef    String?
+  licenseId    String
+  license      MediaLicense      @relation(fields: [licenseId], references: [id], onDelete: Restrict)
+  /// Exact attribution line to display.
+  attribution  String
+  /// Key in the storage provider (local filesystem or S3).
+  storageKey   String?           @unique
+  mimeType     String?
+  width        Int?
+  height       Int?
+  durationMs   Int?
+  bytes        BigInt?
+  /// SHA-256 of the file, to detect duplicates.
+  checksum     String?           @unique
+  reviewStatus MediaReviewStatus @default(PENDING)
+  uploadedById String?
+  uploadedBy   User?             @relation(fields: [uploadedById], references: [id], onDelete: SetNull)
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+  deletedAt    DateTime?
+
+  reconstruction AIReconstruction?
+  entities       EntityMedia[]
+  articles       ArticleMedia[]
+  heroOf         Article[]         @relation("ArticleHero")
+  scenes         SceneAsset[]
+  thumbnails     Thumbnail[]
+
+  @@unique([sourceName, sourceRef])
+  @@index([kind, reviewStatus])
+  @@index([licenseId])
+  @@map("media_assets")
+}
+
+model EntityMedia {
+  entityId String
+  entity   Entity     @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  mediaId  String
+  media    MediaAsset @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+  /// e.g. "portrait", "gallery", "map".
+  role     String     @default("gallery")
+  position Int        @default(0)
+
+  @@id([entityId, mediaId])
+  @@index([mediaId])
+  @@map("entity_media")
+}
+
+model ArticleMedia {
+  articleId String
+  article   Article    @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  mediaId   String
+  media     MediaAsset @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+  caption   String?
+  position  Int        @default(0)
+
+  @@id([articleId, mediaId])
+  @@index([mediaId])
+  @@map("article_media")
+}
+
+enum GenerationStatus {
+  PROMPT_DRAFT
+  QUEUED
+  GENERATING
+  GENERATED
+  FAILED
+  REJECTED
+}
+
+/// Provenance of an AI-generated reconstruction. The linked MediaAsset always has
+/// kind = AI_RECONSTRUCTION (trigger-enforced) and is labelled as such everywhere it appears.
+model AIReconstruction {
+  id                  String           @id @default(cuid())
+  mediaId             String?          @unique
+  media               MediaAsset?      @relation(fields: [mediaId], references: [id], onDelete: SetNull)
+  entityId            String?
+  entity              Entity?          @relation(fields: [entityId], references: [id], onDelete: SetNull)
+  projectId           String?
+  project             ContentProject?  @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  prompt              String
+  negativePrompt      String?
+  /// What in the scene rests on evidence, with references.
+  evidenceNotes       String?
+  /// What is artistic interpretation because the evidence is silent.
+  interpretationNotes String?
+  provider            String?
+  model               String?
+  status              GenerationStatus @default(PROMPT_DRAFT)
+  parentId            String?
+  parent              AIReconstruction?  @relation("ReconstructionVariations", fields: [parentId], references: [id], onDelete: SetNull)
+  variations          AIReconstruction[] @relation("ReconstructionVariations")
+  costUsd             Decimal?         @db.Decimal(10, 4)
+  createdById         String?
+  createdBy           User?            @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+
+  @@index([entityId])
+  @@index([projectId])
+  @@map("ai_reconstructions")
+}

@@ -1,0 +1,13 @@
+// HISTORYVERSE database schema (PostgreSQL 16+).
+// Split by domain: auth, entities, content, media, production, engagement, governance.
+// Integrity rules that Prisma cannot express (CHECK constraints, immutability triggers)
+// live in the SQL migrations and are documented in DATABASE.md.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}

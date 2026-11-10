@@ -1,0 +1,113 @@
+// Users and authentication. User/Session/Account/Verification/RateLimit follow the
+// Better Auth core schema; everything else on User is HISTORYVERSE profile data.
+
+/// One role per user. Roles are hierarchical: each includes the permissions of those below it.
+/// The permission matrix lives in src/lib/auth/roles.ts.
+enum UserRole {
+  USER
+  RESEARCHER
+  EDITOR
+  ADMINISTRATOR
+  SUPER_ADMINISTRATOR
+}
+
+model User {
+  id            String   @id
+  name          String
+  email         String   @unique
+  emailVerified Boolean  @default(false)
+  image         String?
+  role          UserRole @default(USER)
+  bio           String?
+  /// Preferred interface language (BCP 47), e.g. "en", "sw".
+  locale        String   @default("en")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  sessions            Session[]
+  accounts            Account[]
+  bookmarks           Bookmark[]
+  readingHistory      ReadingHistory[]
+  collections         Collection[]
+  categoryFollows     CategoryFollow[]
+  articlesAuthored    Article[]            @relation("ArticleAuthor")
+  articlesEdited      Article[]            @relation("ArticleLastEditor")
+  articleRevisions    ArticleRevision[]
+  claimsVerified      HistoricalClaim[]
+  mediaUploaded       MediaAsset[]
+  reconstructions     AIReconstruction[]
+  projectsCreated     ContentProject[]
+  jobsRequested       ProductionJob[]      @relation("JobRequester")
+  jobsApproved        ProductionJob[]      @relation("JobApprover")
+  reviewsRequested    EditorialReview[]    @relation("ReviewRequester")
+  reviewsAssigned     EditorialReview[]    @relation("ReviewReviewer")
+  schedulesCreated    PublicationSchedule[] @relation("ScheduleCreator")
+  schedulesApproved   PublicationSchedule[] @relation("ScheduleApprover")
+  scriptsApproved     DocumentaryScript[]
+  channelsConnected   YouTubeChannel[]
+  translations        Translation[]
+  correctionRequests  CorrectionRequest[]
+
+  @@index([role])
+  @@map("users")
+}
+
+model Session {
+  id        String   @id
+  token     String   @unique
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("sessions")
+}
+
+/// A sign-in method for a user. For email/password accounts, `password` holds the scrypt hash.
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@unique([providerId, accountId])
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verifications")
+}
+
+/// Database-backed rate limiting for auth endpoints (works across multiple app instances).
+model RateLimit {
+  id          String @id @default(cuid())
+  key         String @unique
+  count       Int
+  lastRequest BigInt
+
+  @@map("rate_limits")
+}
