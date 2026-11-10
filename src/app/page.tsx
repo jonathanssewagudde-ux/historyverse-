@@ -1,69 +1,88 @@
-import Image from "next/image";
+import { CheckCircle2, CircleDashed, Clock } from "lucide-react";
 
-export default function Home() {
+import { ThemeToggle } from "@/components/theme-toggle";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { milestones, type MilestoneStatus } from "@/config/milestones";
+import { siteConfig } from "@/config/site";
+
+const statusMeta: Record<MilestoneStatus, { label: string; icon: typeof Clock }> = {
+  complete: { label: "Complete", icon: CheckCircle2 },
+  in_review: { label: "In review", icon: Clock },
+  in_progress: { label: "In progress", icon: Clock },
+  planned: { label: "Planned", icon: CircleDashed },
+};
+
+/**
+ * Development landing page for the foundation milestone. The cinematic public homepage replaces
+ * this in Milestone 2; the milestone tracker then moves to the administrator dashboard.
+ */
+export default function FoundationPage() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
+    <div className="flex flex-1 flex-col">
+      <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-5 sm:px-6">
+        <span className="font-serif text-xl font-semibold tracking-[0.2em] text-gold">
+          {siteConfig.name}
+        </span>
+        <ThemeToggle />
+      </header>
+
+      <main id="main" className="mx-auto w-full max-w-6xl flex-1 px-4 pb-16 sm:px-6">
+        <section className="py-12 sm:py-20" aria-labelledby="hero-title">
+          <Badge variant="outline" className="mb-6 border-gold/50 text-gold">
+            Platform foundation · in development
+          </Badge>
+          <h1
+            id="hero-title"
+            className="max-w-3xl text-4xl leading-tight font-semibold text-balance sm:text-6xl"
+          >
+            {siteConfig.tagline}
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="mt-6 max-w-2xl text-lg text-pretty text-muted-foreground">
+            {siteConfig.description} The public encyclopedia and the AI Studio are being built in
+            fifteen reviewed milestones, and this page tracks their progress.
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+        </section>
+
+        <section aria-labelledby="milestones-title">
+          <h2 id="milestones-title" className="mb-6 text-3xl font-semibold">
+            Build milestones
+          </h2>
+          <ol className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {milestones.map((m) => {
+              const meta = statusMeta[m.status];
+              const Icon = meta.icon;
+              return (
+                <li key={m.number}>
+                  <Card className="h-full gap-3" data-status={m.status}>
+                    <CardHeader>
+                      <CardDescription className="flex items-center justify-between text-xs tracking-wider uppercase">
+                        <span>Milestone {m.number}</span>
+                        <span className="flex items-center gap-1 normal-case">
+                          <Icon
+                            className={m.status === "planned" ? "size-3.5" : "size-3.5 text-gold"}
+                            aria-hidden
+                          />
+                          {meta.label}
+                        </span>
+                      </CardDescription>
+                      <CardTitle className="font-serif text-xl">{m.title}</CardTitle>
+                    </CardHeader>
+                    <CardContent className="text-sm text-muted-foreground">{m.summary}</CardContent>
+                  </Card>
+                </li>
+              );
+            })}
+          </ol>
+        </section>
       </main>
+
+      <footer className="border-t">
+        <div className="mx-auto max-w-6xl px-4 py-6 text-sm text-muted-foreground sm:px-6">
+          {siteConfig.name}: historical content will be published only after it has been sourced and
+          reviewed by an editor.
+        </div>
+      </footer>
     </div>
   );
 }

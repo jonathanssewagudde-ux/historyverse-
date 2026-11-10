@@ -1,36 +1,65 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# HISTORYVERSE
 
-## Getting Started
+**Every Story. Every Civilization. Every Century.**
 
-First, run the development server:
+HISTORYVERSE is an AI-assisted historical knowledge platform made of two applications on one backend:
+
+- **Public platform:** a sourced historical encyclopedia with articles, archival media, maps, timelines, family trees, documentaries and a grounded AI history assistant.
+- **HISTORYVERSE AI Studio** (`/admin`): a private studio for research, article editing, media licensing, documentary scripting, narration, video rendering and YouTube publishing.
+
+> **Status:** Milestone 1 (Project Foundation) is complete and awaiting review. See [ROADMAP.md](./ROADMAP.md).
+> No historical content is published yet. Content arrives from Milestone 4 onward, sourced and reviewed.
+
+## Requirements
+
+| Tool       | Version           | Needed from  |
+| ---------- | ----------------- | ------------ |
+| Node.js    | ≥ 22              | Milestone 1  |
+| pnpm       | 10.x              | Milestone 1  |
+| PostgreSQL | 16+ with pgvector | Milestone 3  |
+| Redis      | 7+                | Milestone 8  |
+| FFmpeg     | 6+                | Milestone 11 |
+
+## Quick start
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install
+cp .env.example .env.local   # every value is optional for now
+pnpm dev                     # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Scripts
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Command          | What it does                                                             |
+| ---------------- | ------------------------------------------------------------------------ |
+| `pnpm dev`       | Development server (Turbopack)                                           |
+| `pnpm build`     | Production build                                                         |
+| `pnpm start`     | Serve the production build                                               |
+| `pnpm lint`      | ESLint (zero warnings allowed)                                           |
+| `pnpm typecheck` | Generate route types, then `tsc --noEmit`                                |
+| `pnpm format`    | Prettier (with Tailwind class sorting)                                   |
+| `pnpm test`      | Vitest unit and component tests                                          |
+| `pnpm test:e2e`  | Playwright end-to-end tests, desktop and mobile (run `pnpm build` first) |
+| `pnpm check`     | lint + typecheck + format check + unit tests                             |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Health probe: `GET /api/health`.
 
-## Learn More
+## Documentation
 
-To learn more about Next.js, take a look at the following resources:
+| Document                                     | Contents                                              |
+| -------------------------------------------- | ----------------------------------------------------- |
+| [ARCHITECTURE.md](./ARCHITECTURE.md)         | System design, directory layout, key decisions        |
+| [ROADMAP.md](./ROADMAP.md)                   | 15 milestones, status, continuation notes             |
+| [CHANGELOG.md](./CHANGELOG.md)               | Release history                                       |
+| [DATABASE.md](./DATABASE.md)                 | Data model plan (implemented in Milestone 3)          |
+| [API_INTEGRATIONS.md](./API_INTEGRATIONS.md) | Mandatory and optional integrations, configuration    |
+| [CONTENT_PIPELINE.md](./CONTENT_PIPELINE.md) | Generate History Project workflow and production jobs |
+| [EDITORIAL_POLICY.md](./EDITORIAL_POLICY.md) | Accuracy, sourcing, AI-labelling and licensing rules  |
+| [DEPLOYMENT.md](./DEPLOYMENT.md)             | Hosting topology and environment                      |
+| [.env.example](./.env.example)               | Every configuration variable                          |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Known limitations (Milestone 1)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Only the foundation landing page, a 404 page and `/api/health` exist. Every other route arrives with its milestone.
+- No database, authentication or content yet.
+- The shadcn/ui CLI could not reach `ui.shadcn.com` from the build environment, so the components in `src/components/ui` were written by hand to the shadcn source conventions. `pnpm dlx shadcn add <component>` works on any network that allows that host.
