@@ -31,6 +31,11 @@ export interface SourceHttpOptions {
 
 export interface SourceHttpClient {
   getJson<T>(url: string, init?: { headers?: Record<string, string> }): Promise<T>;
+  /** Binary download (images, audio). Same pacing, retry and failure rules as getJson. */
+  getBytes(
+    url: string,
+    init?: { headers?: Record<string, string>; maxBytes?: number },
+  ): Promise<{ body: Uint8Array; contentType: string; finalUrl: string }>;
 }
 
 const RETRYABLE = new Set([408, 425, 429, 500, 502, 503, 504]);
@@ -73,6 +78,7 @@ export function createSourceHttpClient(options: SourceHttpOptions): SourceHttpCl
     url: string,
     host: string,
     headers: Record<string, string>,
+    read: (response: Response) => Promise<T>,
   ): Promise<T> {
     for (let tryNumber = 0; ; tryNumber++) {
       const wait = (lastRequestAt.get(host) ?? -Infinity) + minIntervalMs - now();
@@ -83,14 +89,14 @@ export function createSourceHttpClient(options: SourceHttpOptions): SourceHttpCl
       let failure: string | undefined;
       try {
         response = await fetchImpl(url, {
-          headers: { Accept: "application/json", "User-Agent": userAgent, ...headers },
+          headers: { "User-Agent": userAgent, ...headers },
           signal: AbortSignal.timeout(timeoutMs),
         });
       } catch (error) {
         failure = error instanceof Error ? error.name : "network error";
       }
 
-      if (response?.ok) return (await response.json()) as T;
+      if (response?.ok) return read(response);
 
       const status = response?.status;
       const retryable = response ? RETRYABLE.has(response.status) : true;
@@ -114,15 +120,41 @@ export function createSourceHttpClient(options: SourceHttpOptions): SourceHttpCl
     }
   }
 
+  function enqueue<T>(url: string, run: (host: string) => Promise<T>): Promise<T> {
+    const host = new URL(url).host;
+    const previous = queues.get(host) ?? Promise.resolve();
+    const next = previous.catch(() => undefined).then(() => run(host));
+    queues.set(host, next);
+    return next;
+  }
+
   return {
     getJson<T>(url: string, init?: { headers?: Record<string, string> }) {
-      const host = new URL(url).host;
-      const previous = queues.get(host) ?? Promise.resolve();
-      const next = previous
-        .catch(() => undefined)
-        .then(() => attempt<T>(url, host, init?.headers ?? {}));
-      queues.set(host, next);
-      return next;
+      return enqueue(url, (host) =>
+        attempt(
+          url,
+          host,
+          { Accept: "application/json", ...init?.headers },
+          async (r) => (await r.json()) as T,
+        ),
+      );
+    },
+    getBytes(url, init) {
+      const maxBytes = init?.maxBytes ?? 25 * 1024 * 1024;
+      return enqueue(url, (host) =>
+        attempt(url, host, { Accept: "*/*", ...init?.headers }, async (r) => {
+          const tooBig = () =>
+            new SourceRequestError(`File larger than ${maxBytes} bytes`, url, r.status);
+          if (Number(r.headers.get("content-length") ?? 0) > maxBytes) throw tooBig();
+          const body = new Uint8Array(await r.arrayBuffer());
+          if (body.byteLength > maxBytes) throw tooBig();
+          return {
+            body,
+            contentType: r.headers.get("content-type") ?? "application/octet-stream",
+            finalUrl: r.url || url,
+          };
+        }),
+      );
     },
   };
 }

@@ -9,11 +9,11 @@ describe("NavLink", () => {
   });
 
   it("renders unavailable routes as disabled text, not links", () => {
-    render(<NavLink item={{ title: "Countries", href: "/countries", milestone: 5 }} />);
+    render(<NavLink item={{ title: "Timeline", href: "/timeline", milestone: 13 }} />);
     expect(screen.queryByRole("link")).not.toBeInTheDocument();
-    const el = screen.getByText("Countries");
+    const el = screen.getByText("Timeline");
     expect(el).toHaveAttribute("aria-disabled", "true");
-    expect(el).toHaveAttribute("title", "Coming in Milestone 5");
-    expect(el).toHaveTextContent("Countries (coming soon)");
+    expect(el).toHaveAttribute("title", "Coming in Milestone 13");
+    expect(el).toHaveTextContent("Timeline (coming soon)");
   });
 });

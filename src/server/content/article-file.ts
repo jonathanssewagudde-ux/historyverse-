@@ -63,7 +63,17 @@ export const articleFileSchema = z
     title: z.string().min(3),
     subtitle: z.string().optional(),
     summary: z.string().min(20).max(400),
-    template: z.enum(["COUNTRY", "PRESIDENT", "MONARCH", "BIOGRAPHY", "KINGDOM", "CIVILIZATION", "EVENT", "INVENTION", "GENERAL"]),
+    template: z.enum([
+      "COUNTRY",
+      "PRESIDENT",
+      "MONARCH",
+      "BIOGRAPHY",
+      "KINGDOM",
+      "CIVILIZATION",
+      "EVENT",
+      "INVENTION",
+      "GENERAL",
+    ]),
     primaryEntity: z.object({ wikidataId: qid }),
     /** How the draft was produced. AI-assisted drafts are flagged and cannot be published unreviewed. */
     authoring: z.enum(["ai_draft", "human"]),
@@ -71,7 +81,17 @@ export const articleFileSchema = z
     sections: z
       .array(
         z.object({
-          kind: z.enum(["INTRODUCTION", "OVERVIEW", "CHRONOLOGY", "PEOPLE", "EVENTS", "CULTURE", "LEGACY", "FURTHER_READING", "CUSTOM"]),
+          kind: z.enum([
+            "INTRODUCTION",
+            "OVERVIEW",
+            "CHRONOLOGY",
+            "PEOPLE",
+            "EVENTS",
+            "CULTURE",
+            "LEGACY",
+            "FURTHER_READING",
+            "CUSTOM",
+          ]),
           heading: z.string().optional(),
           body: z.string().min(1),
         }),
@@ -82,19 +102,30 @@ export const articleFileSchema = z
         z.object({
           statement: z.string().min(5),
           type: z.enum(["FACT", "INTERPRETATION", "TRADITION", "DISPUTED"]).default("FACT"),
-          certainty: z.enum(["DOCUMENTED", "TRADITIONAL", "PROBABLE", "UNCERTAIN", "DISPUTED"]).default("DOCUMENTED"),
+          certainty: z
+            .enum(["DOCUMENTED", "TRADITIONAL", "PROBABLE", "UNCERTAIN", "DISPUTED"])
+            .default("DOCUMENTED"),
           date: dateSchema,
           cite: z.array(citeSchema).min(1),
         }),
       )
       .default([]),
-    entities: z.array(z.object({ wikidataId: qid, role: z.enum(["people", "places", "events", "related"]) })).default([]),
+    entities: z
+      .array(z.object({ wikidataId: qid, role: z.enum(["people", "places", "events", "related"]) }))
+      .default([]),
     media: z
       .array(
         z.object({
           /** Commons file title, matching an imported MediaAsset (sourceName "Wikimedia Commons"). */
           sourceRef: z.string().startsWith("File:"),
-          kind: z.enum(["AUTHENTIC_PHOTO", "AUTHENTIC_DOCUMENT", "ARTWORK", "MAP", "MODERN_PHOTO", "DIAGRAM"]),
+          kind: z.enum([
+            "AUTHENTIC_PHOTO",
+            "AUTHENTIC_DOCUMENT",
+            "ARTWORK",
+            "MAP",
+            "MODERN_PHOTO",
+            "DIAGRAM",
+          ]),
           altText: z.string().min(5),
           caption: z.string().min(5),
           hero: z.boolean().default(false),
@@ -104,28 +135,42 @@ export const articleFileSchema = z
   })
   .superRefine((file, ctx) => {
     const keys = new Set(file.sources.map((s) => s.key));
-    if (keys.size !== file.sources.length) ctx.addIssue({ code: "custom", path: ["sources"], message: "duplicate source key" });
+    if (keys.size !== file.sources.length)
+      ctx.addIssue({ code: "custom", path: ["sources"], message: "duplicate source key" });
 
     file.sections.forEach((section, i) => {
       for (const match of section.body.matchAll(AUTHOR_MARKER)) {
         if (!keys.has(match[1]!)) {
-          ctx.addIssue({ code: "custom", path: ["sections", i, "body"], message: `unknown source "${match[1]}"` });
+          ctx.addIssue({
+            code: "custom",
+            path: ["sections", i, "body"],
+            message: `unknown source "${match[1]}"`,
+          });
         }
       }
       // Every factual section must cite something; further reading is a list of sources itself.
       if (section.kind !== "FURTHER_READING" && !AUTHOR_MARKER.test(section.body)) {
-        ctx.addIssue({ code: "custom", path: ["sections", i, "body"], message: "section has no citations" });
+        ctx.addIssue({
+          code: "custom",
+          path: ["sections", i, "body"],
+          message: "section has no citations",
+        });
       }
       AUTHOR_MARKER.lastIndex = 0;
     });
     file.keyDates.forEach((kd, i) =>
       kd.cite.forEach((c, j) => {
         if (!keys.has(c.source)) {
-          ctx.addIssue({ code: "custom", path: ["keyDates", i, "cite", j], message: `unknown source "${c.source}"` });
+          ctx.addIssue({
+            code: "custom",
+            path: ["keyDates", i, "cite", j],
+            message: `unknown source "${c.source}"`,
+          });
         }
       }),
     );
-    if (file.media.filter((m) => m.hero).length > 1) ctx.addIssue({ code: "custom", path: ["media"], message: "only one hero image" });
+    if (file.media.filter((m) => m.hero).length > 1)
+      ctx.addIssue({ code: "custom", path: ["media"], message: "only one hero image" });
   });
 
 export type ArticleFile = z.infer<typeof articleFileSchema>;

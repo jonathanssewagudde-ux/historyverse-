@@ -17,6 +17,7 @@ export default defineConfig({
     environment: "node",
     include: ["tests/integration/**/*.test.ts"],
     globalSetup: ["./tests/integration/global-setup.ts"],
+    setupFiles: ["./tests/integration/setup-each-file.ts"],
     env: { ...testEnv, NODE_ENV: "test" },
     alias: { "server-only": new URL("./src/test/server-only-stub.ts", import.meta.url).pathname },
     // One database is shared, so files run one at a time.

@@ -48,6 +48,7 @@ next-env.d.ts
 
 # local media storage (development)
 /storage
+/storage-test
 
 # generated Prisma client
 /src/generated

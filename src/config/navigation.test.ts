@@ -6,13 +6,18 @@ describe("navigation", () => {
     expect([...availableRoutes].sort()).toEqual([
       "/",
       "/admin",
+      "/admin/articles",
       "/admin/imports",
+      "/countries",
+      "/kingdoms",
+      "/people",
       "/profile",
       "/sign-in",
       "/sign-up",
     ]);
     expect(isRouteAvailable("/")).toBe(true);
-    expect(isRouteAvailable("/countries")).toBe(false);
+    expect(isRouteAvailable("/countries")).toBe(true);
+    expect(isRouteAvailable("/timeline")).toBe(false);
     expect(isRouteAvailable("/search?q=uganda")).toBe(false);
     expect(isRouteAvailable("/#search")).toBe(true);
   });

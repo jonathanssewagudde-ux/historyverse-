@@ -48,7 +48,7 @@ describe("MediaFrame", () => {
         credit={{ source: "Private collection", license: "CC BY 4.0" }}
       />,
     );
-    expect(screen.getByText("Historical map")).toBeInTheDocument();
+    expect(screen.getByText("Map")).toBeInTheDocument();
     expect(screen.queryAllByRole("link")).toHaveLength(0);
     expect(screen.getByText(/Private collection/)).toBeInTheDocument();
   });

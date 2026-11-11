@@ -26,6 +26,8 @@ export default defineConfig({
     command: `pnpm exec next start -p ${PORT}`,
     url: `${baseURL}/api/health`,
     reuseExistingServer: false,
+    stdout: "ignore",
+    stderr: "pipe",
     timeout: 120_000,
     // The server under test uses the disposable test database, never the development one.
     env: { ...testEnv, AUTH_URL: baseURL },

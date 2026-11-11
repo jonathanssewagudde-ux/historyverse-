@@ -179,3 +179,20 @@
     }
   }
 }
+
+/* Reader text size, set by <ReaderTools> on the article element. */
+@layer components {
+  .article-prose {
+    font-size: 1.0625rem;
+    line-height: 1.75;
+  }
+  [data-reading-size="sm"] .article-prose {
+    font-size: 0.9375rem;
+  }
+  [data-reading-size="lg"] .article-prose {
+    font-size: 1.1875rem;
+  }
+  [data-reading-size="xl"] .article-prose {
+    font-size: 1.375rem;
+  }
+}

@@ -1,5 +1,6 @@
 {
   "DATABASE_URL": "postgresql://historyverse:historyverse_dev@127.0.0.1:5432/historyverse_test",
   "AUTH_SECRET": "test-only-secret-not-used-anywhere-else-0123456789",
-  "AUTH_RATE_LIMIT_ENABLED": "false"
+  "AUTH_RATE_LIMIT_ENABLED": "false",
+  "STORAGE_LOCAL_DIR": "./storage-test"
 }

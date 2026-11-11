@@ -9,7 +9,14 @@ import { cn } from "@/lib/utils";
  * distinguishable at a glance.
  */
 export type MediaKind =
-  "authentic_photo" | "authentic_document" | "artwork" | "map" | "ai_reconstruction";
+  | "authentic_photo"
+  | "authentic_document"
+  | "artwork"
+  | "map"
+  | "modern_photo"
+  | "diagram"
+  | "unclassified"
+  | "ai_reconstruction";
 
 export const RECONSTRUCTION_LABEL =
   "AI-Generated Historical Reconstruction — Not an Authentic Photograph";
@@ -18,7 +25,10 @@ const kindLabels: Record<Exclude<MediaKind, "ai_reconstruction">, string> = {
   authentic_photo: "Archival photograph",
   authentic_document: "Historical document",
   artwork: "Historical artwork",
-  map: "Historical map",
+  map: "Map",
+  modern_photo: "Modern photograph",
+  diagram: "Diagram",
+  unclassified: "Unclassified (not public)",
 };
 
 export interface MediaCredit {
@@ -44,6 +54,8 @@ export interface MediaFrameProps {
   priority?: boolean;
   sizes?: string;
   className?: string;
+  /** Serve the file as-is instead of through the image optimizer (e.g. permission-checked media). */
+  unoptimized?: boolean;
 }
 
 function ExternalLink({ href, children }: { href?: string; children: React.ReactNode }) {
@@ -72,6 +84,7 @@ export function MediaFrame({
   priority,
   sizes = "(min-width: 1024px) 66vw, 100vw",
   className,
+  unoptimized,
 }: MediaFrameProps) {
   const isReconstruction = kind === "ai_reconstruction";
 
@@ -88,6 +101,7 @@ export function MediaFrame({
           height={height}
           sizes={sizes}
           priority={priority}
+          unoptimized={unoptimized}
           className="h-auto w-full object-cover"
         />
         {isReconstruction ? (

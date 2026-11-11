@@ -18,6 +18,10 @@ export const availableRoutes: ReadonlySet<string> = new Set([
   "/profile",
   "/admin",
   "/admin/imports",
+  "/admin/articles",
+  "/kingdoms",
+  "/countries",
+  "/people",
 ]);
 
 export function isRouteAvailable(href: string): boolean {

@@ -23,7 +23,7 @@ export const studioNav: StudioNavItem[] = [
     milestone: 8,
     permission: "research:run",
   },
-  { title: "Article Studio", href: "/admin/articles", milestone: 7, permission: "article:draft" },
+  { title: "Article Studio", href: "/admin/articles", milestone: 5, permission: "article:draft" },
   {
     title: "Historical Media Library",
     href: "/admin/media",

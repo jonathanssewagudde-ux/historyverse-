@@ -25,7 +25,9 @@
     "admin:create": "tsx --conditions=react-server scripts/create-admin.ts",
     "user:role": "tsx --conditions=react-server scripts/set-role.ts",
     "test:integration": "vitest run --config vitest.integration.config.mts",
-    "ingest:wikidata": "tsx --conditions=react-server scripts/ingest-wikidata.ts"
+    "ingest:wikidata": "tsx --conditions=react-server scripts/ingest-wikidata.ts",
+    "article:load": "tsx --conditions=react-server scripts/load-article.ts",
+    "media:fetch": "tsx --conditions=react-server scripts/fetch-media.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "7.10.1",
@@ -73,7 +75,7 @@
     "vitest": "^5.1.0"
   },
   "packageManager": "pnpm@10.28.0",
-  "description": "HISTORYVERSE \u2014 AI-powered historical knowledge, research and documentary platform",
+  "description": "HISTORYVERSE — AI-powered historical knowledge, research and documentary platform",
   "engines": {
     "node": ">=22"
   }

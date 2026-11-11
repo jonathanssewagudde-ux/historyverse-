@@ -15,6 +15,9 @@ describe("compileCitations", () => {
   });
 
   it("leaves text without markers unchanged", () => {
-    expect(compileCitations("No citations here.")).toEqual({ body: "No citations here.", citations: [] });
+    expect(compileCitations("No citations here.")).toEqual({
+      body: "No citations here.",
+      citations: [],
+    });
   });
 });

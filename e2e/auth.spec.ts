@@ -245,7 +245,7 @@ test.describe("AI Studio", () => {
     await setRole(email, "ADMINISTRATOR");
     await page.goto("/admin");
     const nav = page.getByRole("navigation", { name: "Studio" });
-    await expect(nav.getByRole("link")).toHaveCount(2);
+    await expect(nav.getByRole("link")).toHaveCount(3);
     await expect(nav.getByRole("link", { name: "Overview" })).toHaveAttribute(
       "aria-current",
       "page",

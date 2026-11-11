@@ -188,7 +188,10 @@
     {
       "statement": "The kingdom is restored and Muwenda Mutebi II becomes kabaka.",
       "date": { "year": 1993, "month": 7, "day": 31, "precision": "day" },
-      "cite": [{ "source": "wikidata-mutebi" }, { "source": "wikipedia-buganda", "locator": "Introduction" }]
+      "cite": [
+        { "source": "wikidata-mutebi" },
+        { "source": "wikipedia-buganda", "locator": "Introduction" }
+      ]
     }
   ],
   "entities": [

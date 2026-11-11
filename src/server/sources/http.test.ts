@@ -86,6 +86,21 @@ describe("source HTTP client", () => {
     expect(calls).toHaveLength(3);
   });
 
+  it("downloads bytes with their content type and enforces a size limit", async () => {
+    const png = new Uint8Array([137, 80, 78, 71]);
+    const { client } = harness([new Response(png, { headers: { "content-type": "image/png" } })]);
+    const file = await client.getBytes("https://example.org/a.png");
+    expect(file.contentType).toBe("image/png");
+    expect([...file.body]).toEqual([137, 80, 78, 71]);
+
+    const { client: small } = harness([
+      new Response(new Uint8Array(10), { headers: { "content-length": "10" } }),
+    ]);
+    await expect(small.getBytes("https://example.org/big", { maxBytes: 5 })).rejects.toThrow(
+      /larger than 5 bytes/,
+    );
+  });
+
   it("does not retry client errors such as 404", async () => {
     const { client, calls } = harness([new Response("", { status: 404 })]);
     await expect(client.getJson("https://example.org/missing")).rejects.toMatchObject({

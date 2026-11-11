@@ -1,5 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
+
+import { isRouteAvailable } from "@/config/navigation";
 import HomePage from "./page";
 
 vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn() }) }));
@@ -45,7 +47,9 @@ describe("HomePage", () => {
     render(<HomePage />);
     for (const link of screen.queryAllByRole("link")) {
       const href = link.getAttribute("href") ?? "";
-      expect(href === "/" || href.startsWith("/#") || href.startsWith("http"), href).toBe(true);
+      expect(href.startsWith("#") || href.startsWith("http") || isRouteAvailable(href), href).toBe(
+        true,
+      );
     }
   });
 
