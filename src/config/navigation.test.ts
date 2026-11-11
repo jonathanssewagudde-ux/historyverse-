@@ -9,16 +9,18 @@ describe("navigation", () => {
       "/admin/articles",
       "/admin/imports",
       "/countries",
+      "/explore",
       "/kingdoms",
       "/people",
       "/profile",
+      "/search",
       "/sign-in",
       "/sign-up",
     ]);
     expect(isRouteAvailable("/")).toBe(true);
     expect(isRouteAvailable("/countries")).toBe(true);
     expect(isRouteAvailable("/timeline")).toBe(false);
-    expect(isRouteAvailable("/search?q=uganda")).toBe(false);
+    expect(isRouteAvailable("/search?q=uganda")).toBe(true);
     expect(isRouteAvailable("/#search")).toBe(true);
   });
 

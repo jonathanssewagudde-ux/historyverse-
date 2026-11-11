@@ -1,46 +1,26 @@
 import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
+
 import { SearchBox } from "./search-box";
 
-const push = vi.fn();
-vi.mock("next/navigation", () => ({ useRouter: () => ({ push }) }));
+vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn() }) }));
 
 describe("SearchBox", () => {
-  it("has an accessible search landmark and labelled input", () => {
+  it("is a search landmark whose form submits to /search, so it works without JavaScript", () => {
     render(<SearchBox suggestions={[]} />);
-    expect(screen.getByRole("search", { name: "Search history" })).toBeInTheDocument();
-    expect(
-      screen.getByRole("searchbox", { name: /search any country, person, kingdom/i }),
-    ).toBeInTheDocument();
+    const form = screen.getByRole("search", { name: "Search history" });
+    expect(form).toHaveAttribute("action", "/search");
+    expect(form).toHaveAttribute("method", "get");
+    const input = screen.getByRole("combobox", { name: /search any country, person, kingdom/i });
+    expect(input).toHaveAttribute("name", "q");
+    expect(input).toHaveAttribute("aria-expanded", "false");
   });
 
-  it("does not pretend to search before the search engine exists", async () => {
-    const user = userEvent.setup();
-    render(<SearchBox suggestions={[]} />);
-    await user.type(screen.getByRole("searchbox"), "Buganda{Enter}");
-    expect(push).not.toHaveBeenCalled();
-    expect(screen.getByRole("status")).toHaveTextContent(/Search is not open yet/);
-  });
-
-  it("ignores empty submissions", async () => {
-    const user = userEvent.setup();
-    render(<SearchBox suggestions={[]} />);
-    await user.click(screen.getByRole("button", { name: /^search/i }));
-    expect(screen.getByRole("status")).toBeEmptyDOMElement();
-    expect(screen.getByRole("searchbox")).toHaveFocus();
-  });
-
-  it("fills the input from a suggestion and clears the notice on edit", async () => {
-    const user = userEvent.setup();
+  it("links each starting point to a real search", () => {
     render(<SearchBox suggestions={["History of the Mali Empire"]} />);
-    await user.click(screen.getByRole("button", { name: "History of the Mali Empire" }));
-    const input = screen.getByRole("searchbox");
-    expect(input).toHaveValue("History of the Mali Empire");
-    expect(input).toHaveFocus();
-    await user.keyboard("{Enter}");
-    expect(screen.getByRole("status")).not.toBeEmptyDOMElement();
-    await user.type(input, "!");
-    expect(screen.getByRole("status")).toBeEmptyDOMElement();
+    expect(screen.getByRole("link", { name: "History of the Mali Empire" })).toHaveAttribute(
+      "href",
+      "/search?q=History%20of%20the%20Mali%20Empire",
+    );
   });
 });

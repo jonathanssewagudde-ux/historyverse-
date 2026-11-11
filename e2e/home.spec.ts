@@ -29,14 +29,15 @@ test.describe("homepage", () => {
     ]);
   });
 
-  test("search explains it is not open yet instead of faking results", async ({ page }) => {
+  test("the hero search submits to the search page", async ({ page }) => {
     await page.goto("/");
-    const box = page.getByRole("searchbox", { name: /search any country/i });
-    await page.getByRole("button", { name: "All kings of Buganda" }).click();
-    await expect(box).toHaveValue("All kings of Buganda");
+    const box = page.getByRole("combobox", { name: /search any country/i });
+    await box.fill("Mali Empire");
     await box.press("Enter");
-    await expect(page.getByRole("status").filter({ hasText: /not open yet/ })).toBeVisible();
-    await expect(page).toHaveURL(/\/$/);
+    await expect(page).toHaveURL(/\/search\?q=Mali\+Empire$/);
+    await expect(page.locator("#main").getByRole("heading", { level: 1 })).toHaveText(
+      "Search history",
+    );
   });
 
   test("today's date comes from the browser", async ({ page }) => {

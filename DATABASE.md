@@ -64,9 +64,18 @@ These live in `prisma/migrations/20261110083700_integrity_constraints` and are c
 
 Not yet enforced in the database: that an entity's detail row matches its `kind`. The repository layer will guarantee this when entity writes arrive in Milestone 4.
 
+## Search index (Milestone 6)
+
+`search_documents` holds one row per published article. SQL functions in the `search_index` migration define it:
+
+- `hv_unaccent(text)`: an immutable wrapper around `unaccent`;
+- `hv_search_vector(title, names, subtitle, summary, body)`: the document side, weighted A (title and names, with no stemming for names), B (subtitle and summary) and C (body, English stemming);
+- `hv_search_query(text)`: the matching query side.
+
+GIN indexes cover the vector, `dateYears`, and the trigram `matchText`. All three are declared in `search.prisma` so Prisma does not try to drop them.
+
 ## Planned indexes (later milestones)
 
-- `tsvector` columns with GIN indexes and `pg_trgm` indexes for search (M6)
 - `vector` columns with HNSW indexes for semantic retrieval (M6/M14)
 
 ## Local development

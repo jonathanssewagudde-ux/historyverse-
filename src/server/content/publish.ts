@@ -3,6 +3,7 @@ import "server-only";
 import type { Prisma, PrismaClient } from "@/generated/prisma/client";
 import { hasPermission, type Role } from "@/lib/auth/roles";
 import { recordAudit } from "@/server/audit";
+import { indexArticle } from "@/server/search/indexer";
 
 export class PublishError extends Error {
   constructor(
@@ -136,6 +137,8 @@ export async function publishArticle(db: PrismaClient, editor: Editor, articleId
         } as Prisma.InputJsonObject,
       },
     });
+    // Same transaction: an article is searchable exactly when it is published.
+    await indexArticle(tx, articleId);
     return {
       slug: article.slug,
       template: article.template,
@@ -174,9 +177,12 @@ export async function unpublishArticle(
   if (article.status !== "PUBLISHED" && article.status !== "UPDATED") {
     throw new PublishError("INVALID_STATE", "Only published articles can be unpublished.");
   }
-  await db.article.update({
-    where: { id: articleId },
-    data: { status: "DRAFT", publishedAt: null, lastEditedById: editor.id },
+  await db.$transaction(async (tx) => {
+    await tx.article.update({
+      where: { id: articleId },
+      data: { status: "DRAFT", publishedAt: null, lastEditedById: editor.id },
+    });
+    await indexArticle(tx, articleId);
   });
   await recordAudit({
     action: "article.unpublished",

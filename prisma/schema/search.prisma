@@ -1,0 +1,41 @@
+// Public search index. One row per PUBLISHED article, written at publication and removed when
+// an article is unpublished, so search can only ever surface reviewed content.
+// The weighted tsvector and the trigram index are maintained in SQL (see DATABASE.md).
+
+model SearchDocument {
+  id          String          @id @default(cuid())
+  articleId   String          @unique
+  article     Article         @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  path        String
+  title       String
+  subtitle    String?
+  summary     String?
+  /// Plain text of the article (citation markers and emphasis removed), used for snippets.
+  body        String
+  template    ArticleTemplate
+  locale      String          @default("en")
+  /// Subject name, aliases and the people/places the article covers: matched with high weight.
+  names       String[]
+  countries   String[]
+  continents  String[]
+  /// Astronomical years of the subject's start/end, for period and century filters.
+  startYear   Int?
+  endYear     Int?
+  /// Astronomical years of the article's key dates, for "what happened in 1962?".
+  dateYears   Int[]
+  /// Key dates as shown on the article: [{ year, label, statement }].
+  keyDates    Json            @default("[]")
+  heroMediaId String?
+  publishedAt DateTime
+  /// Lower-cased, accent-free title + names, for typo-tolerant trigram matching.
+  matchText   String          @default("")
+  searchVector Unsupported("tsvector")?
+  updatedAt   DateTime        @updatedAt
+
+  @@index([template])
+  @@index([startYear, endYear])
+  @@index([searchVector], type: Gin, map: "search_documents_vector_idx")
+  @@index([matchText(ops: raw("gin_trgm_ops"))], type: Gin, map: "search_documents_match_trgm_idx")
+  @@index([dateYears], type: Gin, map: "search_documents_date_years_idx")
+  @@map("search_documents")
+}

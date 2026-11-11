@@ -2,6 +2,21 @@
 
 All notable changes to HISTORYVERSE are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.6.0] - 2026-11-11: Milestone 6, Historical Search Engine
+
+### Added
+
+- PostgreSQL search index of published articles (weighted full-text, unaccent, trigram), kept in sync with publishing
+- `/search` with snippets, filters, facets, year questions, typo tolerance and related searches
+- `/explore` browse page; homepage continent cards and popular searches now link to real pages
+- `/api/search/suggest` autocomplete with rate limiting, and an accessible search combobox
+- `pnpm search:reindex`
+
+### Changed
+
+- The homepage search box now runs real searches
+- Search filter rows scroll sideways on phones; the browser's built-in clear button is hidden so it no longer overlaps the search button
+
 ## [0.5.0] - 2026-11-11: Milestone 5, Historical Article System
 
 ### Added

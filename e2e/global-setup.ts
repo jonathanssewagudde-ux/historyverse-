@@ -34,6 +34,9 @@ export default async function globalSetup() {
       );
     await entity("e2e-buganda", "KINGDOM", "buganda", "Buganda", "Q473748");
     await entity("e2e-uganda", "COUNTRY", "uganda", "Uganda", "Q1036");
+    await client.query(
+      `INSERT INTO "countries" ("entityId","continent","iso2") VALUES ('e2e-uganda','AFRICA','UG')`,
+    );
     await entity("e2e-mutesa-i", "PERSON", "muteesa-i", "Muteesa I", "Q889311");
 
     const license = async (code: string) =>

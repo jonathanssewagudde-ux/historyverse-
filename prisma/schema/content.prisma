@@ -60,6 +60,7 @@ model Article {
   projects       ContentProject[]
   schedules      PublicationSchedule[]
   collectionItems CollectionItem[]
+  searchDocument SearchDocument?
 
   @@index([status, publishedAt])
   @@index([primaryEntityId])

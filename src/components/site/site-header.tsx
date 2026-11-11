@@ -31,7 +31,7 @@ export function SiteHeader() {
         </nav>
         <div className="ml-auto flex items-center gap-1">
           <Button variant="ghost" size="icon" className="hidden sm:inline-flex" asChild>
-            <Link href="/#search" aria-label="Search history">
+            <Link href="/search" aria-label="Search history">
               <Search className="size-5" />
             </Link>
           </Button>

@@ -120,11 +120,29 @@ At the owner's request after review, the UI moved from the original editorial "m
 | Uganda – Location Map (2013) – UNOCHA.svg | Map                                       | CC BY 3.0, attribution shown                                                                                                                     |
 | Buganda map.jpg                           | **Not used**                              | Commons calls it a 1910 public-domain map, but it is visibly a modern digital map of present-day districts, so the date and licence are doubtful |
 
-## Milestone 6: next steps
+## Milestone 6: Historical Search Engine ✅
 
-1. PostgreSQL full-text search (`tsvector` + GIN) over published articles, entities and aliases, plus `pg_trgm` typo-tolerant autocomplete.
-2. `/search` page with filters (category, period, country, century), the homepage search box wired to it, and `/explore`.
-3. Search results only from published, reviewed content and named entities; no generated answers.
+- **Search index** (`search_documents`): one row per published article, written in the same transaction as publication and removed on unpublishing, so search can only surface reviewed content. It holds a weighted `tsvector`, names, countries, continents, subject years and key-date years. `pnpm search:reindex` rebuilds it.
+- **Matching** (all in PostgreSQL, no paid services):
+  - Weighted full-text search: names and title > summary > body. Prose uses English stemming and stop words; names use exact (`simple`) matching.
+  - Accent-insensitive (`unaccent`), so "Muteesá" finds "Muteesa".
+  - Natural-language questions: "Who was Kabaka Mwanga?" becomes the meaningful words.
+  - Year questions: "What happened in 1993?" and "Who ruled France in 1804?" match key dates and the subject's lifespan, and show the matching dates. BCE years are understood.
+  - Typo tolerance with `pg_trgm`, including a "Did you mean …?" suggestion.
+- **`/search`:** highlighted snippets, type / era / continent filters with counts, related searches, pagination and honest empty states (it says how many articles are published). Results are cached and refreshed on publish. Search pages are `noindex`.
+- **`/explore`:** browse by type, era and continent. The homepage continent cards now lead there.
+- **Autocomplete:** `/api/search/suggest` (prefix + fuzzy, published only, 60 requests a minute per visitor) and an accessible combobox used on the homepage and the search page. It is a plain GET form underneath, so it works without JavaScript.
+- **Tests:** 206 unit/component, 69 integration (13 for search, including SQL/tsquery injection attempts), 81 end-to-end.
+
+### Not done (planned)
+
+- Semantic search with pgvector embeddings (optional; needs an embedding provider), in Milestone 14 alongside the AI assistant.
+- Searching unpublished, imported records: that belongs in the Studio (Milestone 7).
+- "Popular searches" ranked by real usage requires analytics (Milestone 15).
+
+## Milestone 7: next steps
+
+Administrator CMS: article editor (edit drafts in the Studio instead of files), entity managers, media library with classification and licence review, citation manager, editorial review queue, publishing calendar, users and roles UI, and the full Integrations page with live connection tests.
 
 ## Continuation notes (for the next coding session)
 

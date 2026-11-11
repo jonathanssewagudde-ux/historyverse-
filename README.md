@@ -7,7 +7,7 @@ HISTORYVERSE is an AI-assisted historical knowledge platform made of two applica
 - **Public platform:** a sourced historical encyclopedia with articles, archival media, maps, timelines, family trees, documentaries and a grounded AI history assistant.
 - **HISTORYVERSE AI Studio** (`/admin`): a private studio for research, article editing, media licensing, documentary scripting, narration, video rendering and YouTube publishing.
 
-> **Status:** Milestones 1–5 are complete. Milestone 5 (Historical Article System) is awaiting review. See [ROADMAP.md](./ROADMAP.md).
+> **Status:** Milestones 1–6 are complete. Milestone 6 (Historical Search Engine) is awaiting review. See [ROADMAP.md](./ROADMAP.md).
 > No historical content is published yet. Content arrives from Milestone 4 onward, sourced and reviewed.
 
 ## Requirements

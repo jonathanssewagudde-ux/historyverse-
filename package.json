@@ -1,6 +1,6 @@
 {
   "name": "historyverse",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -27,7 +27,8 @@
     "test:integration": "vitest run --config vitest.integration.config.mts",
     "ingest:wikidata": "tsx --conditions=react-server scripts/ingest-wikidata.ts",
     "article:load": "tsx --conditions=react-server scripts/load-article.ts",
-    "media:fetch": "tsx --conditions=react-server scripts/fetch-media.ts"
+    "media:fetch": "tsx --conditions=react-server scripts/fetch-media.ts",
+    "search:reindex": "tsx --conditions=react-server scripts/reindex-search.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "7.10.1",

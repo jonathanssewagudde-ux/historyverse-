@@ -47,6 +47,13 @@ test("a draft is invisible to the public and so are its unapproved images", asyn
   expect((await request.get(MUTESA)).status()).toBe(404);
 });
 
+test("search is honest while nothing is published", async ({ page }) => {
+  await page.goto("/search?q=Buganda");
+  const main = page.locator("#main");
+  await expect(main.getByText("No published article matches “Buganda”")).toBeVisible();
+  await expect(main).toContainText("0 articles are published so far");
+});
+
 test("a researcher can preview but not publish", async ({ page }) => {
   await signUpAs(page, "RESEARCHER", "Rita Researcher");
   await page.goto(`/admin/articles/${await articleId()}`);
@@ -135,6 +142,79 @@ test("readers see the published article with sources and only the approved image
   await expect(page).toHaveURL(/\/kingdoms\/buganda$/);
 });
 
+test("homepage autocomplete finds the published article and opens it", async ({ page }) => {
+  await page.goto("/");
+  const box = page.getByRole("combobox", { name: /search any country/i });
+  await box.fill("bugan");
+  const option = page.getByRole("option", { name: /The Complete History of the Buganda Kingdom/ });
+  await expect(option).toBeVisible();
+  await box.press("ArrowDown");
+  await expect(option).toHaveAttribute("aria-selected", "true");
+  await box.press("Enter");
+  await expect(page).toHaveURL(/\/kingdoms\/buganda$/);
+});
+
+test("search answers words, years and typos from published content", async ({ page }) => {
+  const main = page.locator("#main");
+
+  await page.goto("/");
+  const box = page.getByRole("combobox", { name: /search any country/i });
+  await box.fill("Buganda Agreement");
+  // Enter with no suggestion highlighted submits the search form.
+  await box.press("Enter");
+  await expect(page).toHaveURL(/\/search\?q=Buganda\+Agreement$/);
+  await expect(main.getByRole("status")).toHaveText(/1 result for “Buganda Agreement”/);
+  await expect(main.locator("mark").first()).toBeVisible();
+
+  await page.goto("/search?q=" + encodeURIComponent("What happened in 1993?"));
+  await expect(main.getByRole("status")).toHaveText(/Articles with events in 1993/);
+  await expect(
+    main.getByText("The kingdom is restored and Muwenda Mutebi II becomes kabaka."),
+  ).toBeVisible();
+
+  await page.goto("/search?q=Bugnda");
+  await expect(main.getByRole("status")).toContainText("No exact matches for “Bugnda”");
+  await main
+    .getByRole("link", { name: /^Buganda/ })
+    .first()
+    .click();
+  await expect(page).toHaveURL(/\/search\?q=Buganda/);
+});
+
+test("filters narrow results and explore browses by continent", async ({ page }) => {
+  const main = page.locator("#main");
+  await page.goto("/search?q=Buganda");
+  await main
+    .getByRole("navigation", { name: "Filter by type" })
+    .getByRole("link", { name: /Countries/ })
+    .click();
+  await expect(page).toHaveURL(/type=countries/);
+  await expect(main).toContainText("Try removing a filter.");
+
+  // The homepage continent card leads to the explore page filtered to Africa.
+  await page.goto("/");
+  await page
+    .locator("#continents")
+    .getByRole("link", { name: /Africa/ })
+    .click();
+  await expect(page).toHaveURL(/\/explore\?continent=Africa$/);
+  await expect(
+    main.getByRole("link", { name: "The Complete History of the Buganda Kingdom" }),
+  ).toBeVisible();
+  await page.goto("/explore?continent=europe");
+  await expect(main).toContainText("Nothing here yet");
+});
+
+test("the suggestions API returns only published articles and rate-limits abuse", async ({
+  request,
+}) => {
+  const res = await request.get("/api/search/suggest?q=bugan");
+  expect(res.status()).toBe(200);
+  const body = await res.json();
+  expect(body.suggestions.map((s: { path: string }) => s.path)).toEqual(["/kingdoms/buganda"]);
+  expect((await (await request.get("/api/search/suggest?q=b")).json()).suggestions).toEqual([]);
+});
+
 test("the text size control changes and remembers the reading size", async ({ page }) => {
   await page.goto("/kingdoms/buganda");
   const article = page.locator("#main #article");
@@ -157,7 +237,13 @@ for (const theme of ["dark", "light"] as const) {
   }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.addInitScript((t) => localStorage.setItem("theme", t), theme);
-    for (const path of ["/kingdoms/buganda", "/kingdoms", "/countries"]) {
+    for (const path of [
+      "/kingdoms/buganda",
+      "/kingdoms",
+      "/countries",
+      "/search?q=Buganda",
+      "/explore",
+    ]) {
       await page.goto(path);
       await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
       const results = await new AxeBuilder({ page })

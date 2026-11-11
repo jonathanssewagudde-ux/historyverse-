@@ -22,6 +22,8 @@ export const availableRoutes: ReadonlySet<string> = new Set([
   "/kingdoms",
   "/countries",
   "/people",
+  "/search",
+  "/explore",
 ]);
 
 export function isRouteAvailable(href: string): boolean {

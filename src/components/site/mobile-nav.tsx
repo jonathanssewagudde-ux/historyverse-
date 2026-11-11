@@ -43,7 +43,7 @@ export function MobileNav() {
           }}
         >
           <Link
-            href="/#search"
+            href="/search"
             className="mb-3 flex items-center gap-3 rounded-full bg-lime px-4 py-3 font-semibold text-lime-foreground transition-transform active:scale-[0.98]"
           >
             <Search className="size-4" aria-hidden />
