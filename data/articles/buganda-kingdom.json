@@ -1,0 +1,236 @@
+{
+  "slug": "buganda",
+  "title": "The Complete History of the Buganda Kingdom",
+  "subtitle": "From a refuge on Lake Victoria's shores to the largest of Uganda's kingdoms",
+  "summary": "How Buganda grew from a cluster of clans on the northern shore of Lake Victoria into the most powerful state in the region, survived the religious wars and British rule, was abolished in 1967 and restored in 1993.",
+  "template": "KINGDOM",
+  "primaryEntity": { "wikidataId": "Q473748" },
+  "authoring": "ai_draft",
+  "sources": [
+    {
+      "key": "loc-1990",
+      "type": "BOOK",
+      "title": "Uganda: A Country Study",
+      "authors": ["Rita M. Byrnes (editor)"],
+      "publisher": "Federal Research Division, Library of Congress (Washington: GPO)",
+      "publishedYear": 1990,
+      "url": "https://countrystudies.us/uganda/",
+      "accessedAt": "2026-11-11",
+      "repository": "Library of Congress Country Studies (countrystudies.us mirror)",
+      "licenseNote": "U.S. government work, public domain.",
+      "reliabilityNote": "Government reference work; text reflects information available as of December 1990. Some framing of the region's early history is dated. Used for events up to 1990."
+    },
+    {
+      "key": "wikipedia-buganda",
+      "type": "ENCYCLOPEDIA",
+      "title": "Buganda",
+      "authors": ["Wikipedia contributors"],
+      "publisher": "Wikipedia",
+      "url": "https://en.wikipedia.org/w/index.php?title=Buganda&oldid=1381429378",
+      "accessedAt": "2026-11-11",
+      "repository": "wikipedia",
+      "licenseNote": "CC BY-SA 4.0. Used as a research input only; no text is copied.",
+      "reliabilityNote": "Community-edited and internally inconsistent on some dates (the protectorate is dated 1884 in one place and 1894 in another). Cited only for Ganda oral tradition and to corroborate the 1993 restoration."
+    },
+    {
+      "key": "wikidata-mutebi",
+      "type": "DATASET",
+      "title": "Wikidata: Muwenda Mutebi II of Buganda (Q630274)",
+      "publisher": "Wikimedia Foundation",
+      "url": "https://www.wikidata.org/wiki/Q630274",
+      "accessedAt": "2026-11-10",
+      "repository": "wikidata",
+      "licenseNote": "CC0 1.0",
+      "reliabilityNote": "Community-edited structured data; the date is corroborated by the Wikipedia article."
+    },
+    {
+      "key": "wikidata-mutesa-ii",
+      "type": "DATASET",
+      "title": "Wikidata: Muteesa II of Buganda (Q356026)",
+      "publisher": "Wikimedia Foundation",
+      "url": "https://www.wikidata.org/wiki/Q356026",
+      "accessedAt": "2026-11-10",
+      "repository": "wikidata",
+      "licenseNote": "CC0 1.0",
+      "reliabilityNote": "Community-edited structured data; consistent with the Library of Congress account of the 1962 settlement."
+    },
+    {
+      "key": "uganda-constitution",
+      "type": "PRIMARY_SOURCE",
+      "title": "Constitution of the Republic of Uganda, 1995 (as amended to 2017)",
+      "publisher": "Constitute Project",
+      "publishedYear": 1995,
+      "url": "https://www.constituteproject.org/constitution/Uganda_2017",
+      "accessedAt": "2026-11-11",
+      "repository": "constituteproject.org",
+      "reliabilityNote": "English text of the constitution as published by the Constitute Project."
+    }
+  ],
+  "sections": [
+    {
+      "kind": "INTRODUCTION",
+      "body": "Buganda is the kingdom of the Baganda people on the northern shores of Lake Victoria, in what is now Uganda, and its ruler holds the title *kabaka*.[@loc-1990|Uganda Before 1900] For several centuries it competed with Bunyoro for power in the lakes region, and in the nineteenth century it became a meeting point for traders, missionaries and imperial agents from far beyond Africa.[@loc-1990|Long-Distance Trade and Foreign Contact] The kingdom was abolished by Uganda's republican constitution of 1967[@loc-1990|Independence: The Early Years] and restored in 1993.[@wikipedia-buganda|Introduction]"
+    },
+    {
+      "kind": "OVERVIEW",
+      "heading": "Origins: two accounts",
+      "body": "The lake shores where Buganda grew up were densely settled by Bantu-speaking farmers, especially after bananas became a staple food around AD 1000.[@loc-1990|Uganda Before 1900]\n\nGanda oral tradition names Kintu as the kingdom's founder and the first of its kings.[@wikipedia-buganda|Origin] The Library of Congress study describes the process differently. In its account the swamp-and-hill country north of the lake had become a refuge for people escaping the rule of Bunyoro, and early in the fifteenth century a group from Bunyoro led by Prince Kimera arrived. Clan chiefs were already struggling to absorb newcomers and a political order above the clans was emerging, and Kimera became the first effective kabaka of this new state.[@loc-1990|Uganda Before 1900] The same study argues that the traditions of earlier, semi-legendary kabakas later served to play down this link with Bunyoro.[@loc-1990|Uganda Before 1900]\n\nHISTORYVERSE presents both accounts rather than choosing between them. Dates for Buganda before the nineteenth century rest largely on oral tradition and should be read as approximate."
+    },
+    {
+      "kind": "CULTURE",
+      "heading": "How the kingdom worked",
+      "body": "Royal succession followed an unusual rule. A prince belonged to the clan of his mother, not his father, and the kabaka married women from most of the clans. When a kabaka died, clan elders chose his successor from among the eligible princes, so the throne passed between clans instead of staying with one.[@loc-1990|Uganda Before 1900]\n\nThe kabaka appointed the chiefs who governed newly conquered lands. Royal armies and tax collectors moved along purpose-built roads that crossed streams and swamps on bridges, a fleet of outrigger canoes on the lake was commanded by the chief of the Lungfish clan, and drum signals carried messages across the kingdom.[@loc-1990|Uganda Before 1900] Young pages served at the royal court while training to become chiefs.[@loc-1990|Uganda Before 1900]"
+    },
+    {
+      "kind": "CHRONOLOGY",
+      "heading": "Expansion",
+      "body": "With power concentrated in the kingship, Buganda turned from defence to expansion, and by the middle of the nineteenth century it had doubled its territory and then doubled it again.[@loc-1990|Uganda Before 1900]\n\nThe journalist Henry M. Stanley, who visited in 1875, left estimates of the kingdom's strength: about 125,000 troops setting out on a single campaign to the east, supported by 230 war canoes, and a capital of around 40,000 people surrounding the kabaka's hilltop palace. These are one visitor's figures, not counts.[@loc-1990|Uganda Before 1900]"
+    },
+    {
+      "kind": "CHRONOLOGY",
+      "heading": "Trade, faith and war (1840s–1890s)",
+      "body": "Coastal Arab traders from Zanzibar, seeking ivory, had reached Lake Victoria by 1844. One of them, Ahmad bin Ibrahim, introduced the kabaka to imported cloth, guns and gunpowder, and also to Islam.[@loc-1990|Long-Distance Trade and Foreign Contact] By the 1860s caravans were arriving in Buganda in growing numbers.[@loc-1990|Long-Distance Trade and Foreign Contact]\n\nEuropean visitors followed. John Hanning Speke passed through Buganda in 1862, and Henry Stanley stayed in 1875. Finding Kabaka Muteesa I apparently receptive to Christianity, Stanley persuaded the Church Missionary Society to send missionaries, who arrived in 1877; French Catholic White Fathers came two years later.[@loc-1990|Long-Distance Trade and Foreign Contact]\n\nBy the mid-1880s Protestant, Catholic and Muslim converts all held important positions at court. When the young Kabaka Mwanga II tried to halt the spread of these foreign creeds, armed converts deposed him in 1888, beginning four years of civil war. Muslims at first prevailed and proclaimed an Islamic state, but they were defeated, and the Protestant and Catholic factions then ruled through a kabaka who depended on them.[@loc-1990|Long-Distance Trade and Foreign Contact]\n\nIn January 1892 fighting broke out between Protestant and Catholic converts. The British officer Frederick Lugard intervened with a Maxim gun on the side of the pro-British Protestants, and the French Catholic mission was burned.[@loc-1990|Long-Distance Trade and Foreign Contact]"
+    },
+    {
+      "kind": "CHRONOLOGY",
+      "heading": "Under British rule (1900–1950s)",
+      "body": "Protestant Baganda chiefs allied with the British in the conquest of the surrounding region. In return, Britain negotiated a separate agreement that gave Buganda wide self-government under indirect rule, and awarded it half of the territory taken from Bunyoro, including part of Bunyoro's historic heartland and several Nyoro royal tombs. Buganda grew from ten to twenty counties (*amasaza*), and these \"lost counties\" remained a grievance in Bunyoro.[@loc-1990|Long-Distance Trade and Foreign Contact]\n\nThe Buganda Agreement of 1900, negotiated by Commissioner Sir Harry Johnston, kept the kabaka's line and gave the chiefs half of all the land in Buganda as private estates, which became known as *mailo* land. It also imposed a tax on huts and guns, with the chiefs as collectors.[@loc-1990|The Colonial Era] Baganda agents were then sent to administer neighbouring areas for the British; in Bunyoro, a 1907 uprising known as *nyangire* (\"refusing\") forced their withdrawal.[@loc-1990|The Colonial Era]\n\nCotton grown on the new estates made Buganda prosperous compared with the rest of the protectorate, and schools such as Mengo High School and King's College Budo trained a new generation.[@loc-1990|The Colonial Era] The long-serving chief minister, Sir Apolo Kagwa, resigned in 1926, while Kabaka Daudi Chwa II remained a figurehead under indirect rule.[@loc-1990|The Colonial Era]"
+    },
+    {
+      "kind": "CHRONOLOGY",
+      "heading": "Exile and independence (1950s–1962)",
+      "body": "In 1953 a speech in London raised the possibility of federating Kenya, Uganda and Tanganyika, and Baganda opposition to the reforms of Governor Sir Andrew Cohen hardened. Kabaka Muteesa II refused to accept an integrated Buganda and demanded separation from the protectorate, and Cohen deported him to exile in London.[@loc-1990|Power Politics in Buganda] The exile made the kabaka a hero to his subjects, and after two years of resistance Cohen reinstated him, now with the power to appoint and dismiss his own chiefs.[@loc-1990|Power Politics in Buganda]\n\nBaganda loyalists formed the Kabaka Yekka (\"the King Only\") party. It allied with Milton Obote's Uganda People's Congress, and the coalition led Uganda to independence in October 1962, with Obote as prime minister and the kabaka promised the largely ceremonial post of head of state.[@loc-1990|Power Politics in Buganda] Muteesa II became President of Uganda on 9 October 1963.[@wikidata-mutesa-ii]"
+    },
+    {
+      "kind": "CHRONOLOGY",
+      "heading": "Crisis and abolition (1964–1967)",
+      "body": "A referendum in the \"lost counties\" showed an overwhelming wish to return to Bunyoro, and the transfer went ahead over Kabaka Yekka's opposition.[@loc-1990|Independence: The Early Years] In 1966 a new constitution removed the federal powers of the kingdoms, including Buganda's internal autonomy. When Buganda's leaders resisted, Obote sent troops under Idi Amin to attack the kabaka's palace on Mengo Hill. The kabaka escaped over the rear wall and went into exile, and Buganda was divided into four districts under martial law.[@loc-1990|Independence: The Early Years] The republican constitution of 1967 abolished the kingdoms altogether.[@loc-1990|Independence: The Early Years]"
+    },
+    {
+      "kind": "LEGACY",
+      "heading": "Restoration and today",
+      "body": "The kingdom was restored in 1993, and Muwenda Mutebi II has been kabaka since 31 July of that year.[@wikidata-mutebi][@wikipedia-buganda|Introduction] Uganda's 1995 Constitution allows traditional and cultural leaders to exist where the people concerned wish it. It bars them from partisan politics while they hold office, and it states that no one may be compelled to pay them allegiance.[@uganda-constitution|Article 246]"
+    },
+    {
+      "kind": "FURTHER_READING",
+      "heading": "Further reading",
+      "body": "The Library of Congress study *Uganda: A Country Study* (1990) covers Buganda's history in the chapters \"Uganda Before 1900\", \"Long-Distance Trade and Foreign Contact\", \"The Colonial Era\" and \"Power Politics in Buganda\". Article 246 of Uganda's Constitution sets out the legal position of cultural institutions today."
+    }
+  ],
+  "keyDates": [
+    {
+      "statement": "Coastal traders from Zanzibar have reached Lake Victoria, bringing cloth, guns and Islam to Buganda's court.",
+      "date": { "year": 1844, "precision": "year" },
+      "cite": [{ "source": "loc-1990", "locator": "Long-Distance Trade and Foreign Contact" }]
+    },
+    {
+      "statement": "John Hanning Speke passes through Buganda.",
+      "date": { "year": 1862, "precision": "year" },
+      "cite": [{ "source": "loc-1990", "locator": "Long-Distance Trade and Foreign Contact" }]
+    },
+    {
+      "statement": "Henry M. Stanley visits Kabaka Muteesa I.",
+      "date": { "year": 1875, "precision": "year" },
+      "cite": [{ "source": "loc-1990", "locator": "Long-Distance Trade and Foreign Contact" }]
+    },
+    {
+      "statement": "Church Missionary Society missionaries arrive in Buganda.",
+      "date": { "year": 1877, "precision": "year" },
+      "cite": [{ "source": "loc-1990", "locator": "Long-Distance Trade and Foreign Contact" }]
+    },
+    {
+      "statement": "Armed converts depose Kabaka Mwanga II, beginning four years of civil war.",
+      "date": { "year": 1888, "precision": "year" },
+      "cite": [{ "source": "loc-1990", "locator": "Long-Distance Trade and Foreign Contact" }]
+    },
+    {
+      "statement": "Fighting between Protestant and Catholic converts; Lugard intervenes for the Protestants.",
+      "date": { "year": 1892, "month": 1, "precision": "month" },
+      "cite": [{ "source": "loc-1990", "locator": "Long-Distance Trade and Foreign Contact" }]
+    },
+    {
+      "statement": "The Buganda Agreement gives the chiefs half the land as private mailo estates.",
+      "date": { "year": 1900, "precision": "year" },
+      "cite": [{ "source": "loc-1990", "locator": "The Colonial Era" }]
+    },
+    {
+      "statement": "Chief minister Sir Apolo Kagwa resigns.",
+      "date": { "year": 1926, "precision": "year" },
+      "cite": [{ "source": "loc-1990", "locator": "The Colonial Era" }]
+    },
+    {
+      "statement": "Crisis over a proposed East African federation; Governor Cohen deports Kabaka Muteesa II to London.",
+      "type": "FACT",
+      "certainty": "PROBABLE",
+      "date": { "year": 1953, "precision": "year", "approximate": true },
+      "cite": [{ "source": "loc-1990", "locator": "Power Politics in Buganda" }]
+    },
+    {
+      "statement": "Uganda becomes independent under a coalition of the Uganda People's Congress and Kabaka Yekka.",
+      "date": { "year": 1962, "month": 10, "precision": "month" },
+      "cite": [{ "source": "loc-1990", "locator": "Power Politics in Buganda" }]
+    },
+    {
+      "statement": "Muteesa II becomes President of Uganda.",
+      "date": { "year": 1963, "month": 10, "day": 9, "precision": "day" },
+      "cite": [{ "source": "wikidata-mutesa-ii" }]
+    },
+    {
+      "statement": "Troops attack the kabaka's palace on Mengo Hill; Muteesa II goes into exile.",
+      "date": { "year": 1966, "precision": "year" },
+      "cite": [{ "source": "loc-1990", "locator": "Independence: The Early Years" }]
+    },
+    {
+      "statement": "Uganda's republican constitution abolishes the kingdoms.",
+      "date": { "year": 1967, "precision": "year" },
+      "cite": [{ "source": "loc-1990", "locator": "Independence: The Early Years" }]
+    },
+    {
+      "statement": "The kingdom is restored and Muwenda Mutebi II becomes kabaka.",
+      "date": { "year": 1993, "month": 7, "day": 31, "precision": "day" },
+      "cite": [{ "source": "wikidata-mutebi" }, { "source": "wikipedia-buganda", "locator": "Introduction" }]
+    }
+  ],
+  "entities": [
+    { "wikidataId": "Q1036", "role": "places" },
+    { "wikidataId": "Q3894", "role": "places" },
+    { "wikidataId": "Q889311", "role": "people" },
+    { "wikidataId": "Q707775", "role": "people" },
+    { "wikidataId": "Q708027", "role": "people" },
+    { "wikidataId": "Q356026", "role": "people" },
+    { "wikidataId": "Q630274", "role": "people" }
+  ],
+  "media": [
+    {
+      "sourceRef": "File:King Mwanga II Buganda.jpg",
+      "kind": "ARTWORK",
+      "altText": "Engraved portrait of a man in a turban and dark robe, captioned in German \"König Mwanga von Uganda\".",
+      "caption": "Kabaka Mwanga II, in an engraving captioned \"König Mwanga von Uganda\".",
+      "hero": true
+    },
+    {
+      "sourceRef": "File:Mutesa I.jpg",
+      "kind": "AUTHENTIC_PHOTO",
+      "altText": "Black-and-white portrait of a man wearing a cap and a robe with a beaded collar.",
+      "caption": "Portrait identified as Kabaka Muteesa I. Photographer and date unknown."
+    },
+    {
+      "sourceRef": "File:Sir. Edward Fredrick Mutesa, The President of Uganda.jpg",
+      "kind": "AUTHENTIC_PHOTO",
+      "altText": "Black-and-white photograph of a man in a white military dress uniform and peaked cap.",
+      "caption": "Muteesa II, captioned \"Sir Edward Fredrick Mutesa, The President of Uganda\"."
+    },
+    {
+      "sourceRef": "File:Kabaka Muwenda Mutebi II cropped.jpg",
+      "kind": "MODERN_PHOTO",
+      "altText": "A man in a crown and leopard-skin robe seated on a raised platform, with officials around him.",
+      "caption": "Kabaka Muwenda Mutebi II at a public ceremony."
+    },
+    {
+      "sourceRef": "File:Uganda - Location Map (2013) - UGA - UNOCHA.svg",
+      "kind": "MAP",
+      "altText": "Map of present-day Uganda showing Kampala and other main towns, Lake Victoria and neighbouring countries.",
+      "caption": "Present-day Uganda. Buganda lies around Kampala on the northern shore of Lake Victoria."
+    }
+  ]
+}
