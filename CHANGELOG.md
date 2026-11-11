@@ -2,6 +2,23 @@
 
 All notable changes to HISTORYVERSE are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.5.0] - 2026-11-11: Milestone 5, Historical Article System
+
+### Added
+
+- Article data files with strict validation; `pnpm article:load`
+- Editorial preview and publish/unpublish workflow in the Studio (`/admin/articles`)
+- Public kingdom, country and people pages with citations, key dates, galleries, references and reader tools
+- Proxy slug check that returns real HTTP 404s for unknown or unpublished articles
+- Local media storage, `pnpm media:fetch`, and a permission-checked `/media/[id]` route
+- The first article draft: _The Complete History of the Buganda Kingdom_
+- Integration and end-to-end tests for loading, publishing, visibility and media licensing
+
+### Changed
+
+- Integration test files each start from an empty database
+- `MediaFrame` labels modern photographs, diagrams and unclassified images correctly
+
 ## [0.4.0] - 2026-11-10: Milestone 4, Historical Data Integration
 
 ### Added

@@ -43,6 +43,15 @@ function Media({
   preview: boolean;
   priority?: boolean;
 }) {
+  if (!media.stored) {
+    return (
+      <div className="flex aspect-[4/3] flex-col items-center justify-center gap-2 rounded-xl border border-dashed p-6 text-center text-sm text-muted-foreground">
+        <strong className="text-foreground">{media.title}</strong>
+        <span>File not downloaded yet. Run pnpm media:fetch for this article.</span>
+        {media.caption && <span className="text-xs">{media.caption}</span>}
+      </div>
+    );
+  }
   return (
     <div>
       <MediaFrame
@@ -71,7 +80,7 @@ function Media({
   );
 }
 
-function Reference({ r }: { r: ReferenceView }) {
+function Reference({ r, showNote }: { r: ReferenceView; showNote: boolean }) {
   const by = r.authors.length > 0 ? `${r.authors.join(", ")}. ` : "";
   const pub = [r.publisher, r.year].filter(Boolean).join(", ");
   return (
@@ -98,7 +107,7 @@ function Reference({ r }: { r: ReferenceView }) {
         <span className="text-muted-foreground">. Accessed {formatUtcDate(r.accessedAt)}</span>
       )}
       .
-      {r.reliabilityNote && (
+      {showNote && r.reliabilityNote && (
         <span className="mt-0.5 block text-xs text-muted-foreground">
           Note: {r.reliabilityNote}
         </span>
@@ -154,7 +163,7 @@ export function ArticlePage({
           )}
           {article.publishedAt && <span>Published {formatUtcDate(article.publishedAt)}</span>}
           <span className="inline-flex items-center gap-1.5">
-            <ScrollText className="size-4" aria-hidden /> {article.references.length} sources cited
+            <ScrollText className="size-4" aria-hidden /> {article.references.length} references
           </span>
         </div>
         <div className="mt-5">
@@ -238,8 +247,12 @@ export function ArticlePage({
               Sources and references
             </h2>
             <ol className="space-y-3 text-sm leading-relaxed">
-              {article.references.map((r) => (
-                <Reference key={r.n} r={r} />
+              {article.references.map((r, i) => (
+                <Reference
+                  key={r.n}
+                  r={r}
+                  showNote={article.references.findIndex((x) => x.url === r.url) === i}
+                />
               ))}
             </ol>
             {further && (

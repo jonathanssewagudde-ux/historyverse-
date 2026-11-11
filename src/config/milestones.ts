@@ -34,13 +34,13 @@ export const milestones: Milestone[] = [
   {
     number: 4,
     title: "Historical Data Integration",
-    status: "in_review",
+    status: "complete",
     summary: "Wikidata, Wikipedia, Wikimedia Commons ingestion with provenance and licensing.",
   },
   {
     number: 5,
     title: "Historical Article System",
-    status: "planned",
+    status: "in_review",
     summary: "Article templates, country/biography/kingdom pages, references, galleries.",
   },
   {

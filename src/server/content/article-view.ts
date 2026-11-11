@@ -32,6 +32,8 @@ export interface MediaView {
   };
   /** Set only in previews: why this image would not be shown publicly. */
   blocker: string | null;
+  /** The file exists in storage (false only possible in previews). */
+  stored: boolean;
 }
 
 export interface ReferenceView {
@@ -192,6 +194,7 @@ export async function buildArticleView(
       license: m.license.name,
       licenseUrl: m.license.url,
     },
+    stored: Boolean(m.storageKey),
     blocker: publicOnly
       ? null
       : (mediaPublishBlocker(m) ??

@@ -89,12 +89,42 @@ At the owner's request after review, the UI moved from the original editorial "m
 - Wikimedia throttles shared cloud IPs on its action API. The client waits and retries, so imports with media can take minutes.
 - Behind an HTTPS proxy, run the importer with `NODE_USE_ENV_PROXY=1`.
 
-## Milestone 5: next steps
+## Milestone 5: Historical Article System ✅
 
-1. Public article system: templates for country, kingdom and biography pages, rendering only PUBLISHED content.
-2. Media storage (local and S3) and image download for approved, publishable media; `MediaFrame` on pages.
-3. Sources and references section, related entities, documentary slot.
-4. Because nothing is published yet, Milestone 5 needs a first reviewed article: the Buganda Kingdom article is drafted from the imported claims plus independent sources, then reviewed by you.
+- **Article files** (`data/articles/*.json`, schema in `src/server/content/article-file.ts`): reviewable, version-controlled drafts. Every factual section must cite a declared source (`[@source|locator]`), dates are validated, and AI-assisted drafts are flagged.
+- **Loader** (`pnpm article:load`): writes a file as a DRAFT with sections, numbered citations, sources, dated key-date claims, linked entities and proposed image classifications. It keeps a revision snapshot, and refuses to overwrite an article that has entered review.
+- **Publishing** (Studio `/admin/articles/[id]`): editors preview exactly what readers will see, annotated with review notes and with every withheld image and its reason. To publish they must tick a source-check confirmation. Publishing:
+  - records the approving editor, an EditorialReview, a revision snapshot and an audit entry;
+  - verifies the key dates;
+  - approves only images that are classified, publishable and stored.
+    Unpublishing requires a reason.
+- **Public pages:** `/kingdoms`, `/countries`, `/people` and their `[slug]` article pages. Each has a hero image, cited sections, a key-dates timeline, people and places, an image gallery, a documentary slot, numbered sources and references, further reading, text-size and share controls, and Open Graph metadata. Article data is cached (`use cache`), and publishing refreshes it immediately (`updateTag`).
+- **Real 404s:** `proxy.ts` checks article slugs with one indexed query and rewrites unknown or unpublished ones to a static not-found page, because streamed pages are committed to HTTP 200.
+- **Media storage:** local storage provider (content-addressed, path-traversal-safe), `pnpm media:fetch` to download an article's Commons images, and `/media/[id]`, which serves only approved, publishable images publicly and everything else only to signed-in staff.
+- **First article:** _The Complete History of the Buganda Kingdom_, drafted from sources retrieved in-session:
+  - the Library of Congress _Uganda: A Country Study_ (1990, public domain);
+  - Uganda's 1995 Constitution, Article 246;
+  - Wikidata;
+  - Wikipedia, used only for Ganda oral tradition and to corroborate a date.
+    It presents both origin accounts (Kintu in Ganda tradition; Kimera in the Library of Congress study). It is loaded as an **unreviewed AI draft awaiting the owner's editorial approval**.
+- **Tests:** 182 unit/component, 56 integration, 76 end-to-end (1 mobile-only skipped on desktop; the serial article flow runs on desktop only).
+
+### Image review notes for the Buganda article
+
+| Commons file                              | Classified as                             | Decision                                                                                                                                         |
+| ----------------------------------------- | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| King Mwanga II Buganda.jpg                | Historical artwork (engraving)            | Public domain, hero image                                                                                                                        |
+| Mutesa I.jpg                              | Photograph, date and photographer unknown | Public domain per Commons, weak provenance (sourced from a website)                                                                              |
+| Sir. Edward Fredrick Mutesa… .jpg         | Photograph                                | Public domain per Commons                                                                                                                        |
+| Kabaka Muwenda Mutebi II cropped.jpg      | Modern photograph                         | CC0                                                                                                                                              |
+| Uganda – Location Map (2013) – UNOCHA.svg | Map                                       | CC BY 3.0, attribution shown                                                                                                                     |
+| Buganda map.jpg                           | **Not used**                              | Commons calls it a 1910 public-domain map, but it is visibly a modern digital map of present-day districts, so the date and licence are doubtful |
+
+## Milestone 6: next steps
+
+1. PostgreSQL full-text search (`tsvector` + GIN) over published articles, entities and aliases, plus `pg_trgm` typo-tolerant autocomplete.
+2. `/search` page with filters (category, period, country, century), the homepage search box wired to it, and `/explore`.
+3. Search results only from published, reviewed content and named entities; no generated answers.
 
 ## Continuation notes (for the next coding session)
 

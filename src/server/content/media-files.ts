@@ -1,5 +1,7 @@
 import "server-only";
 
+import { createHash } from "node:crypto";
+
 import type { PrismaClient } from "@/generated/prisma/client";
 import type { StorageProvider } from "@/server/providers/contracts";
 import type { SourceHttpClient } from "@/server/sources/http";
@@ -12,10 +14,27 @@ const EXTENSIONS: Record<string, string> = {
   "image/gif": "gif",
 };
 
-/** Commons serves a rendered thumbnail of any image (SVG → PNG) at a requested width. */
-export function commonsThumbnailUrl(sourceRef: string, width = 1600): string {
+/** One of Wikimedia's standard thumbnail widths; other widths may be refused. */
+export const THUMBNAIL_WIDTH = 1280;
+
+/**
+ * Direct URL of a Commons file on upload.wikimedia.org. Files live under a path derived from the
+ * MD5 of their underscored name, e.g. "Mutesa_I.jpg" → /6/6e/Mutesa_I.jpg. Going straight to the
+ * upload server avoids a redirect through commons.wikimedia.org (one request instead of two).
+ *
+ * The original is used when it is small enough; larger images and SVGs (which browsers should
+ * not be served from our storage as-is) use a rendered thumbnail of a standard width.
+ */
+export function commonsFileUrl(sourceRef: string, originalWidth: number | null): string {
   const name = sourceRef.replace(/^File:/, "").replace(/ /g, "_");
-  return `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(name)}?width=${width}`;
+  const hash = createHash("md5").update(name).digest("hex");
+  const dir = `${hash[0]}/${hash.slice(0, 2)}`;
+  const encoded = encodeURIComponent(name);
+  const isSvg = /\.svg$/i.test(name);
+  if (!isSvg && originalWidth !== null && originalWidth <= THUMBNAIL_WIDTH) {
+    return `https://upload.wikimedia.org/wikipedia/commons/${dir}/${encoded}`;
+  }
+  return `https://upload.wikimedia.org/wikipedia/commons/thumb/${dir}/${encoded}/${THUMBNAIL_WIDTH}px-${encoded}${isSvg ? ".png" : ""}`;
 }
 
 export interface FetchResult {
@@ -44,7 +63,7 @@ export async function fetchCommonsMedia(
       continue;
     }
     try {
-      const file = await deps.http.getBytes(commonsThumbnailUrl(asset.sourceRef));
+      const file = await deps.http.getBytes(commonsFileUrl(asset.sourceRef, asset.width));
       const mime = file.contentType.split(";")[0]!.trim().toLowerCase();
       const ext = EXTENSIONS[mime];
       if (!ext) throw new Error(`unexpected content type ${mime}`);

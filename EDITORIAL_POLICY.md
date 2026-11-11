@@ -31,3 +31,11 @@ HISTORYVERSE must be trustworthy. These rules apply to people, to automation and
 `Draft → Research Review → Editorial Approval → Published → Updated`
 
 Every state change and edit is recorded in revision history and the audit log. Public publishing (site or YouTube) **always** requires explicit approval from an authorized editor. Readers can submit correction requests, which enter the review queue.
+
+## How this is enforced (Milestone 5)
+
+- Article files cannot be loaded unless every factual section cites a declared source.
+- AI-assisted drafts carry `containsUnreviewedAi`; the database refuses to make such an article public.
+- Publishing requires an editor, an explicit source-check confirmation, and records who approved which version.
+- Images appear publicly only when classified, under a publishable licence, stored, and approved at publication.
+- Unpublishing requires a reason and is audit-logged.

@@ -1,6 +1,6 @@
 {
   "name": "historyverse",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -75,7 +75,7 @@
     "vitest": "^5.1.0"
   },
   "packageManager": "pnpm@10.28.0",
-  "description": "HISTORYVERSE — AI-powered historical knowledge, research and documentary platform",
+  "description": "HISTORYVERSE \u2014 AI-powered historical knowledge, research and documentary platform",
   "engines": {
     "node": ">=22"
   }
