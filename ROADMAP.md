@@ -132,7 +132,7 @@ At the owner's request after review, the UI moved from the original editorial "m
 - **`/search`:** highlighted snippets, type / era / continent filters with counts, related searches, pagination and honest empty states (it says how many articles are published). Results are cached and refreshed on publish. Search pages are `noindex`.
 - **`/explore`:** browse by type, era and continent. The homepage continent cards now lead there.
 - **Autocomplete:** `/api/search/suggest` (prefix + fuzzy, published only, 60 requests a minute per visitor) and an accessible combobox used on the homepage and the search page. It is a plain GET form underneath, so it works without JavaScript.
-- **Tests:** 206 unit/component, 69 integration (13 for search, including SQL/tsquery injection attempts), 81 end-to-end.
+- **Tests:** 204 unit/component, 69 integration (13 for search, including SQL/tsquery injection attempts), 81 end-to-end.
 
 ### Not done (planned)
 
