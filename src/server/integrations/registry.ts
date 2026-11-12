@@ -108,24 +108,36 @@ export const integrations: IntegrationDefinition[] = [
     category: "video",
     purpose: "Audio mixing, encoding and final MP4 assembly for documentaries.",
     milestone: 11,
-    capabilities: ["Encoding", "Audio mixing", "Subtitle burn-in", "Format conversion"],
+    capabilities: [
+      "Scene composition with camera moves",
+      "On-screen text and labels",
+      "Audio mixing and loudness",
+      "Captions",
+      "16:9 and 9:16 MP4",
+    ],
     billable: false,
-    envKeys: ["FFMPEG_PATH"],
+    envKeys: ["FFMPEG_PATH", "FFPROBE_PATH", "VIDEO_FONT_PATH"],
     missing: (env) => need(env, "FFMPEG_PATH"),
     fallback: "None for rendering; scripts and assets can still be prepared.",
+    implemented: true,
   },
   {
     id: "remotion",
     name: "Remotion",
+    // Mandatory in the specification. Not built yet: its licence requires a paid company licence
+    // for organisations above three people, and paid licences need the owner's approval. FFmpeg
+    // renders documentaries meanwhile (Milestone 11). See API_INTEGRATIONS.md.
     classification: "mandatory-platform",
     category: "video",
-    purpose: "Scene-based documentary composition, motion graphics and captions.",
+    purpose:
+      "Scene-based documentary composition and motion graphics. Awaiting the owner's licence decision; FFmpeg renders documentaries meanwhile.",
     milestone: 11,
     capabilities: ["Ken Burns animation", "Titles", "Map animations", "Landscape + vertical"],
     billable: false,
     envKeys: [],
     missing: () => [],
-    fallback: "None for rendering.",
+    fallback:
+      "FFmpeg renders documentaries: camera moves, titles, labels, captions, 16:9 and 9:16. Animated maps wait for this decision.",
   },
   {
     id: "map-tiles",

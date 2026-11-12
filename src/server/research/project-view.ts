@@ -97,7 +97,17 @@ export async function getProjectView(db: PrismaClient, id: string) {
       },
       _count: { select: { reconstructions: true } },
       documentaries: {
-        select: { id: true, title: true, status: true },
+        select: {
+          id: true,
+          title: true,
+          status: true,
+          renders: {
+            orderBy: { createdAt: "desc" },
+            take: 1,
+            select: { status: true, format: true, durationSeconds: true },
+          },
+          thumbnails: { where: { isSelected: true }, select: { id: true } },
+        },
         orderBy: { createdAt: "desc" },
       },
       researchSources: {
@@ -167,7 +177,20 @@ export async function getProjectView(db: PrismaClient, id: string) {
     research,
     mediaSearch,
     imageApprovals,
-    documentaries: project.documentaries,
+    documentaries: project.documentaries.map((d) => ({
+      id: d.id,
+      title: d.title,
+      status: d.status,
+      latestRender: d.renders[0]
+        ? {
+            status: d.renders[0].status,
+            format: d.renders[0].format,
+            seconds:
+              d.renders[0].durationSeconds === null ? null : Number(d.renders[0].durationSeconds),
+          }
+        : null,
+      thumbnailChosen: d.thumbnails.length > 0,
+    })),
     reconstructions: project._count.reconstructions,
     candidates: project.mediaCandidates.map((c) => ({
       id: c.id,

@@ -1,5 +1,7 @@
 import "server-only";
 
+import { access } from "node:fs/promises";
+
 import { getServerEnv } from "@/server/env";
 import { checkDatabase } from "@/server/db/health";
 import { getDb } from "@/server/db/client";
@@ -10,6 +12,7 @@ import { createWikipediaClient } from "@/server/sources/wikipedia/client";
 import { getSpeech } from "@/server/ai/speech";
 import { pingQueue } from "@/server/jobs/queue";
 import { getStorage } from "@/server/storage";
+import { runTool } from "@/server/video/ffmpeg";
 
 export interface ConnectionTestResult {
   id: string;
@@ -78,6 +81,20 @@ const TESTS: Record<string, () => Promise<string>> = {
       language: "en",
     });
     return `${provider.id} spoke a test phrase (${(audio.durationMs / 1000).toFixed(1)} s of audio).`;
+  },
+  async ffmpeg() {
+    const { env } = getServerEnv();
+    const version =
+      (await runTool(env.FFMPEG_PATH, ["-hide_banner", "-version"], 30_000)).split("\n")[0] ?? "";
+    const filters = await runTool(env.FFMPEG_PATH, ["-hide_banner", "-filters"], 30_000);
+    const missing = ["zoompan", "drawtext", "subtitles", "loudnorm"].filter(
+      (f) => !new RegExp(`\\s${f}\\s`).test(filters),
+    );
+    if (missing.length > 0) throw new Error(`FFmpeg lacks filters: ${missing.join(", ")}.`);
+    await access(env.VIDEO_FONT_PATH).catch(() => {
+      throw new Error(`The video font is missing (${env.VIDEO_FONT_PATH}).`);
+    });
+    return `${version.replace(/ Copyright.*/, "")}; camera moves, text, captions and loudness available.`;
   },
   async redis() {
     const counts = await pingQueue();

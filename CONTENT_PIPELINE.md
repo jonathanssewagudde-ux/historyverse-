@@ -1,6 +1,6 @@
 # Content pipeline
 
-> **Status:** steps 1–7 are implemented (Milestones 8–10): research, grounded article draft, archival media discovery, reconstruction prompts and labelled image generation, the documentary script built from the reviewed article, the scene plan and narration. Steps 8–11 follow in Milestones 11–12. See ROADMAP.md for how each rule below is enforced.
+> **Status:** steps 1–8 are implemented (Milestones 8–11): research, grounded article draft, archival media discovery, reconstruction prompts and labelled image generation, the documentary script built from the reviewed article, the scene plan, narration and the video render. Step 9 is partly built: captions, thumbnails and the manifest exist; title, description, chapters and tags come with the upload. Steps 9–11 are completed in Milestone 12. See ROADMAP.md for how each rule below is enforced.
 
 ## Generate History Project
 
@@ -15,7 +15,7 @@ An administrator enters a topic (for example _"The Complete History of the Bugan
 | 5   | Documentary script       | Hook → background → origins → developments → figures → turning points → consequences → significance → conclusion               | ✔ editor approval                   |
 | 6   | Scene plan               | Per scene: narration, visual description, assets, duration, references, status                                                 |                                     |
 | 7   | Narration                | Per-scene audio (local or paid TTS, or an uploaded recording)                                                                  | ✔ approve the cost estimate if paid |
-| 8   | Video render             | Remotion + FFmpeg MP4 (16:9 and/or 9:16), with captions and music                                                              |                                     |
+| 8   | Video render             | FFmpeg MP4 (16:9 and/or 9:16), with captions, labelled reconstructions and licensed music                                      |                                     |
 | 9   | YouTube assets           | Title, description, chapters, tags, SRT subtitles, thumbnail, source and licence manifest                                      |                                     |
 | 10  | Review                   | Article plus documentary preview                                                                                               | ✔ **explicit approval**             |
 | 11  | Publication              | Article published. Video uploaded **private**, then scheduled or published, and the verified video ID is linked to the article | ✔ **explicit approval**             |

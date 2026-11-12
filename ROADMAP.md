@@ -14,8 +14,8 @@ The milestone list in `src/config/milestones.ts` mirrors this file.
 | 7   | Administrator CMS                          | ✅ Complete                  |
 | 8   | AI Historical Research Engine              | ✅ Complete                  |
 | 9   | Image and AI Reconstruction Studio         | ✅ Complete                  |
-| 10  | Documentary Scripts and Narration          | 🔍 Complete, awaiting review |
-| 11  | Documentary Video Production Studio        | Planned                      |
+| 10  | Documentary Scripts and Narration          | ✅ Complete                  |
+| 11  | Documentary Video Production Studio        | 🔍 Complete, awaiting review |
 | 12  | YouTube Integration                        | Planned                      |
 | 13  | Maps, Timelines and Family Trees           | Planned                      |
 | 14  | AI Assistant and Global Features           | Planned                      |
@@ -246,7 +246,7 @@ At the owner's request after review, the UI moved from the original editorial "m
 - Gemini and ComfyUI image adapters; Europeana and Smithsonian search (they need API keys).
 - Documentary scripts, scene plans and narration: Milestone 10.
 
-## Milestone 10: Documentary Scripts and Narration 🔍 (in review)
+## Milestone 10: Documentary Scripts and Narration ✅
 
 - **Script generator (pipeline step 5):** builds a script from an article's **reviewed text**, in the documentary structure: hook → background → origins → key developments → important figures → turning points → consequences → significance → conclusion.
   - Each paragraph becomes one or more scenes of up to about 90 words, keeping that paragraph's citations.
@@ -283,11 +283,37 @@ At the owner's request after review, the UI moved from the original editorial "m
 ### Not done (planned)
 
 - An AI pass that restructures narration (it would need a language model and a budget); a Google speech adapter.
-- Video rendering with Remotion and FFmpeg, captions and music: Milestone 11.
+- Video rendering, captions and music: Milestone 11.
 
-## Milestone 11: next steps
+## Milestone 11: Documentary Video Production 🔍 (in review)
 
-Documentary Video Production Studio: Remotion composition from the scene plan (images with camera moves, on-screen text, labelled reconstructions), narration and licensed music mixing with FFmpeg, captions from the narration text, 16:9 and 9:16 renders as jobs, and the source and licence manifest.
+- **Renderer (pipeline step 8):** a `RENDER` job composes an approved script with **FFmpeg** on the worker. It is free and local.
+  - Pictures: each one fits whole over a blurred, darkened copy of itself, so portraits, maps and documents are never cropped. It gets a slow camera move (push in, pan, push out), fades, the scene's on-screen text and its own credit line (title and licence).
+  - **AI reconstructions** carry "AI-Generated Historical Reconstruction — Not an Authentic Photograph" burned into the top of the picture, on every frame they appear. The tests check the label's pixels.
+  - Sound: each scene's narration padded to the scene's length, an optional music bed at low volume (looped if short), loudness normalised to −14 LUFS for YouTube.
+  - Formats: 16:9 (1920×1080) and 9:16 (1080×1920, captions burned in), H.264 and AAC, 30 fps, ready for streaming (`+faststart`).
+  - When the job runs it checks every picture again (approved, not deleted, publishable licence). A render whose script was replaced in the meantime is refused.
+- **Captions:** made from the narration actually spoken, as SRT and WebVTT with every render. Cues have at most two lines of 42 characters and are timed across each scene's audio.
+- **Manifest:** saved with each render. It lists pictures (kind, source, licence, attribution, scenes), narration voices and their licences, music and its attribution, the sources the narration cites, and whether the film contains AI reconstructions or a synthetic voice. Milestone 12 will print it in the YouTube description.
+- **Music library** (`/admin/video-editor`): WAV or MP3, only under a licence that allows publication, with attribution. Duration is read with FFprobe.
+- **Thumbnails** (`/admin/thumbnails`): 1280×720 from an approved picture and a headline. A thumbnail made from an AI reconstruction carries the label. One is chosen per documentary.
+- **Review in the Studio:** the documentary page's Video section has the render form, render history with a player and captions, MP4 and caption downloads, thumbnails and the manifest. `/video`, `/video-assets` and `/thumbnails` are staff-only and stream in byte ranges, so large files are never loaded whole.
+- **Remotion (decision needed):** the specification lists Remotion. Its licence is free only for individuals and companies of up to three people; larger organisations need a paid company licence. Paid licences need the owner's approval, so it was not added. FFmpeg does everything this milestone needs. Remotion stays in the registry as mandatory and not built, and animated maps (Milestone 13) may need it.
+- **Live checks:** real FFmpeg 6.1 renders in the integration tests: a two-scene film with a real public-domain Commons engraving and a test reconstruction, both formats, a music bed. FFprobe confirms dimensions, codecs and duration, and the pixels confirm the label and the burned captions. Thumbnails and music checks run FFmpeg in the end-to-end tests.
+- **Tests:** 235 unit/component, 129 integration, 109 end-to-end.
+
+### Not verified, and why
+
+- **No Buganda documentary has been rendered.** Its script is a draft and can only be approved once the article is published, which is the owner's decision. Renders were verified with test documentaries only.
+- Thumbnails and music checks run FFmpeg inside the web request (well under a second for one frame). So the web server needs FFmpeg too (see DEPLOYMENT.md).
+
+### Not done (planned)
+
+- Animated maps and timelines on screen (Milestone 13); title, description, chapters and tags for YouTube, and the upload (Milestone 12).
+
+## Milestone 12: next steps
+
+YouTube integration: OAuth for a channel (owner's authorisation), private uploads of approved renders with the chosen thumbnail and captions, title, description with the manifest's credits, chapters from the scenes, the altered/synthetic content disclosure when the film contains AI reconstructions or a synthetic voice, scheduling, and linking the verified video to its article. Publishing stays an explicit administrator decision.
 
 ## Continuation notes (for the next coding session)
 
@@ -297,5 +323,6 @@ Documentary Video Production Studio: Remotion composition from the scene plan (i
 - Local services: start PostgreSQL with `service postgresql start` if the container restarted; the dev database is `historyverse`, the test database `historyverse_test`.
 - Network: Wikidata, Wikipedia and Commons are reachable, but Commons often answers HTTP 429 (throttling); scripts wait for its Retry-After. Node `fetch` needs `NODE_USE_ENV_PROXY=1` to use the environment's proxy. `ui.shadcn.com` was blocked.
 - The Buganda article draft (`data/articles/buganda-kingdom.json`) still awaits the owner's editorial approval. It has never been published in the development database.
+- Rendering: `apt-get install ffmpeg fonts-dejavu-core` on the worker and web server (`FFMPEG_PATH`, `FFPROBE_PATH`, `VIDEO_FONT_PATH`).
 - Narration engines: `apt-get install espeak-ng` (free). Piper: `pip install piper-tts` plus a voice model (`.onnx` and `.onnx.json`) from huggingface.co/rhasspy/piper-voices, then set `PIPER_PATH` and `PIPER_MODEL`. Check the voice's model card before publishing.
 - Background jobs: start Redis (`service redis-server start`) and a worker (`pnpm worker`). The dev `.env.local` has `REDIS_URL=redis://127.0.0.1:6379`; tests use database 1 and the `historyverse-test` prefix.

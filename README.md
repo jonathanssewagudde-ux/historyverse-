@@ -7,18 +7,18 @@ HISTORYVERSE is an AI-assisted historical knowledge platform made of two applica
 - **Public platform:** a sourced historical encyclopedia with articles, archival media, maps, timelines, family trees, documentaries and a grounded AI history assistant.
 - **HISTORYVERSE AI Studio** (`/admin`): a private studio for research, article editing, media licensing, documentary scripting, narration, video rendering and YouTube publishing.
 
-> **Status:** Milestones 1–9 are complete. Milestone 10 (Documentary Scripts and Narration) is awaiting review. See [ROADMAP.md](./ROADMAP.md).
+> **Status:** Milestones 1–10 are complete. Milestone 11 (Documentary Video Production) is awaiting review. See [ROADMAP.md](./ROADMAP.md).
 > No historical content is published yet. Content arrives from Milestone 4 onward, sourced and reviewed.
 
 ## Requirements
 
-| Tool       | Version           | Needed from  |
-| ---------- | ----------------- | ------------ |
-| Node.js    | ≥ 22              | Milestone 1  |
-| pnpm       | 10.x              | Milestone 1  |
-| PostgreSQL | 16+ with pgvector | Milestone 3  |
-| Redis      | 7+                | Milestone 8  |
-| FFmpeg     | 6+                | Milestone 11 |
+| Tool       | Version               | Needed from  |
+| ---------- | --------------------- | ------------ |
+| Node.js    | ≥ 22                  | Milestone 1  |
+| pnpm       | 10.x                  | Milestone 1  |
+| PostgreSQL | 16+ with pgvector     | Milestone 3  |
+| Redis      | 7+                    | Milestone 8  |
+| FFmpeg     | 6+ (and DejaVu fonts) | Milestone 11 |
 
 ## Quick start
 
@@ -66,11 +66,12 @@ Health probe: `GET /api/health`.
 
 ## Known limitations
 
-- Public pages: homepage, kingdoms, countries, people, search, explore, sign-in, sign-up and profile. The AI Studio (`/admin`) has the CMS of Milestone 7, the research engine of Milestone 8 the media and reconstruction studio of Milestone 9 and documentary scripts and narration of Milestone 10. Navigation shows every later route as unavailable, with the milestone that delivers it.
+- Public pages: homepage, kingdoms, countries, people, search, explore, sign-in, sign-up and profile. The AI Studio (`/admin`) has the CMS of Milestone 7, the research engine of Milestone 8, the media and reconstruction studio of Milestone 9, documentary scripts and narration of Milestone 10, and the video editor, music library and thumbnails of Milestone 11. Navigation shows every later route as unavailable, with the milestone that delivers it.
 - No email delivery yet, so there is no email verification or self-service password reset. Super Administrators assign roles at `/admin/users` (or with `pnpm user:role`).
 - The first article (Buganda) is a draft awaiting editorial approval; until an editor publishes it, the public sections show empty states.
 - Homepage topic cards are planned subjects (name and region only). Search covers published articles only, so it stays small until more articles are approved.
 - Scheduled publishing needs a scheduler calling `POST /api/cron/publish` with `CRON_SECRET`; without one, editors run due publications from the calendar.
+- Video renders run on the worker with FFmpeg (free). The web server also needs FFmpeg for thumbnails and music checks. Remotion, named in the specification, is not used: its licence needs a paid company licence for larger organisations, which awaits the owner's decision.
 - Narration works for free with eSpeak NG (installed separately); Piper voices need their licence checked before publishing. Paid voices need a key, a price and a budget.
 - Image generation needs an image provider with a per-image price (none is configured by default). Reconstructions made with other tools can be uploaded instead, and are labelled the same way.
 - AI drafting needs a language model: an API key plus an approved budget, or a free local model (Ollama). None is configured by default, so drafting reports that it is unavailable; research and source review work without one.

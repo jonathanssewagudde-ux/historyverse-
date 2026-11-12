@@ -115,6 +115,9 @@ export const serverEnvSchema = {
 
   // Video production
   FFMPEG_PATH: z.string().default("ffmpeg"),
+  FFPROBE_PATH: z.string().default("ffprobe"),
+  /** Bold sans-serif font for on-screen text, labels and burned-in captions (a free font). */
+  VIDEO_FONT_PATH: z.string().default("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"),
 
   // YouTube
   YOUTUBE_OAUTH_CLIENT_ID: optionalString,

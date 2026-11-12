@@ -63,6 +63,7 @@ describe("resolveIntegrationStates", () => {
     const implemented = states.filter((s) => s.implemented).map((s) => s.id);
     expect(implemented.sort()).toEqual([
       "auth",
+      "ffmpeg",
       "google-signin",
       "llm",
       "postgres",
@@ -74,7 +75,7 @@ describe("resolveIntegrationStates", () => {
       "wikipedia",
     ]);
     for (const s of states.filter((x) => x.implemented))
-      expect(s.milestone).toBeLessThanOrEqual(10);
+      expect(s.milestone).toBeLessThanOrEqual(11);
   });
 
   it("needs both a secret and a database for authentication", () => {

@@ -4,17 +4,17 @@
 
 ## Components
 
-| Component      | Requirement                                                             | Options                                                             |
-| -------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------- |
-| Web app        | Node 22 runtime for Next.js 16                                          | Vercel, a container on any VM, Fly.io, Render, a Kubernetes cluster |
-| Database       | PostgreSQL 16+ with pgvector                                            | Managed Postgres (Neon, Supabase, RDS, Cloud SQL) or self-hosted    |
-| Queue          | Redis 7+                                                                | Managed Redis or self-hosted                                        |
-| Workers        | **Long-running** Node processes with FFmpeg and Chromium (for Remotion) | VM or container. **Not** serverless functions.                      |
-| Object storage | S3-compatible                                                           | S3, R2, MinIO, GCS (S3 API)                                         |
+| Component      | Requirement                                           | Options                                                             |
+| -------------- | ----------------------------------------------------- | ------------------------------------------------------------------- |
+| Web app        | Node 22 runtime for Next.js 16                        | Vercel, a container on any VM, Fly.io, Render, a Kubernetes cluster |
+| Database       | PostgreSQL 16+ with pgvector                          | Managed Postgres (Neon, Supabase, RDS, Cloud SQL) or self-hosted    |
+| Queue          | Redis 7+                                              | Managed Redis or self-hosted                                        |
+| Workers        | **Long-running** Node processes with FFmpeg and fonts | VM or container. **Not** serverless functions.                      |
+| Object storage | S3-compatible                                         | S3, R2, MinIO, GCS (S3 API)                                         |
 
 Video rendering and narration run only on dedicated workers. Serverless request timeouts are too short, and those functions lack FFmpeg.
 
-From Milestone 8, run at least one worker next to the web app: `pnpm worker`, with the same environment and `REDIS_URL`. It processes research, drafting, media, image and narration jobs, and re-queues interrupted jobs when it starts. Free local narration needs `espeak-ng` (or Piper and a voice model) installed on the worker. Several workers can share one queue. `QUEUE_PREFIX` keeps environments that share a Redis server apart.
+From Milestone 8, run at least one worker next to the web app: `pnpm worker`, with the same environment and `REDIS_URL`. It processes research, drafting, media, image and narration jobs, and re-queues interrupted jobs when it starts. Free local narration needs `espeak-ng` (or Piper and a voice model) installed on the worker. Rendering needs `ffmpeg` (with ffprobe, libx264 and libass) and a TrueType font (`fonts-dejavu-core`, or set `VIDEO_FONT_PATH`) on the worker. The web server needs them too, for thumbnails and music checks, which take well under a second; a host without FFmpeg shows a clear error for those two actions. Renders need temporary disk space of roughly twice the finished film. Several workers can share one queue. `QUEUE_PREFIX` keeps environments that share a Redis server apart.
 
 ## Build and run
 

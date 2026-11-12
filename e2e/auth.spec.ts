@@ -245,15 +245,15 @@ test.describe("AI Studio", () => {
     await setRole(email, "ADMINISTRATOR");
     await page.goto("/admin");
     const nav = page.getByRole("navigation", { name: "Studio" });
-    // Milestones 3–10 modules are links; later ones are labelled with their milestone.
-    await expect(nav.getByRole("link")).toHaveCount(21);
+    // Milestones 3–11 modules are links; later ones are labelled with their milestone.
+    await expect(nav.getByRole("link")).toHaveCount(23);
     await expect(nav.getByRole("link", { name: "Overview" })).toHaveAttribute(
       "aria-current",
       "page",
     );
     await expect(nav.getByRole("link", { name: "Historical Media Library" })).toBeVisible();
-    await expect(nav.getByRole("link", { name: "Video Editor" })).toHaveCount(0);
-    await expect(nav.getByText("Video Editor")).toBeVisible();
+    await expect(nav.getByRole("link", { name: "YouTube Studio" })).toHaveCount(0);
+    await expect(nav.getByText("YouTube Studio")).toBeVisible();
   });
 });
 

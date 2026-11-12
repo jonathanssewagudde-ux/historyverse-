@@ -2,6 +2,32 @@
 
 All notable changes to HISTORYVERSE are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.11.0] - 2026-11-12: Milestone 11, Documentary Video Production
+
+### Added
+
+- Video rendering (pipeline step 8): a `RENDER` job turns an approved script into an MP4 with FFmpeg on the worker (free, local):
+  - each picture fits whole over a blurred copy of itself (portraits and maps are never cropped), with a slow camera move, fades, on-screen text and its credit line;
+  - AI reconstructions carry the label "AI-Generated Historical Reconstruction — Not an Authentic Photograph" burned into the picture;
+  - narration scene by scene, an optional licensed music bed underneath, loudness normalised to −14 LUFS;
+  - 16:9 1920×1080 and 9:16 1080×1920, H.264 + AAC, `+faststart`;
+  - every picture is checked again when the render runs (approved, not deleted, publishable); a render whose script was replaced is refused.
+- Captions from the narration actually spoken: SRT and WebVTT files with every render, at most two lines of 42 characters, timed across each scene's audio; burned into the picture for 9:16
+- Source and licence manifest saved with each render: pictures (kind, source, licence, attribution, scenes), narration voices and their licences, music, the sources cited, whether it contains AI reconstructions or a synthetic voice
+- Music library (`/admin/video-editor`): WAV/MP3 tracks under a licence that allows publication only, with attribution and duration
+- Thumbnail generator: 1280×720 JPEG from an approved picture and a headline; thumbnails from AI reconstructions carry the reconstruction label; choose one per documentary (`/admin/thumbnails`)
+- Video section on the documentary page: render form, render history with a player (captions track), MP4 and caption downloads, thumbnails, the manifest
+- Staff-only `/video/[id]`, `/video-assets/[id]` and `/thumbnails/[id]`, streamed in byte ranges (large files are never loaded whole)
+- Storage drivers read byte ranges (`size`, `getRange`) for local files and S3
+- Project page steps 8–9; FFmpeg connection test on the Integrations page (filters and font)
+- `FFPROBE_PATH`, `VIDEO_FONT_PATH`
+
+### Changed
+
+- `/audio/[id]` streams ranges from storage instead of loading the whole file
+- Remotion stays a mandatory integration in the registry, not built: its licence needs a paid company licence for larger organisations, so it awaits the owner's decision (FFmpeg renders meanwhile)
+- CI installs FFmpeg and the DejaVu fonts
+
 ## [0.10.0] - 2026-11-12: Milestone 10, Documentary Scripts and Narration
 
 ### Added

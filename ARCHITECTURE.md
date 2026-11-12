@@ -13,7 +13,7 @@
               ┌─────────────────────────┐     ┌──────────────────┐      ┌───────────────────────┐
               │ PostgreSQL + pgvector   │◀───▶│ Redis + BullMQ   │◀────▶│ Workers (Node)         │
               │ entities, articles,     │     │ durable job      │      │ research · ingestion   │
-              │ claims, citations,      │     │ queues           │      │ TTS · Remotion/FFmpeg  │
+              │ claims, citations,      │     │ queues           │      │ TTS · FFmpeg           │
               │ media, jobs, audit      │     └──────────────────┘      │ render · YouTube upload│
               └─────────────────────────┘                                └──────────┬────────────┘
                              ▲                                                      │
@@ -54,7 +54,7 @@ Also: `prisma/` (schema, migrations, seed), `scripts/` (operator tools), `tests/
 
 Also: `src/server/sources/*` (Wikimedia adapters), `src/server/ingestion` (importer), `data/datasets` (seed lists), `tests/fixtures` (real source responses).
 
-Planned additions: `src/server/jobs` and `workers/` (M8), `remotion/` compositions (M11).
+Job handlers live in `src/server/jobs` (M8); video rendering in `src/server/video` (M11).
 
 ## Key decisions
 

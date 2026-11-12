@@ -116,6 +116,10 @@ export interface StorageProvider {
   readonly id: "local" | "s3";
   put(key: string, body: Uint8Array, contentType: string): Promise<StoredObject>;
   get(key: string): Promise<Uint8Array | null>;
+  /** Size in bytes, or null when the object does not exist. */
+  size(key: string): Promise<number | null>;
+  /** Bytes start..end (inclusive), for streaming large files (video) without loading them whole. */
+  getRange(key: string, start: number, end: number): Promise<Uint8Array | null>;
   delete(key: string): Promise<void>;
   /** URL a browser can load (public path or time-limited signed URL). */
   url(key: string, expiresInSeconds?: number): Promise<string>;
