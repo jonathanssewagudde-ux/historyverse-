@@ -54,26 +54,110 @@ test("search is honest while nothing is published", async ({ page }) => {
   await expect(main).toContainText("0 articles are published so far");
 });
 
-test("a researcher can preview but not publish", async ({ page }) => {
+test("a researcher writes a new draft with a citation in the Studio editor", async ({ page }) => {
+  await signUpAs(page, "RESEARCHER", "Nora Newdraft");
+  await page.goto("/admin/articles");
+  await page.getByRole("link", { name: "New article" }).click();
+  await expect(page.getByRole("heading", { level: 1, name: "New article" })).toBeVisible();
+
+  // Nothing is saved until the draft has the essentials.
+  const basics = page.getByRole("region", { name: "Basics" });
+  await basics.getByLabel("Title", { exact: true }).fill("Mengo Hill test draft");
+  await page.getByRole("button", { name: "Save draft" }).click();
+  const problems = page.locator("#main").getByRole("alert").last();
+  await expect(problems).toContainText("Subject: needs an entity");
+
+  await page.getByLabel("Subject").selectOption({ label: "Buganda (kingdom)" });
+  await page
+    .getByLabel("Add an existing source")
+    .selectOption({ label: "Uganda: A Country Study" });
+  await page
+    .getByRole("textbox", { name: "Text", exact: true })
+    .fill("Mengo was the royal capital. ");
+  await page.getByLabel("Cite", { exact: true }).selectOption("s1");
+  await page.getByLabel("Page or section", { exact: true }).first().fill("Buganda");
+  await page.getByRole("button", { name: "Insert citation" }).click();
+  await expect(page.getByRole("textbox", { name: "Text", exact: true })).toHaveValue(
+    "Mengo was the royal capital. [@s1|Buganda]",
+  );
+
+  await page.getByRole("button", { name: "Save draft" }).click();
+  await expect(page).toHaveURL(/\/admin\/articles\/[^/]+\/edit\?created=1$/);
+  await expect(page.locator("#main")).toContainText("Draft created as version 1.");
+  // The saved draft comes back with its citation and source.
+  await expect(page.getByRole("textbox", { name: "Text", exact: true })).toHaveValue(
+    "Mengo was the royal capital. [@s1|Buganda]",
+  );
+  await page
+    .getByRole("region", { name: "Basics" })
+    .getByLabel("Subtitle")
+    .fill("A short test article");
+  await page.getByRole("button", { name: "Save draft" }).click();
+  await expect(page.locator("#main")).toContainText("Saved as version 2.");
+
+  await page.getByRole("button", { name: "Preview" }).click();
+  const main = page.locator("#main");
+  await expect(
+    main.getByRole("heading", { level: 1, name: "Mengo Hill test draft" }),
+  ).toBeVisible();
+  await expect(main.getByRole("link", { name: "Uganda: A Country Study" }).first()).toBeVisible();
+  // Drafts never reach the public site.
+  await withTestClient(async (c) => {
+    const { rows } = await c.query(
+      `SELECT "status" FROM "articles" WHERE "title" = 'Mengo Hill test draft'`,
+    );
+    expect(rows).toEqual([{ status: "DRAFT" }]);
+  });
+});
+
+test("a researcher can edit and submit a draft, but not approve or publish it", async ({
+  page,
+}) => {
   await signUpAs(page, "RESEARCHER", "Rita Researcher");
   await page.goto(`/admin/articles/${await articleId()}`);
   await expect(
     page.getByRole("heading", { level: 1, name: "The Complete History of the Buganda Kingdom" }),
   ).toBeVisible();
   await expect(page.locator("#main").getByRole("note")).toContainText("AI-assisted draft");
-  await expect(
-    page.locator("#main").getByText("Only editors can approve articles for publication."),
-  ).toBeVisible();
-  await expect(page.getByRole("button", { name: "Approve and publish" })).toHaveCount(0);
   // Staff can load an unapproved image for review.
   expect((await page.request.get(MWANGA)).status()).toBe(200);
+
+  // Saving the real file through the editor changes nothing but the version.
+  await page.getByRole("link", { name: "Edit draft" }).click();
+  await expect(
+    page.getByRole("region", { name: "Basics" }).getByLabel("Title", { exact: true }),
+  ).toHaveValue("The Complete History of the Buganda Kingdom");
+  await page.getByRole("button", { name: "Save draft" }).click();
+  await expect(page.locator("#main")).toContainText("Saved as version 2.");
+  await page.getByRole("button", { name: "Preview" }).click();
+
+  const workflow = page.getByRole("region", { name: "Draft" });
+  await workflow.getByLabel("Note for the reviewer").fill("Ready for a source check.");
+  await workflow.getByRole("button", { name: "Submit for research review" }).click();
+  await expect(page.locator("#main").getByRole("status").first()).toHaveText(
+    "Submitted for research review.",
+  );
+  await page.reload();
+  const review = page.getByRole("region", { name: "Research review" });
+  await expect(review).toContainText("Waiting for an editor to review this article.");
+  await expect(page.getByRole("button", { name: /Approve/ })).toHaveCount(0);
+  await expect(page.getByRole("link", { name: "Edit draft" })).toHaveCount(0);
 });
 
-test("an editor must confirm the source check, then publishes", async ({ page }) => {
+test("an editor approves the research, must confirm the source check, then publishes", async ({
+  page,
+}) => {
   await signUpAs(page, "EDITOR", "Eddie Editor");
   await page.goto("/admin/articles");
   await expect(page.locator("#main")).toContainText("unreviewed AI draft");
   await page.getByRole("link", { name: "The Complete History of the Buganda Kingdom" }).click();
+
+  await page
+    .getByRole("region", { name: "Research review" })
+    .getByRole("button", { name: "Approve research" })
+    .click();
+  await expect(page.locator("#main").getByRole("status").first()).toHaveText(/Research approved/);
+  await page.reload();
 
   const controls = page.getByRole("region", { name: "Editorial approval" });
   await expect(controls).toContainText(
@@ -84,13 +168,15 @@ test("an editor must confirm the source check, then publishes", async ({ page })
   ).toBeVisible();
 
   await page.getByRole("button", { name: "Approve and publish" }).click();
-  await expect(page.locator("#main").getByRole("alert")).toHaveText(
+  await expect(page.locator("#main").getByRole("alert").first()).toHaveText(
     /Confirm that you have checked/,
   );
 
-  await page.getByLabel(/I have checked this article against its cited sources/).check();
+  await controls
+    .getByRole("checkbox", { name: /I have checked this article against its cited sources/ })
+    .check();
   await page.getByRole("button", { name: "Approve and publish" }).click();
-  await expect(page.locator("#main").getByRole("status")).toHaveText(
+  await expect(page.locator("#main").getByRole("status").first()).toHaveText(
     /Published\. 1 image\(s\) were withheld\./,
   );
   await expect(page.getByRole("link", { name: "/kingdoms/buganda" })).toBeVisible();
@@ -136,6 +222,14 @@ test("readers see the published article with sources and only the approved image
   await expect(
     main.getByRole("region", { name: "Watch the HISTORYVERSE Documentary" }),
   ).toContainText("No documentary yet");
+
+  // Readers can report an error; signing in is required to send it.
+  await main.getByText("Spotted an error? Report it").click();
+  await main.getByLabel("What is wrong?").fill("Testing the report form while signed out.");
+  await main.getByRole("button", { name: "Send report" }).click();
+  await expect(main.getByRole("alert").filter({ hasText: "Sign in" })).toHaveText(
+    "Sign in to report an error.",
+  );
 
   await page.goto("/kingdoms");
   await page.getByRole("link", { name: /The Complete History of the Buganda Kingdom/ }).click();
@@ -267,4 +361,9 @@ test("an editor can unpublish with a reason, and the page disappears", async ({ 
   await page.getByRole("button", { name: "Unpublish" }).click();
   await expect(page.locator("#main").getByRole("status")).toHaveText(/Unpublished/);
   expect((await page.goto("/kingdoms/buganda"))?.status()).toBe(404);
+  // Back in draft, the old publication decision is not presented as a current note.
+  await page.goto(`/admin/articles/${await articleId()}`);
+  const workflow = page.getByRole("region", { name: "Draft" });
+  await expect(workflow.getByRole("button", { name: "Submit for research review" })).toBeVisible();
+  await expect(workflow).not.toContainText("Approved ·");
 });

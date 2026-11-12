@@ -2,6 +2,7 @@ import { CalendarClock, Clock, Film, MapPin, ScrollText, Users } from "lucide-re
 import type { Route } from "next";
 import Link from "next/link";
 
+import { CorrectionForm } from "@/components/content/correction-form";
 import { ReaderTools } from "@/components/content/reader-tools";
 import { RichText } from "@/components/content/rich-text";
 import { EmptyState } from "@/components/home/empty-state";
@@ -263,6 +264,11 @@ export function ArticlePage({
                   refs={further.refs}
                   className="space-y-3 text-sm text-muted-foreground"
                 />
+              </div>
+            )}
+            {!preview && (
+              <div className="mt-8">
+                <CorrectionForm articleId={article.id} />
               </div>
             )}
           </section>

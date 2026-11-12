@@ -1,4 +1,5 @@
 import { CircleAlert, CircleCheck, CircleDashed } from "lucide-react";
+import Link from "next/link";
 import { Suspense } from "react";
 
 import { AccessDenied } from "@/components/admin/access-denied";
@@ -131,8 +132,11 @@ function Integrations({ states }: { states: IntegrationState[] }) {
         Integrations
       </h2>
       <p className="mt-1 text-sm text-muted-foreground">
-        Status comes from configuration only. &quot;Connected&quot; will appear once live connection
-        tests ship with the full Integrations page (Milestone 7).
+        Status from configuration. Run live connection tests on the{" "}
+        <Link href="/admin/integrations" className="text-primary underline underline-offset-4">
+          Integrations page
+        </Link>
+        .
       </p>
       <div
         role="region"

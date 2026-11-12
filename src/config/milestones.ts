@@ -46,13 +46,13 @@ export const milestones: Milestone[] = [
   {
     number: 6,
     title: "Historical Search Engine",
-    status: "in_review",
+    status: "complete",
     summary: "PostgreSQL full-text search, autocomplete, filters, discovery.",
   },
   {
     number: 7,
     title: "Administrator CMS",
-    status: "planned",
+    status: "in_review",
     summary: "Dashboard, article editor, entity/media/citation management, editorial workflow.",
   },
   {

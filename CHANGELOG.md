@@ -2,6 +2,30 @@
 
 All notable changes to HISTORYVERSE are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.7.0] - 2026-11-12: Milestone 7, Administrator CMS
+
+### Added
+
+- Editorial workflow: draft → research review → editorial approval → published, with submit, approve, request-changes and unpublish decisions, reviewer notes and an audit entry for each
+- Studio article editor (`/admin/articles/new`, `/admin/articles/[id]/edit`): sources, citation insertion, sections, key dates, linked entities, images and categories. Drafts round-trip unchanged through the editable format
+- Entity managers for countries, people, kingdoms, civilizations and events, with claim verification (verifying requires a cited source) and import by Wikidata id
+- Media library: upload (type checked from file bytes, 10 MB cap, duplicate detection), classification, licence and alt text, editor approval, and download of imported Commons files
+- References manager: correct a source once and every citation follows, including on published pages
+- Editorial review queue and reader error reports ("Spotted an error? Report it" on published articles)
+- Publishing calendar with scheduled publication: the editor's approval is given at scheduling; `POST /api/cron/publish` (needs `CRON_SECRET`) or "Publish due articles now" runs it
+- Categories manager (nesting, loop prevention, stable addresses, delete only when unused)
+- Users and roles page for Super Administrators
+- Integrations page with live, free, read-only connection tests (PostgreSQL, auth, storage, Wikidata, Wikipedia, Wikimedia Commons)
+- Settings and audit log page
+- `CRON_SECRET` environment variable
+
+### Changed
+
+- Publishing now requires editorial approval and a citation in every factual section
+- Creating an article in the Studio refuses an address that is already taken instead of overwriting that draft
+- The access-denied page distinguishes "no Studio access" from "not this page"
+- Server Actions accept bodies up to 11 MB, for image uploads
+
 ## [0.6.0] - 2026-11-11: Milestone 6, Historical Search Engine
 
 ### Added

@@ -89,5 +89,10 @@ export const studioNav: StudioNavItem[] = [
     milestone: 7,
     permission: "integration:view",
   },
-  { title: "Settings", href: "/admin/settings", milestone: 7, permission: "settings:manage" },
+  {
+    title: "Settings & Audit Log",
+    href: "/admin/settings",
+    milestone: 7,
+    permission: "audit:view",
+  },
 ];

@@ -30,6 +30,20 @@ Liveness: `GET /api/health`. Dependency readiness checks are added as each depen
 
 Set environment variables from `.env.example` in the host's secret manager. `AUTH_URL` must be the public https origin (cookies are then marked Secure). If the app sits behind a proxy, make sure the client IP header is forwarded so auth rate limiting works per visitor. Never bake secrets into images. Only `NEXT_PUBLIC_*` values reach the browser.
 
+## Scheduled publishing
+
+Articles scheduled in the Studio's publishing calendar are published by `POST /api/cron/publish`. Set `CRON_SECRET` (at least 32 characters) and call the endpoint every few minutes from any scheduler:
+
+```bash
+curl -fsS -X POST -H "Authorization: Bearer $CRON_SECRET" https://your-site.example/api/cron/publish
+```
+
+Without `CRON_SECRET` the endpoint answers 404 and editors publish due articles from the calendar instead.
+
+## Uploads
+
+Server Actions accept request bodies up to 11 MB (`next.config.ts`) so the media library can take 10 MB images. A reverse proxy in front of the app must allow at least that body size.
+
 ## Operations checklist (completed in Milestone 15)
 
 - Automated database backups and restore drill

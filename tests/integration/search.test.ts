@@ -4,6 +4,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type { PrismaClient } from "@/generated/prisma/client";
 import { loadArticle } from "@/server/content/load-article";
 import { publishArticle, unpublishArticle } from "@/server/content/publish";
+import { approveResearch, submitForReview } from "@/server/content/workflow";
 import { getDb } from "@/server/db/client";
 import { reindexAll } from "@/server/search/indexer";
 import { searchArticles, suggest } from "@/server/search/search";
@@ -80,6 +81,8 @@ beforeAll(async () => {
   });
   for (const file of [buganda, ugandaFixture]) {
     const { articleId } = await loadArticle(db, file);
+    await submitForReview(db, editor, articleId);
+    await approveResearch(db, editor, articleId);
     await publishArticle(db, editor, articleId);
   }
 });

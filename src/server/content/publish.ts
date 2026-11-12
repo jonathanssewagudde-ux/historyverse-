@@ -59,20 +59,35 @@ export async function publishArticle(db: PrismaClient, editor: Editor, articleId
       },
     });
     if (!article || article.deletedAt) throw new PublishError("NOT_FOUND", "Article not found.");
-    if (
-      article.status === "PUBLISHED" ||
-      article.status === "UPDATED" ||
-      article.status === "ARCHIVED"
-    ) {
+    if (article.status !== "EDITORIAL_APPROVAL") {
       throw new PublishError(
         "INVALID_STATE",
-        `Article is already ${article.status.toLowerCase()}.`,
+        article.status === "PUBLISHED" || article.status === "UPDATED"
+          ? "Article is already published."
+          : "An article must pass research review and reach editorial approval before it can be published.",
       );
     }
-    if ((await tx.citation.count({ where: { articleId } })) === 0) {
+    const citedSections = new Set(
+      (
+        await tx.citation.findMany({
+          where: { articleId, sectionId: { not: null } },
+          select: { sectionId: true },
+        })
+      ).map((c) => c.sectionId),
+    );
+    const uncited = article.sections.filter(
+      (s) => s.kind !== "FURTHER_READING" && !citedSections.has(s.id),
+    );
+    if (uncited.length > 0) {
       throw new PublishError(
         "NO_CITATIONS",
-        "An article must cite at least one source before publication.",
+        `Every section must cite a source before publication. Uncited: ${uncited
+          .map(
+            (s) =>
+              s.heading ??
+              (s.kind === "INTRODUCTION" ? "Introduction" : `section ${s.position + 1}`),
+          )
+          .join(", ")}.`,
       );
     }
 
@@ -107,18 +122,30 @@ export async function publishArticle(db: PrismaClient, editor: Editor, articleId
         version,
       },
     });
-    await tx.editorialReview.create({
-      data: {
-        stage: "EDITORIAL_APPROVAL",
-        decision: "APPROVED",
-        articleId,
-        articleVersion: article.version,
-        reviewerId: editor.id,
-        decidedAt: now,
-        notes:
-          withheld.length > 0 ? `${withheld.length} image(s) withheld from publication.` : null,
-      },
+    const reviewNotes =
+      withheld.length > 0 ? `${withheld.length} image(s) withheld from publication.` : null;
+    const pending = await tx.editorialReview.findFirst({
+      where: { articleId, stage: "EDITORIAL_APPROVAL", decision: "PENDING" },
+      orderBy: { createdAt: "desc" },
     });
+    if (pending) {
+      await tx.editorialReview.update({
+        where: { id: pending.id },
+        data: { decision: "APPROVED", reviewerId: editor.id, decidedAt: now, notes: reviewNotes },
+      });
+    } else {
+      await tx.editorialReview.create({
+        data: {
+          stage: "EDITORIAL_APPROVAL",
+          decision: "APPROVED",
+          articleId,
+          articleVersion: article.version,
+          reviewerId: editor.id,
+          decidedAt: now,
+          notes: reviewNotes,
+        },
+      });
+    }
     await tx.articleRevision.create({
       data: {
         articleId,

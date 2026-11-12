@@ -7,7 +7,7 @@ HISTORYVERSE is an AI-assisted historical knowledge platform made of two applica
 - **Public platform:** a sourced historical encyclopedia with articles, archival media, maps, timelines, family trees, documentaries and a grounded AI history assistant.
 - **HISTORYVERSE AI Studio** (`/admin`): a private studio for research, article editing, media licensing, documentary scripting, narration, video rendering and YouTube publishing.
 
-> **Status:** Milestones 1–6 are complete. Milestone 6 (Historical Search Engine) is awaiting review. See [ROADMAP.md](./ROADMAP.md).
+> **Status:** Milestones 1–6 are complete. Milestone 7 (Administrator CMS) is awaiting review. See [ROADMAP.md](./ROADMAP.md).
 > No historical content is published yet. Content arrives from Milestone 4 onward, sourced and reviewed.
 
 ## Requirements
@@ -63,8 +63,9 @@ Health probe: `GET /api/health`.
 
 ## Known limitations
 
-- Pages so far: homepage, sign-in, sign-up, profile, the AI Studio overview (`/admin`) and a 404 page. Navigation shows every other route as unavailable, with the milestone that delivers it.
-- No email delivery yet, so there is no email verification or self-service password reset. An operator can promote users with `pnpm user:role`; role management in the UI arrives in Milestone 7.
+- Public pages: homepage, kingdoms, countries, people, search, explore, sign-in, sign-up and profile. The AI Studio (`/admin`) has the CMS modules of Milestone 7. Navigation shows every later route as unavailable, with the milestone that delivers it.
+- No email delivery yet, so there is no email verification or self-service password reset. Super Administrators assign roles at `/admin/users` (or with `pnpm user:role`).
 - The first article (Buganda) is a draft awaiting editorial approval; until an editor publishes it, the public sections show empty states.
-- Homepage topic cards are planned subjects (name and region only). Search explains that it is not open yet. There are no images yet: licensed archival media arrives with Milestones 4–5.
+- Homepage topic cards are planned subjects (name and region only). Search covers published articles only, so it stays small until more articles are approved.
+- Scheduled publishing needs a scheduler calling `POST /api/cron/publish` with `CRON_SECRET`; without one, editors run due publications from the calendar.
 - The shadcn/ui CLI could not reach `ui.shadcn.com` from the build environment, so the components in `src/components/ui` were written by hand to the shadcn source conventions. `pnpm dlx shadcn add <component>` works on any network that allows that host.

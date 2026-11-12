@@ -19,6 +19,10 @@ const nextConfig: NextConfig = {
   partialPrefetching: true,
   poweredByHeader: false,
   typedRoutes: true,
+  experimental: {
+    // Studio image uploads are capped at 10 MB (checked again in the upload action).
+    serverActions: { bodySizeLimit: "11mb" },
+  },
   turbopack: {
     rules: {
       "*.css": {
