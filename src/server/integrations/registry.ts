@@ -354,15 +354,27 @@ export const integrations: IntegrationDefinition[] = [
     milestone: 9,
     capabilities: ["Prompted generation", "Variations"],
     billable: true,
-    envKeys: ["IMAGE_PROVIDER", "IMAGE_API_KEY", "IMAGE_BASE_URL"],
+    envKeys: [
+      "IMAGE_PROVIDER",
+      "IMAGE_MODEL",
+      "IMAGE_API_KEY",
+      "IMAGE_BASE_URL",
+      "IMAGE_USD_PER_IMAGE",
+    ],
     secretEnvKeys: ["IMAGE_API_KEY"],
-    missing: (env) =>
-      provider(env, "IMAGE_PROVIDER", {
-        openai: ["IMAGE_API_KEY"],
+    missing: (env) => {
+      const missing = provider(env, "IMAGE_PROVIDER", {
+        openai: ["IMAGE_API_KEY", "IMAGE_MODEL"],
+        "openai-compatible": ["IMAGE_BASE_URL", "IMAGE_MODEL"],
         gemini: ["IMAGE_API_KEY"],
         stability: ["IMAGE_API_KEY"],
         comfyui: ["IMAGE_BASE_URL"],
-      }),
+      });
+      // Costs must be estimable before anything is generated.
+      if (missing.length === 0 && env.IMAGE_USD_PER_IMAGE === undefined)
+        missing.push("IMAGE_USD_PER_IMAGE");
+      return missing;
+    },
     fallback: "Editable reconstruction prompts and manual image upload.",
   },
   {

@@ -56,7 +56,11 @@ export async function listMedia(db: PrismaClient, filters: MediaFilters = {}) {
       where,
       orderBy: { createdAt: "desc" },
       take: 100,
-      include: { license: true, _count: { select: { articles: true } } },
+      include: {
+        license: true,
+        licenseVerifiedBy: { select: { name: true } },
+        _count: { select: { articles: true } },
+      },
     }),
     db.mediaLicense.findMany({ orderBy: { name: "asc" } }),
   ]);
@@ -80,6 +84,9 @@ export async function listMedia(db: PrismaClient, filters: MediaFilters = {}) {
       blocker: mediaPublishBlocker(a),
       articles: a._count.articles,
       isCommons: a.sourceName === "Wikimedia Commons" && Boolean(a.sourceRef),
+      licenseVerified: a.licenseVerifiedAt
+        ? `${a.licenseVerifiedBy?.name ?? "operator"}, ${a.licenseVerifiedAt.toISOString().slice(0, 10)}`
+        : null,
     })),
   };
 }
@@ -158,7 +165,19 @@ export async function reviewMedia(
       throw new MediaAdminError("Cannot approve: add alt text describing the image first.");
     }
   }
-  await db.mediaAsset.update({ where: { id }, data: { reviewStatus: decision } });
+  await db.mediaAsset.update({
+    where: { id },
+    data: {
+      reviewStatus: decision,
+      // Approving attests the licence when nobody has verified it yet (e.g. an upload).
+      ...(decision === "APPROVED" && !asset.licenseVerifiedAt
+        ? {
+            licenseVerifiedAt: new Date(),
+            licenseVerifiedById: actor.id.startsWith("system:") ? null : actor.id,
+          }
+        : {}),
+    },
+  });
   await recordAudit({
     action: decision === "APPROVED" ? "media.approved" : "media.rejected",
     actor,

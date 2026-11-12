@@ -205,10 +205,13 @@ export function CostApproval({
   projectId,
   jobId,
   amount,
+  what = "this draft",
 }: {
   projectId: string;
   jobId: string;
   amount: number;
+  /** What the money is for, e.g. "these images". */
+  what?: string;
 }) {
   const [state, act, pending] = useActionState<ProjectActionState, FormData>(projectAction, null);
   return (
@@ -224,8 +227,8 @@ export function CostApproval({
           className="mt-1 size-4 accent-[var(--primary)]"
         />
         <span>
-          I approve spending up to ${amount.toFixed(4)} on this draft, within this project&apos;s
-          budget and the monthly ceiling.
+          I approve spending up to ${amount.toFixed(4)} on {what}, within this project&apos;s budget
+          and the monthly ceiling.
         </span>
       </label>
       <Button type="submit" variant="lime" disabled={pending}>

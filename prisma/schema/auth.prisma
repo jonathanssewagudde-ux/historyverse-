@@ -40,6 +40,8 @@ model User {
   jobsRequested       ProductionJob[]      @relation("JobRequester")
   jobsApproved        ProductionJob[]      @relation("JobApprover")
   researchReviewed    ResearchSource[]     @relation("ResearchSourceReviewer")
+  candidatesReviewed  MediaCandidate[]     @relation("MediaCandidateReviewer")
+  licensesVerified    MediaAsset[]         @relation("LicenseVerifier")
   sourceSetsApproved  ContentProject[]     @relation("SourceSetApprover")
   reviewsRequested    EditorialReview[]    @relation("ReviewRequester")
   reviewsAssigned     EditorialReview[]    @relation("ReviewReviewer")

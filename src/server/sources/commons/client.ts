@@ -18,6 +18,10 @@ export interface CommonsFile {
   dateText: string | null;
   license: ResolvedLicense;
   attribution: string;
+  /** Rights wording as Commons states it (e.g. a usage-terms note). */
+  usageTerms: string | null;
+  /** Provider-hosted preview (only present when a thumbnail width was requested). */
+  thumbnailUrl: string | null;
 }
 
 interface ImageInfoResponse {
@@ -32,6 +36,7 @@ interface ImageInfoResponse {
         width: number;
         height: number;
         sha1?: string;
+        thumburl?: string;
         extmetadata?: Record<string, { value: string } | undefined>;
       }>;
     }>;
@@ -67,6 +72,8 @@ export function parseCommonsFiles(response: ImageInfoResponse): CommonsFile[] {
         attribution: [creator ?? "Unknown author", "via Wikimedia Commons", license.name].join(
           ", ",
         ),
+        usageTerms: text("UsageTerms"),
+        thumbnailUrl: info.thumburl ?? null,
       },
     ];
   });
@@ -88,6 +95,29 @@ export function createCommonsClient(http: SourceHttpClient) {
         out.push(...parseCommonsFiles(await http.getJson<ImageInfoResponse>(url)));
       }
       return out;
+    },
+    /**
+     * Search Commons files (images only) by text. Returns full licence metadata for each hit,
+     * plus a 320-pixel preview URL, in search-relevance order.
+     */
+    async search(query: string, limit = 24): Promise<CommonsFile[]> {
+      const url =
+        "https://commons.wikimedia.org/w/api.php?action=query&format=json&formatversion=2" +
+        `&generator=search&gsrnamespace=6&gsrlimit=${Math.min(50, limit)}` +
+        `&gsrsearch=${encodeURIComponent(`${query} filetype:bitmap|drawing`)}` +
+        `&prop=imageinfo&iiurlwidth=320&iiprop=${encodeURIComponent("url|size|mime|extmetadata|sha1")}`;
+      const data = await http.getJson<
+        ImageInfoResponse & { query?: { pages?: { index?: number }[] } }
+      >(url);
+      const order = new Map(
+        (data.query?.pages ?? []).map((p) => [
+          (p as { title: string }).title,
+          (p as { index?: number }).index ?? 0,
+        ]),
+      );
+      return parseCommonsFiles(data).sort(
+        (a, b) => (order.get(a.title) ?? 0) - (order.get(b.title) ?? 0),
+      );
     },
   };
 }

@@ -31,8 +31,13 @@ export function mediaPublishBlocker(asset: {
   kind: string;
   storageKey: string | null;
   license: { publishable: boolean; name: string };
+  reviewStatus?: string;
 }): string | null {
   if (asset.kind === "UNCLASSIFIED") return "not yet classified as photograph, artwork, map, etc.";
+  // Reconstructions are approved one by one in the AI Image Studio, never in bulk at publication.
+  if (asset.kind === "AI_RECONSTRUCTION" && asset.reviewStatus !== "APPROVED") {
+    return "AI reconstruction not yet approved in the AI Image Studio";
+  }
   if (!asset.license.publishable)
     return `licence "${asset.license.name}" does not allow publication`;
   if (!asset.storageKey) return "file has not been downloaded to storage";

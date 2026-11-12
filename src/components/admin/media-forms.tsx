@@ -32,6 +32,7 @@ export type MediaCardData = {
   blocker: string | null;
   articles: number;
   isCommons: boolean;
+  licenseVerified: string | null;
 };
 
 const KINDS = [
@@ -156,6 +157,10 @@ export function MediaCard({
             asset.sourceName
           )}{" "}
           · {asset.license}
+          {" · "}
+          {asset.licenseVerified
+            ? `licence checked by ${asset.licenseVerified}`
+            : "licence not yet checked"}
         </p>
         {asset.blocker && (
           <p className="text-sm text-destructive">Cannot be shown publicly: {asset.blocker}.</p>

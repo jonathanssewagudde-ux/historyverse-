@@ -91,6 +91,11 @@ export async function getProjectView(db: PrismaClient, id: string) {
           requestedBy: { select: { name: true } },
         },
       },
+      mediaCandidates: {
+        orderBy: [{ status: "asc" }, { createdAt: "asc" }],
+        include: { reviewedBy: { select: { name: true } } },
+      },
+      _count: { select: { reconstructions: true } },
       researchSources: {
         orderBy: [{ status: "asc" }, { kind: "asc" }, { publishedYear: "asc" }],
         include: { reviewedBy: { select: { name: true } } },
@@ -99,8 +104,7 @@ export async function getProjectView(db: PrismaClient, id: string) {
   });
   if (!project) return null;
 
-  const job = (type: "RESEARCH" | "ARTICLE_DRAFT") => {
-    const j = project.jobs.find((x) => x.type === type);
+  const describe = (j: (typeof project.jobs)[number] | undefined) => {
     if (!j) return null;
     const output = (j.output ?? {}) as Record<string, unknown>;
     return {
@@ -125,7 +129,13 @@ export async function getProjectView(db: PrismaClient, id: string) {
       output,
     };
   };
+  const job = (type: "RESEARCH" | "ARTICLE_DRAFT" | "MEDIA_SEARCH") =>
+    describe(project.jobs.find((x) => x.type === type));
   const research = job("RESEARCH");
+  const mediaSearch = job("MEDIA_SEARCH");
+  const imageApprovals = project.jobs
+    .filter((j) => j.type === "IMAGE_GENERATION" && j.status === "AWAITING_APPROVAL")
+    .map((j) => describe(j)!);
   const draft = job("ARTICLE_DRAFT");
   const { env } = getServerEnv();
 
@@ -146,6 +156,27 @@ export async function getProjectView(db: PrismaClient, id: string) {
     sourceSetApprovedAt: iso(project.sourceSetApprovedAt),
     sourceSetApprovedBy: project.sourceSetApprovedBy?.name ?? null,
     research,
+    mediaSearch,
+    imageApprovals,
+    reconstructions: project._count.reconstructions,
+    candidates: project.mediaCandidates.map((c) => ({
+      id: c.id,
+      provider: c.provider,
+      title: c.title,
+      sourceUrl: c.sourceUrl,
+      thumbnailUrl: c.thumbnailUrl,
+      creator: c.creator,
+      dateText: c.dateText,
+      licenseCode: c.licenseCode,
+      licenseName: c.licenseName,
+      rightsStatement: c.rightsStatement,
+      width: c.width,
+      height: c.height,
+      status: c.status,
+      note: c.note,
+      reviewedBy: c.reviewedBy?.name ?? null,
+      mediaId: c.mediaId,
+    })),
     report: (research?.status === "SUCCEEDED"
       ? research.output.report
       : null) as ResearchReport | null,

@@ -283,10 +283,15 @@ export async function loadArticle(
         await tx.mediaAsset.update({
           where: { id: asset.id },
           // An AI reconstruction keeps its label whatever the draft says.
-          data: {
-            altText: m.altText,
-            ...(asset.kind === "AI_RECONSTRUCTION" ? {} : { kind: m.kind }),
-          },
+          data:
+            asset.kind === "AI_RECONSTRUCTION"
+              ? // Screen readers must hear what it is, too.
+                {
+                  altText: /^AI reconstruction:/i.test(m.altText)
+                    ? m.altText
+                    : `AI reconstruction: ${m.altText}`,
+                }
+              : { altText: m.altText, kind: m.kind },
         });
         await tx.articleMedia.create({
           data: { articleId, mediaId: asset.id, caption: m.caption, position },

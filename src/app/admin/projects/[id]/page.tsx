@@ -11,6 +11,7 @@ import {
   ProjectButton,
   SourceDecision,
 } from "@/components/admin/project-forms";
+import { CandidateDecision, MediaSearchForm } from "@/components/admin/media-studio-forms";
 import { hasPermission } from "@/lib/auth/roles";
 import { authorize } from "@/server/auth/session";
 import { getDb } from "@/server/db/client";
@@ -123,6 +124,7 @@ async function Project({ params }: { params: Promise<{ id: string }> }) {
   const role = auth.user.role;
   const canRun = hasPermission(role, "research:run");
   const canSpend = hasPermission(role, "spend:approve");
+  const canMedia = hasPermission(role, "media:upload");
   const locked = Boolean(project.sourceSetApprovedAt);
   const report = project.report;
   const accepted = project.sources.filter((s) => s.status === "ACCEPTED");
@@ -168,13 +170,13 @@ async function Project({ params }: { params: Promise<{ id: string }> }) {
             <li
               key={name}
               className={
-                milestone <= 8
+                milestone <= 9
                   ? "rounded-full border border-primary px-3 py-1"
                   : "rounded-full border px-3 py-1 text-muted-foreground"
               }
             >
               {i + 1}. {name}
-              {milestone > 8 && ` · M${milestone}`}
+              {milestone > 9 && ` · M${milestone}`}
             </li>
           ))}
         </ol>
@@ -524,8 +526,141 @@ async function Project({ params }: { params: Promise<{ id: string }> }) {
         )}
       </section>
 
+      {/* Step 3 ------------------------------------------------------------------------------ */}
+      <section aria-labelledby="step-media" className="space-y-4 rounded-3xl border bg-card p-6">
+        <h2 id="step-media" className="text-2xl font-bold">
+          3. Archival media
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Images found in free archives (Wikimedia Commons, and the Library of Congress when
+          enabled), with the licence each archive states. Check the licence on the source page
+          before adding an image: it then enters the media library unclassified and is shown to
+          readers only after classification and an editor&apos;s approval.
+        </p>
+        {project.mediaSearch && (
+          <Job job={project.mediaSearch} projectId={project.id} canRun={canRun} />
+        )}
+        {canMedia && project.subject && (
+          <MediaSearchForm projectId={project.id} defaultQuery={project.subject.name} />
+        )}
+        {!project.subject && (
+          <p className="text-sm">Run research first: the subject is not known yet.</p>
+        )}
+        {project.candidates.length > 0 && (
+          <ul aria-label="Images found" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {project.candidates.map((c) => (
+              <li key={c.id} className="space-y-2 rounded-2xl border p-3 text-sm">
+                {c.thumbnailUrl && (
+                  // eslint-disable-next-line @next/next/no-img-element -- archive-hosted preview, not stored by us
+                  <img
+                    src={c.thumbnailUrl}
+                    alt=""
+                    loading="lazy"
+                    referrerPolicy="no-referrer"
+                    className="aspect-[4/3] w-full rounded-xl bg-muted object-cover"
+                  />
+                )}
+                <a
+                  href={c.sourceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block font-semibold break-words text-primary underline underline-offset-4"
+                >
+                  {c.title}
+                </a>
+                <p className="text-xs text-muted-foreground">
+                  {[
+                    c.creator,
+                    c.dateText,
+                    c.provider === "commons" ? "Wikimedia Commons" : "Library of Congress",
+                    c.width && c.height ? `${c.width}×${c.height}` : null,
+                  ]
+                    .filter(Boolean)
+                    .join(" · ")}
+                </p>
+                <p className={c.licenseCode === "UNKNOWN" ? "text-xs text-destructive" : "text-xs"}>
+                  Licence as stated: {c.licenseName}
+                  {c.rightsStatement && ` — ${c.rightsStatement}`}
+                </p>
+                {c.status === "CANDIDATE" ? (
+                  canMedia && <CandidateDecision candidateId={c.id} title={c.title} />
+                ) : (
+                  <p className="font-mono text-xs">
+                    {label(c.status)}
+                    {c.reviewedBy && ` · ${c.reviewedBy}`}
+                    {c.note && ` · ${c.note}`}
+                    {c.mediaId && (
+                      <>
+                        {" · "}
+                        <Link
+                          href={"/admin/media?review=PENDING" as Route}
+                          className="text-primary underline underline-offset-4"
+                        >
+                          in the library
+                        </Link>
+                      </>
+                    )}
+                  </p>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      {/* Step 4 ------------------------------------------------------------------------------ */}
+      <section aria-labelledby="step-recon" className="space-y-4 rounded-3xl border bg-card p-6">
+        <h2 id="step-recon" className="text-2xl font-bold">
+          4. Reconstruction prompts
+        </h2>
+        <p className="text-sm">
+          {project.reconstructions} prompt(s).{" "}
+          <Link
+            href={"/admin/ai-images" as Route}
+            className="font-semibold text-primary underline underline-offset-4"
+          >
+            Open the AI Image Studio
+          </Link>{" "}
+          to write evidence-based prompts and make labelled reconstructions.
+        </p>
+        {project.imageApprovals.map((job) => (
+          <div key={job.id} className="space-y-3 rounded-2xl border border-dashed border-pink p-4">
+            <p className="font-semibold">
+              Image generation waiting for approval: up to {usd(job.costEstimateUsd ?? 0)}
+            </p>
+            {job.estimateBasis && (
+              <p className="text-sm text-muted-foreground">{job.estimateBasis}</p>
+            )}
+            <p className="text-sm">
+              Project budget {usd(project.budgetUsd)}, spent {usd(project.spentUsd)}. Monthly
+              ceiling {usd(project.monthlyCeilingUsd)}, committed this month{" "}
+              {usd(project.monthlyCommittedUsd)}.
+            </p>
+            {canSpend ? (
+              <CostApproval
+                projectId={project.id}
+                jobId={job.id}
+                amount={job.costEstimateUsd ?? 0}
+                what="these images"
+              />
+            ) : (
+              <p className="text-sm">An administrator must approve this spending.</p>
+            )}
+            {canRun && (
+              <ProjectButton
+                projectId={project.id}
+                intent="cancel_job"
+                fields={{ jobId: job.id }}
+                label="Cancel"
+                variant="ghost"
+              />
+            )}
+          </div>
+        ))}
+      </section>
+
       <p className="px-1 text-sm text-muted-foreground">
-        Steps 3–11 (media, documentary, narration, video, YouTube) arrive in Milestones 9–12.
+        Steps 5–11 (documentary, narration, video, YouTube) arrive in Milestones 10–12.
       </p>
     </div>
   );

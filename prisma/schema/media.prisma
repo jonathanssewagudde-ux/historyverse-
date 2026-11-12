@@ -91,6 +91,10 @@ model MediaAsset {
   /// SHA-256 of the file, to detect duplicates.
   checksum     String?           @unique
   reviewStatus MediaReviewStatus @default(PENDING)
+  /// A person confirmed the licence on the source's own page (or stated it for an upload).
+  licenseVerifiedAt   DateTime?
+  licenseVerifiedById String?
+  licenseVerifiedBy   User?     @relation("LicenseVerifier", fields: [licenseVerifiedById], references: [id], onDelete: SetNull)
   uploadedById String?
   uploadedBy   User?             @relation(fields: [uploadedById], references: [id], onDelete: SetNull)
   createdAt    DateTime          @default(now())
@@ -98,6 +102,7 @@ model MediaAsset {
   deletedAt    DateTime?
 
   reconstruction AIReconstruction?
+  candidate      MediaCandidate?
   entities       EntityMedia[]
   articles       ArticleMedia[]
   heroOf         Article[]         @relation("ArticleHero")
@@ -169,6 +174,7 @@ model AIReconstruction {
   parent              AIReconstruction?  @relation("ReconstructionVariations", fields: [parentId], references: [id], onDelete: SetNull)
   variations          AIReconstruction[] @relation("ReconstructionVariations")
   costUsd             Decimal?         @db.Decimal(10, 4)
+  sources             ReconstructionSource[]
   createdById         String?
   createdBy           User?            @relation(fields: [createdById], references: [id], onDelete: SetNull)
   createdAt           DateTime         @default(now())

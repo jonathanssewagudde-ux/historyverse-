@@ -239,6 +239,7 @@ model Source {
 
   citations Citation[]
   researchSources ResearchSource[]
+  reconstructions ReconstructionSource[]
 
   @@index([title])
   @@index([repository])
