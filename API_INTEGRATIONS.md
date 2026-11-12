@@ -12,15 +12,15 @@ All integrations are declared in `src/server/integrations/registry.ts` and consu
 
 ## Mandatory platform capabilities
 
-| Integration    | Env                         | Milestone | Fallback when unavailable                |
-| -------------- | --------------------------- | --------- | ---------------------------------------- |
-| PostgreSQL     | `DATABASE_URL`              | 3         | none                                     |
-| Auth.js        | `AUTH_SECRET`               | 3         | public pages stay readable               |
-| Media storage  | `STORAGE_DRIVER` (+ `S3_*`) | 5         | local filesystem                         |
-| Redis + BullMQ | `REDIS_URL`                 | 8         | browsing and manual editing keep working |
-| FFmpeg         | `FFMPEG_PATH`               | 11        | none for rendering                       |
-| Remotion       | none                        | 11        | none for rendering                       |
-| MapLibre style | `MAP_STYLE_URL`             | 13        | bundled outline map                      |
+| Integration    | Env                                              | Milestone | Fallback when unavailable                    |
+| -------------- | ------------------------------------------------ | --------- | -------------------------------------------- |
+| PostgreSQL     | `DATABASE_URL`                                   | 3         | none                                         |
+| Auth.js        | `AUTH_SECRET`                                    | 3         | public pages stay readable                   |
+| Media storage  | `STORAGE_DRIVER` (+ `S3_*`)                      | 5         | local filesystem                             |
+| Redis + BullMQ | `REDIS_URL`                                      | 8         | browsing and manual editing keep working     |
+| FFmpeg         | `FFMPEG_PATH`, `FFPROBE_PATH`, `VIDEO_FONT_PATH` | 11        | none for rendering                           |
+| Remotion       | none                                             | 11        | not built (licence decision); FFmpeg renders |
+| MapLibre style | `MAP_STYLE_URL`                                  | 13        | bundled outline map                          |
 
 ## Mandatory external integrations (required for one capability each)
 
@@ -75,6 +75,12 @@ Every generated image is stored and shown as an AI reconstruction. Without a pro
 | `google`       | Not built                      | —                                                                    | —                                                        |
 
 Voices are stock synthetic voices; no one's voice is cloned. Recorded narration can always be uploaded with the speaker's consent.
+
+### Video rendering (Milestone 11)
+
+**FFmpeg** (LGPL/GPL build from the operating system, free) does the whole job on the worker: picture composition with camera moves (`zoompan`), text and the reconstruction label (`drawtext` with `VIDEO_FONT_PATH`, DejaVu Sans Bold by default), captions (`subtitles`, libass), mixing and loudness (`amix`, `loudnorm`), and H.264/AAC encoding. The Integrations page tests that these filters and the font are present.
+
+**Remotion is not used.** The specification lists it, but its licence is free only for individuals and companies of up to three employees; larger organisations need a paid company licence. A paid licence is the owner's decision, so nothing was bought or installed. FFmpeg covers every Milestone 11 feature. Remotion could add React-based motion graphics (animated maps, kinetic titles) later if the owner approves the licence.
 
 ## Optional enhancements
 

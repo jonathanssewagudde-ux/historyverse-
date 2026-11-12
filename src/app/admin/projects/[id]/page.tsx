@@ -170,13 +170,13 @@ async function Project({ params }: { params: Promise<{ id: string }> }) {
             <li
               key={name}
               className={
-                milestone <= 10
+                milestone <= 11
                   ? "rounded-full border border-primary px-3 py-1"
                   : "rounded-full border px-3 py-1 text-muted-foreground"
               }
             >
               {i + 1}. {name}
-              {milestone > 10 && ` · M${milestone}`}
+              {milestone > 11 && ` · M${milestone}`}
             </li>
           ))}
         </ol>
@@ -698,9 +698,50 @@ async function Project({ params }: { params: Promise<{ id: string }> }) {
         )}
       </section>
 
+      {/* Steps 8–9 --------------------------------------------------------------------------- */}
+      <section aria-labelledby="step-video" className="space-y-3 rounded-3xl border bg-card p-6">
+        <h2 id="step-video" className="text-2xl font-bold">
+          8–9. Video render and YouTube assets
+        </h2>
+        {project.documentaries.length > 0 ? (
+          <ul className="space-y-2 text-sm">
+            {project.documentaries.map((d) => (
+              <li key={d.id} className="flex flex-wrap items-center gap-2">
+                <Link
+                  href={`/admin/documentaries/${d.id}#video` as Route}
+                  className="font-semibold text-primary underline underline-offset-4"
+                >
+                  {d.title}
+                </Link>
+                {d.latestRender ? (
+                  <>
+                    <JobStatus status={d.latestRender.status} />
+                    {d.latestRender.format === "VERTICAL_1080P" ? "9:16" : "16:9"}
+                    {d.latestRender.seconds !== null &&
+                      ` · ${Math.floor(d.latestRender.seconds / 60)} min ${String(Math.round(d.latestRender.seconds % 60)).padStart(2, "0")} s`}
+                  </>
+                ) : (
+                  <span className="text-muted-foreground">not rendered yet</span>
+                )}
+                <span className="text-muted-foreground">
+                  · {d.thumbnailChosen ? "thumbnail chosen" : "no thumbnail chosen"}
+                </span>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-sm">
+            The video is rendered from the documentary once its script is approved.
+          </p>
+        )}
+        <p className="text-xs text-muted-foreground">
+          Captions (SRT, WebVTT) and the source-and-licence manifest are made with every render.
+          Titles, descriptions and chapters for YouTube come with the upload in Milestone 12.
+        </p>
+      </section>
+
       <p className="px-1 text-sm text-muted-foreground">
-        Steps 8–11 (video render, YouTube assets, review and publication) arrive in Milestones
-        11–12.
+        Steps 10–11 (review and publication to YouTube) arrive in Milestone 12.
       </p>
     </div>
   );

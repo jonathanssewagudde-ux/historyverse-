@@ -18,6 +18,8 @@ import { hasPermission } from "@/lib/auth/roles";
 import { authorize } from "@/server/auth/session";
 import { getDb } from "@/server/db/client";
 import { getDocumentaryView, getSpeechStatus } from "@/server/documentary/view";
+import { VideoPanel } from "@/components/admin/video-panel";
+import { getFfmpegStatus, getVideoPanel } from "@/server/video/view";
 
 export const metadata: Metadata = { title: "Documentary" };
 
@@ -51,6 +53,7 @@ async function Documentary({ params }: { params: Promise<{ id: string }> }) {
         orderBy: { createdAt: "desc" },
       })
     : null;
+  const [videoPanel, ffmpeg] = await Promise.all([getVideoPanel(db, id), getFfmpegStatus()]);
   const draft = script?.status === "DRAFT";
   const approved = script?.status === "APPROVED";
 
@@ -188,6 +191,10 @@ async function Documentary({ params }: { params: Promise<{ id: string }> }) {
         )}
         <LexiconForm documentaryId={doc.id} lexicon={doc.lexicon} />
       </section>
+
+      {approved && (
+        <VideoPanel documentaryId={doc.id} title={doc.title} panel={videoPanel} ffmpeg={ffmpeg} />
+      )}
 
       {script && (
         <section aria-labelledby="scenes-title" className="space-y-3">

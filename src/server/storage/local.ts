@@ -1,6 +1,6 @@
 import "server-only";
 import { createHash } from "node:crypto";
-import { mkdir, readFile, rm, stat, writeFile } from "node:fs/promises";
+import { mkdir, open, readFile, rm, stat, writeFile, type FileHandle } from "node:fs/promises";
 import path from "node:path";
 
 import type { StorageProvider, StoredObject } from "@/server/providers/contracts";
@@ -45,6 +45,31 @@ export function createLocalStorage(rootDir: string): StorageProvider {
       } catch (error) {
         if ((error as NodeJS.ErrnoException).code === "ENOENT") return null;
         throw error;
+      }
+    },
+    async size(key) {
+      try {
+        return (await stat(resolve(key))).size;
+      } catch (error) {
+        if ((error as NodeJS.ErrnoException).code === "ENOENT") return null;
+        throw error;
+      }
+    },
+    async getRange(key, start, end) {
+      let handle: FileHandle;
+      try {
+        handle = await open(resolve(key), "r");
+      } catch (error) {
+        if ((error as NodeJS.ErrnoException).code === "ENOENT") return null;
+        throw error;
+      }
+      try {
+        const length = Math.max(0, end - start + 1);
+        const buffer = new Uint8Array(length);
+        const { bytesRead } = await handle.read(buffer, 0, length, start);
+        return buffer.subarray(0, bytesRead);
+      } finally {
+        await handle.close();
       }
     },
     async delete(key) {

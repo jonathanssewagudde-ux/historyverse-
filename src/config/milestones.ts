@@ -70,14 +70,15 @@ export const milestones: Milestone[] = [
   {
     number: 10,
     title: "Documentary Scripts and Narration",
-    status: "in_review",
+    status: "complete",
     summary: "Script generator, scene planner, configurable text-to-speech, audio storage.",
   },
   {
     number: 11,
     title: "Documentary Video Production",
-    status: "planned",
-    summary: "Remotion + FFmpeg rendering, subtitles, music, thumbnails, MP4 export.",
+    status: "in_review",
+    summary:
+      "FFmpeg rendering (16:9 and 9:16), captions, music bed, labelled thumbnails, manifest, MP4 export.",
   },
   {
     number: 12,

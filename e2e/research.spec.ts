@@ -117,7 +117,7 @@ test("an administrator starts a project; research waits honestly for a worker", 
   await expect(research).toContainText("queued");
   await expect(page.getByRole("status").filter({ hasText: "No worker is running" })).toBeVisible();
   // Steps after drafting are labelled with their milestone.
-  await expect(page.getByRole("list", { name: "Pipeline" })).toContainText("Video render · M11");
+  await expect(page.getByRole("list", { name: "Pipeline" })).toContainText("Review · M12");
   await research.getByRole("button", { name: "Cancel" }).click();
   await expect(research).toContainText("cancelled");
 });

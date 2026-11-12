@@ -3,6 +3,7 @@ import "server-only";
 import {
   DeleteObjectCommand,
   GetObjectCommand,
+  HeadObjectCommand,
   NoSuchKey,
   PutObjectCommand,
   S3Client,
@@ -47,6 +48,29 @@ export function createS3Storage(config: S3Config): StorageProvider {
       assertSafeKey(key);
       try {
         const res = await client.send(new GetObjectCommand({ Bucket: config.bucket, Key: key }));
+        return res.Body ? new Uint8Array(await res.Body.transformToByteArray()) : null;
+      } catch (error) {
+        if (error instanceof NoSuchKey || (error as { name?: string }).name === "NoSuchKey") return null;
+        throw error;
+      }
+    },
+    async size(key) {
+      assertSafeKey(key);
+      try {
+        const head = await client.send(new HeadObjectCommand({ Bucket: config.bucket, Key: key }));
+        return head.ContentLength ?? null;
+      } catch (error) {
+        const name = (error as { name?: string }).name;
+        if (name === "NotFound" || name === "NoSuchKey") return null;
+        throw error;
+      }
+    },
+    async getRange(key, start, end) {
+      assertSafeKey(key);
+      try {
+        const res = await client.send(
+          new GetObjectCommand({ Bucket: config.bucket, Key: key, Range: `bytes=${start}-${end}` }),
+        );
         return res.Body ? new Uint8Array(await res.Body.transformToByteArray()) : null;
       } catch (error) {
         if (error instanceof NoSuchKey || (error as { name?: string }).name === "NoSuchKey") return null;

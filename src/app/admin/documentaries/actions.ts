@@ -22,13 +22,21 @@ import {
 } from "@/server/documentary/documentaries";
 import { requestNarration, uploadNarration } from "@/server/documentary/narration";
 import { getStorage } from "@/server/storage";
+import { generateThumbnail, LibraryError, selectThumbnail } from "@/server/video/library";
+import { RenderError, requestRender } from "@/server/video/render";
+import type { VideoFormat } from "@/generated/prisma/client";
 
 export type DocumentaryState = { ok: boolean; message: string } | null;
 
 function failure(error: unknown): { ok: false; message: string } {
   if (error instanceof ForbiddenError)
     return { ok: false, message: "You do not have permission to do that." };
-  if (error instanceof DocumentaryError) return { ok: false, message: error.message };
+  if (
+    error instanceof DocumentaryError ||
+    error instanceof RenderError ||
+    error instanceof LibraryError
+  )
+    return { ok: false, message: error.message };
   return { ok: false, message: "Something went wrong. Nothing was changed." };
 }
 
@@ -132,6 +140,31 @@ export async function documentaryAction(
         });
         break;
       }
+      case "render": {
+        const { queued } = await requestRender(db, actor, text(formData, "documentaryId"), {
+          format: text(formData, "format") as VideoFormat,
+          musicId: text(formData, "musicId") || null,
+          burnCaptions: formData.get("burnCaptions") === "yes",
+        });
+        refresh();
+        return {
+          ok: true,
+          message: queued
+            ? "Render queued. It runs on the worker with FFmpeg (no charge)."
+            : "Render saved; it runs when a worker is available.",
+        };
+      }
+      case "thumbnail":
+        await generateThumbnail(db, getStorage(), actor, {
+          documentaryId: text(formData, "documentaryId"),
+          mediaId: text(formData, "mediaId"),
+          headline: text(formData, "headline"),
+        });
+        refresh();
+        return { ok: true, message: "Thumbnail made." };
+      case "select_thumbnail":
+        await selectThumbnail(db, actor, text(formData, "thumbnailId"));
+        break;
       default:
         return { ok: false, message: "Unknown action." };
     }

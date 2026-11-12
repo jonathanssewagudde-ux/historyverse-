@@ -2,6 +2,7 @@ import Image from "next/image";
 
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { RECONSTRUCTION_LABEL } from "@/lib/media/labels";
 
 /**
  * How an asset relates to the past. This drives labelling and is never optional:
@@ -18,8 +19,7 @@ export type MediaKind =
   | "unclassified"
   | "ai_reconstruction";
 
-export const RECONSTRUCTION_LABEL =
-  "AI-Generated Historical Reconstruction — Not an Authentic Photograph";
+export { RECONSTRUCTION_LABEL };
 
 const kindLabels: Record<Exclude<MediaKind, "ai_reconstruction">, string> = {
   authentic_photo: "Archival photograph",

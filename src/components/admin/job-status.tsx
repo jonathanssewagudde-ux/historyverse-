@@ -2,6 +2,7 @@ const labels: Record<string, string> = {
   QUEUED: "queued",
   AWAITING_APPROVAL: "awaiting cost approval",
   RUNNING: "running",
+  RENDERING: "rendering",
   SUCCEEDED: "done",
   FAILED: "failed",
   CANCELLED: "cancelled",
@@ -11,6 +12,7 @@ const styles: Record<string, string> = {
   SUCCEEDED: "border-lime bg-lime text-lime-foreground",
   FAILED: "border-destructive text-destructive",
   RUNNING: "border-primary text-primary",
+  RENDERING: "border-primary text-primary",
   AWAITING_APPROVAL: "border-dashed border-pink",
 };
 

@@ -4,6 +4,7 @@ import { getImageModel } from "@/server/ai/images";
 import { getLanguageModel } from "@/server/ai/providers";
 import { getSpeech } from "@/server/ai/speech";
 import { createNarrationHandler } from "@/server/documentary/narration";
+import { createRenderHandler } from "@/server/video/render";
 import { getServerEnv } from "@/server/env";
 import { createMediaSearchHandler } from "@/server/media/discovery";
 import { createImageGenerationHandler } from "@/server/media/reconstructions";
@@ -39,5 +40,6 @@ export function createJobHandlers(): JobHandlers {
     }),
     IMAGE_GENERATION: createImageGenerationHandler(() => getImageModel(), getStorage),
     NARRATION: createNarrationHandler(() => getSpeech(), getStorage),
+    RENDER: createRenderHandler(getStorage),
   };
 }
