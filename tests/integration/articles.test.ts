@@ -5,6 +5,7 @@ import type { PrismaClient } from "@/generated/prisma/client";
 import { buildArticleView, listPublishedArticles } from "@/server/content/article-view";
 import { ArticleLoadError, loadArticle, parseArticleFile } from "@/server/content/load-article";
 import { PublishError, publishArticle, unpublishArticle } from "@/server/content/publish";
+import { approveResearch, requestChanges, submitForReview } from "@/server/content/workflow";
 import { getDb } from "@/server/db/client";
 
 /**
@@ -160,6 +161,58 @@ describe("loading", () => {
   });
 });
 
+describe("editorial workflow", () => {
+  it("refuses to publish a draft that has not been reviewed", async () => {
+    const article = await db.article.findUniqueOrThrow({ where: { slug: "buganda" } });
+    await expect(publishArticle(db, editor, article.id)).rejects.toMatchObject({
+      code: "INVALID_STATE",
+    });
+  });
+
+  it("lets a researcher submit, but only an editor approve or send back", async () => {
+    const article = await db.article.findUniqueOrThrow({ where: { slug: "buganda" } });
+    await submitForReview(db, researcher, article.id, "Ready for a look");
+    expect((await db.article.findUniqueOrThrow({ where: { id: article.id } })).status).toBe(
+      "RESEARCH_REVIEW",
+    );
+    await expect(submitForReview(db, researcher, article.id)).rejects.toMatchObject({
+      code: "INVALID_STATE",
+    });
+    await expect(approveResearch(db, researcher, article.id)).rejects.toMatchObject({
+      code: "FORBIDDEN",
+    });
+
+    await requestChanges(db, editor, article.id, "Check the 1953 date against a second source.");
+    expect((await db.article.findUniqueOrThrow({ where: { id: article.id } })).status).toBe(
+      "DRAFT",
+    );
+    const sentBack = await db.editorialReview.findFirstOrThrow({
+      where: { articleId: article.id, decision: "CHANGES_REQUESTED" },
+    });
+    expect(sentBack).toMatchObject({
+      stage: "RESEARCH_REVIEW",
+      reviewerId: editor.id,
+      notes: "Check the 1953 date against a second source.",
+    });
+
+    await submitForReview(db, researcher, article.id);
+    await approveResearch(db, editor, article.id, "Sources check out.");
+    expect((await db.article.findUniqueOrThrow({ where: { id: article.id } })).status).toBe(
+      "EDITORIAL_APPROVAL",
+    );
+    const actions = (
+      await db.auditLog.findMany({ where: { targetId: article.id }, orderBy: { createdAt: "asc" } })
+    ).map((a) => a.action);
+    expect(actions).toEqual(
+      expect.arrayContaining([
+        "article.submitted_for_review",
+        "article.changes_requested",
+        "article.research_approved",
+      ]),
+    );
+  });
+});
+
 describe("publishing", () => {
   it("is refused for researchers", async () => {
     const article = await db.article.findUniqueOrThrow({ where: { slug: "buganda" } });
@@ -190,7 +243,9 @@ describe("publishing", () => {
       true,
     );
 
-    const review = await db.editorialReview.findFirstOrThrow({ where: { articleId: article.id } });
+    const review = await db.editorialReview.findFirstOrThrow({
+      where: { articleId: article.id, stage: "EDITORIAL_APPROVAL" },
+    });
     expect(review).toMatchObject({
       stage: "EDITORIAL_APPROVAL",
       decision: "APPROVED",
@@ -237,7 +292,85 @@ describe("publishing", () => {
     const article = await db.article.findUniqueOrThrow({ where: { slug: "buganda" } });
     await db.article.update({ where: { id: article.id }, data: { status: "RESEARCH_REVIEW" } });
     await expect(loadArticle(db, bugandaFile)).rejects.toThrow(
-      /RESEARCH_REVIEW; it can no longer be replaced/,
+      /is research review; only drafts can be edited/,
+    );
+  });
+});
+
+describe("editor round trip", () => {
+  it("exports an article and saves it back unchanged", async () => {
+    const { exportArticle } = await import("@/server/content/export-article");
+    // A fresh draft from the real file.
+    await db.article.deleteMany({ where: { slug: "buganda" } });
+    const { articleId } = await loadArticle(db, bugandaFile);
+    const before = await buildArticleView(db, { id: articleId }, { publicOnly: false });
+
+    const draft = await exportArticle(db, articleId);
+    expect(draft!.sections[0]!.body).toContain("[@s1|Uganda Before 1900]");
+    const saved = await loadArticle(db, draft, null, { mode: "lenient", articleId });
+    expect(saved.version).toBe(2);
+
+    const after = await buildArticleView(db, { id: articleId }, { publicOnly: false });
+    // Sections and key-date claims are recreated on save, so only their ids may differ.
+    const strip = (v: typeof before) => ({
+      ...v!,
+      version: 0,
+      updatedAt: "",
+      sections: v!.sections.map((s) => ({ ...s, id: "" })),
+      keyDates: v!.keyDates.map((d) => ({ ...d, id: "" })),
+    });
+    expect(strip(after)).toEqual(strip(before));
+  });
+
+  it("saves unfinished drafts in the editor but still refuses them at publication", async () => {
+    const draft = structuredClone(bugandaFile);
+    draft.slug = "unfinished-draft";
+    draft.sections = [{ kind: "INTRODUCTION", body: "No citations yet." }];
+    draft.keyDates = [];
+    expect(() => parseArticleFile(draft)).toThrow(/section has no citations/);
+    const { articleId } = await loadArticle(db, draft, null, { mode: "lenient" });
+    await submitForReview(db, researcher, articleId);
+    await approveResearch(db, editor, articleId);
+    await expect(publishArticle(db, editor, articleId)).rejects.toThrow(
+      /Every section must cite a source.*Introduction/,
+    );
+  });
+
+  it("refuses to create a new article over an existing address", async () => {
+    const draft = structuredClone(bugandaFile);
+    draft.slug = "unfinished-draft";
+    await expect(
+      loadArticle(db, draft, null, { mode: "lenient", createOnly: true }),
+    ).rejects.toThrow(/Another article already uses the address "unfinished-draft"/);
+  });
+
+  it("keeps sources that are listed but not cited yet", async () => {
+    const { exportArticle } = await import("@/server/content/export-article");
+    const article = await db.article.findUniqueOrThrow({ where: { slug: "unfinished-draft" } });
+    await requestChanges(db, editor, article.id, "Add citations before this goes further.");
+    const draft = (await exportArticle(db, article.id))!;
+    draft.sources.push({ key: "later", type: "BOOK", title: "A book to cite later", authors: [] });
+    await loadArticle(db, draft, null, { mode: "lenient", articleId: article.id });
+    const again = (await exportArticle(db, article.id))!;
+    expect(again.sources.map((s) => s.title)).toContain("A book to cite later");
+  });
+
+  it("can rename an article but not onto another article's address", async () => {
+    const { exportArticle } = await import("@/server/content/export-article");
+    const article = await db.article.findUniqueOrThrow({ where: { slug: "buganda" } });
+    const draft = (await exportArticle(db, article.id))!;
+    await expect(
+      loadArticle(db, { ...draft, slug: "unfinished-draft" }, null, {
+        mode: "lenient",
+        articleId: article.id,
+      }),
+    ).rejects.toThrow(/already uses the address/);
+    await loadArticle(db, { ...draft, slug: "kingdom-of-buganda" }, null, {
+      mode: "lenient",
+      articleId: article.id,
+    });
+    expect((await db.article.findUniqueOrThrow({ where: { id: article.id } })).slug).toBe(
+      "kingdom-of-buganda",
     );
   });
 });

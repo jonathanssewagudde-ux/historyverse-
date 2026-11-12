@@ -4,7 +4,11 @@ import type { Prisma, PrismaClient } from "@/generated/prisma/client";
 import { compileCitations } from "@/lib/content/citations";
 import { chronologicalSortKey, type HistoricalDate } from "@/lib/history/dates";
 import { recordAudit } from "@/server/audit";
-import { articleFileSchema, type ArticleFile } from "./article-file";
+import {
+  articleDraftSchema,
+  articleFileSchema,
+  type ArticleDraft,
+} from "./article-file";
 
 export class ArticleLoadError extends Error {
   constructor(message: string) {
@@ -38,8 +42,11 @@ const dateData = (d: HistoricalDate): Prisma.HistoricalDateCreateInput => ({
 });
 
 /** Parse and validate an article data file. Throws ArticleLoadError listing every problem. */
-export function parseArticleFile(raw: unknown): ArticleFile {
-  const result = articleFileSchema.safeParse(raw);
+export function parseArticleFile(
+  raw: unknown,
+  mode: "strict" | "lenient" = "strict",
+): ArticleDraft {
+  const result = (mode === "strict" ? articleFileSchema : articleDraftSchema).safeParse(raw);
   if (!result.success) {
     const problems = result.error.issues.map(
       (i) => `${i.path.join(".") || "(file)"}: ${i.message}`,
@@ -61,29 +68,54 @@ export async function loadArticle(
   db: PrismaClient,
   raw: unknown,
   actor?: { id: string; email?: string | null; role?: string | null } | null,
+  options: {
+    mode?: "strict" | "lenient";
+    /** Update this article (the editor). Without it, the article is matched by slug (files). */
+    articleId?: string;
+    /** Only create: refuse when the slug is taken instead of updating that article. */
+    createOnly?: boolean;
+  } = {},
 ): Promise<LoadReport> {
-  const file = parseArticleFile(raw);
+  const file = parseArticleFile(raw, options.mode ?? "strict");
+  const isUser = Boolean(actor && !actor.id.startsWith("system:"));
   const warnings: string[] = [];
 
   const report = await db.$transaction(
     async (tx) => {
-      const primary = await tx.entity.findUnique({
-        where: { wikidataId: file.primaryEntity.wikidataId },
-      });
+      const ref = file.primaryEntity;
+      const primary = ref.entityId
+        ? await tx.entity.findUnique({ where: { id: ref.entityId } })
+        : await tx.entity.findUnique({ where: { wikidataId: ref.wikidataId } });
       if (!primary) {
         throw new ArticleLoadError(
-          `Primary entity ${file.primaryEntity.wikidataId} is not in the database. Import it first with pnpm ingest:wikidata.`,
+          `Primary entity ${ref.entityId ?? ref.wikidataId} is not in the database. Import it first with pnpm ingest:wikidata.`,
         );
       }
 
-      const existing = await tx.article.findUnique({ where: { slug: file.slug } });
+      const existing = options.articleId
+        ? await tx.article.findUnique({ where: { id: options.articleId } })
+        : await tx.article.findUnique({ where: { slug: file.slug } });
+      if (options.articleId && !existing) throw new ArticleLoadError("Article not found.");
+      if (options.createOnly && existing) {
+        throw new ArticleLoadError(
+          `Another article already uses the address "${file.slug}". Choose a different title or address.`,
+        );
+      }
+      if (
+        existing &&
+        existing.slug !== file.slug &&
+        (await tx.article.findUnique({ where: { slug: file.slug } }))
+      ) {
+        throw new ArticleLoadError(`Another article already uses the address "${file.slug}".`);
+      }
       if (existing && existing.status !== "DRAFT") {
         throw new ArticleLoadError(
-          `Article "${file.slug}" is ${existing.status}; it can no longer be replaced from a file. Edit it in the Studio.`,
+          `Article "${existing.slug}" is ${existing.status.toLowerCase().replace(/_/g, " ")}; only drafts can be edited. Request changes to return it to draft.`,
         );
       }
 
-      // Sources: matched by URL so reloading never duplicates them.
+      // Sources: by id when the editor round-trips them, otherwise matched by URL so reloading
+      // never duplicates them.
       const sourceIds = new Map<string, string>();
       for (const s of file.sources) {
         const data = {
@@ -92,13 +124,18 @@ export async function loadArticle(
           authors: s.authors,
           publisher: s.publisher ?? null,
           publishedYear: s.publishedYear ?? null,
-          url: s.url,
+          url: s.url ?? null,
           repository: s.repository ?? null,
           licenseNote: s.licenseNote ?? null,
           reliabilityNote: s.reliabilityNote ?? null,
-          accessedAt: new Date(`${s.accessedAt}T00:00:00Z`),
+          accessedAt: s.accessedAt ? new Date(`${s.accessedAt}T00:00:00Z`) : null,
         };
-        const found = await tx.source.findFirst({ where: { url: s.url } });
+        const found = s.id
+          ? await tx.source.findUnique({ where: { id: s.id } })
+          : s.url
+            ? await tx.source.findFirst({ where: { url: s.url } })
+            : null;
+        if (s.id && !found) throw new ArticleLoadError(`Source "${s.title}" no longer exists.`);
         const row = found
           ? await tx.source.update({ where: { id: found.id }, data })
           : await tx.source.create({ data });
@@ -109,14 +146,16 @@ export async function loadArticle(
       const articleData = {
         title: file.title,
         subtitle: file.subtitle ?? null,
-        summary: file.summary,
+        summary: file.summary || null,
         template: file.template,
+        slug: file.slug,
         status: "DRAFT" as const,
         primaryEntityId: primary.id,
         containsUnreviewedAi: file.authoring === "ai_draft",
         readingMinutes: Math.max(1, Math.round(wordCount / WORDS_PER_MINUTE)),
         heroMediaId: null,
         publishedAt: null,
+        ...(isUser ? { lastEditedById: actor!.id } : {}),
       };
 
       let articleId: string;
@@ -135,7 +174,9 @@ export async function loadArticle(
       } else {
         version = 1;
         articleId = (
-          await tx.article.create({ data: { ...articleData, slug: file.slug, version } })
+          await tx.article.create({
+            data: { ...articleData, version, ...(isUser ? { authorId: actor!.id } : {}) },
+          })
         ).id;
       }
 
@@ -188,12 +229,14 @@ export async function loadArticle(
       // Related entities.
       let entityCount = 0;
       for (const [position, e] of file.entities.entries()) {
-        const entity = await tx.entity.findUnique({
-          where: { wikidataId: e.wikidataId },
-          select: { id: true },
-        });
+        const entity = e.entityId
+          ? await tx.entity.findUnique({ where: { id: e.entityId }, select: { id: true } })
+          : await tx.entity.findUnique({
+              where: { wikidataId: e.wikidataId },
+              select: { id: true },
+            });
         if (!entity) {
-          warnings.push(`Related entity ${e.wikidataId} is not imported; skipped.`);
+          warnings.push(`Related entity ${e.entityId ?? e.wikidataId} is not imported; skipped.`);
           continue;
         }
         await tx.articleEntity.create({
@@ -205,18 +248,24 @@ export async function loadArticle(
       // Media: the file proposes a classification; approval happens at publication.
       let mediaCount = 0;
       for (const [position, m] of file.media.entries()) {
-        const asset = await tx.mediaAsset.findUnique({
-          where: {
-            sourceName_sourceRef: { sourceName: "Wikimedia Commons", sourceRef: m.sourceRef },
-          },
-        });
+        const asset = m.mediaId
+          ? await tx.mediaAsset.findUnique({ where: { id: m.mediaId } })
+          : await tx.mediaAsset.findUnique({
+              where: {
+                sourceName_sourceRef: { sourceName: "Wikimedia Commons", sourceRef: m.sourceRef! },
+              },
+            });
         if (!asset) {
-          warnings.push(`Media ${m.sourceRef} has not been imported; skipped.`);
+          warnings.push(`Media ${m.mediaId ?? m.sourceRef} has not been imported; skipped.`);
           continue;
         }
         await tx.mediaAsset.update({
           where: { id: asset.id },
-          data: { kind: m.kind, altText: m.altText },
+          // An AI reconstruction keeps its label whatever the draft says.
+          data: {
+            altText: m.altText,
+            ...(asset.kind === "AI_RECONSTRUCTION" ? {} : { kind: m.kind }),
+          },
         });
         await tx.articleMedia.create({
           data: { articleId, mediaId: asset.id, caption: m.caption, position },
@@ -231,9 +280,20 @@ export async function loadArticle(
           articleId,
           version,
           status: "DRAFT",
-          snapshot: file as unknown as Prisma.InputJsonObject,
-          note: existing ? "Draft reloaded from file" : "Draft created from file",
-          editedById: actor && !actor.id.startsWith("system:") ? actor.id : null,
+          // Source ids are recorded so the editor keeps sources that are not cited yet.
+          snapshot: {
+            ...file,
+            sources: file.sources.map((src) => ({ ...src, id: sourceIds.get(src.key) })),
+          } as unknown as Prisma.InputJsonObject,
+          note:
+            options.mode === "lenient"
+              ? existing
+                ? "Draft saved in the Studio"
+                : "Draft created in the Studio"
+              : existing
+                ? "Draft reloaded from file"
+                : "Draft created from file",
+          editedById: isUser ? actor!.id : null,
         },
       });
 

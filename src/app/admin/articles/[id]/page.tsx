@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
 import { AccessDenied } from "@/components/admin/access-denied";
-import { PublishControls } from "@/components/admin/publish-controls";
+import { PublishControls, type WorkflowStatus } from "@/components/admin/publish-controls";
 import { ArticlePage } from "@/components/content/article-page";
 import { hasPermission } from "@/lib/auth/roles";
 import { authorize } from "@/server/auth/session";
@@ -29,27 +29,52 @@ async function Preview({ params }: { params: Promise<{ id: string }> }) {
 
   const article = await buildArticleView(getDb(), { id }, { publicOnly: false });
   if (!article) notFound();
-  const published = article.status === "PUBLISHED" || article.status === "UPDATED";
   const withheld = [article.hero, ...article.gallery]
     .filter((m) => m?.blocker && m.blocker !== "awaiting approval at publication")
     .map((m) => ({ title: m!.title, reason: m!.blocker! }));
+  const uncited = article.sections.flatMap((s, i) =>
+    s.kind !== "FURTHER_READING" && Object.keys(s.refs).length === 0
+      ? [s.heading ?? (s.kind === "INTRODUCTION" ? "Introduction" : `section ${i + 1}`)]
+      : [],
+  );
+  const review = await getDb().editorialReview.findFirst({
+    where: {
+      articleId: id,
+      notes: { not: null },
+      decision: { in: ["CHANGES_REQUESTED", "APPROVED"] },
+    },
+    orderBy: { decidedAt: "desc" },
+    include: { reviewer: { select: { name: true } } },
+  });
+  const role = auth.user.role;
 
   return (
     <div className="space-y-6">
-      {hasPermission(auth.user.role, "article:publish") ? (
-        <div className="mx-auto max-w-6xl">
-          <PublishControls
-            articleId={article.id}
-            published={published}
-            path={article.path}
-            withheld={withheld}
-          />
-        </div>
-      ) : (
-        <p className="mx-auto max-w-6xl rounded-2xl border p-4 text-sm text-muted-foreground">
-          Only editors can approve articles for publication.
-        </p>
-      )}
+      <div className="mx-auto max-w-6xl">
+        <PublishControls
+          articleId={article.id}
+          status={article.status as WorkflowStatus}
+          path={article.path}
+          withheld={withheld}
+          uncited={uncited}
+          can={{
+            edit: hasPermission(role, "article:draft"),
+            submit: hasPermission(role, "review:request"),
+            review: hasPermission(role, "article:review"),
+            publish: hasPermission(role, "article:publish"),
+          }}
+          lastNote={
+            review?.notes
+              ? {
+                  decision:
+                    review.decision === "CHANGES_REQUESTED" ? "Changes requested" : "Approved",
+                  note: review.notes,
+                  by: review.reviewer?.name ?? "an editor",
+                }
+              : null
+          }
+        />
+      </div>
       <div className="overflow-hidden rounded-3xl border bg-background">
         <ArticlePage article={article} preview />
       </div>

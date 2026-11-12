@@ -1,8 +1,10 @@
 import type { Metadata, Route } from "next";
 import Link from "next/link";
+import { Plus } from "lucide-react";
 import { Suspense } from "react";
 
 import { AccessDenied } from "@/components/admin/access-denied";
+import { Button } from "@/components/ui/button";
 import { authorize } from "@/server/auth/session";
 import { getDb } from "@/server/db/client";
 
@@ -42,10 +44,15 @@ async function Articles() {
         <p className="font-mono text-xs text-muted-foreground">ai studio · articles</p>
         <h1 className="mt-2 text-4xl font-extrabold">Articles</h1>
         <p className="mt-2 max-w-2xl text-muted-foreground">
-          Drafts are loaded from reviewable data files with{" "}
-          <code className="font-mono">pnpm article:load</code>. Open an article to preview it
-          exactly as readers will see it and, as an editor, approve it for publication.
+          Write drafts here or load them from reviewable data files with{" "}
+          <code className="font-mono">pnpm article:load</code>. Each article goes through research
+          review and editorial approval before an editor publishes it.
         </p>
+        <Button asChild variant="lime" className="mt-4">
+          <Link href={"/admin/articles/new" as Route}>
+            <Plus aria-hidden /> New article
+          </Link>
+        </Button>
       </section>
       <section aria-label="All articles" className="rounded-3xl border bg-card p-6">
         {articles.length === 0 ? (
@@ -65,7 +72,16 @@ async function Articles() {
                     /{a.slug} · v{a.version} · {a._count.citations} citations
                   </p>
                 </div>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap items-center gap-2">
+                  {a.status === "DRAFT" && (
+                    <Link
+                      href={`/admin/articles/${a.id}/edit` as Route}
+                      className="text-sm font-semibold underline-offset-4 hover:underline"
+                      aria-label={`Edit ${a.title}`}
+                    >
+                      edit
+                    </Link>
+                  )}
                   {a.containsUnreviewedAi && (
                     <span className="rounded-full border border-dashed border-primary px-2 py-0.5 font-mono text-xs text-primary">
                       unreviewed AI draft
