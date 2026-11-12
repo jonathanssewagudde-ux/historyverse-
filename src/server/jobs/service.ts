@@ -30,18 +30,31 @@ export async function createJob(
   db: PrismaClient,
   actor: Actor | null,
   input: {
-    projectId: string;
+    /** Paid jobs need a project: budgets are per project. */
+    projectId: string | null;
     type: JobType;
     input?: Record<string, unknown>;
     costEstimateUsd?: number;
     maxAttempts?: number;
+    /** Identifies "the same step" for jobs without a project, e.g. { scriptId }. */
+    subject?: { key: string; value: string };
   },
 ) {
   const existing = await db.productionJob.findFirst({
-    where: { projectId: input.projectId, type: input.type, status: { in: [...ACTIVE] } },
+    where: {
+      projectId: input.projectId,
+      type: input.type,
+      status: { in: [...ACTIVE] },
+      ...(input.subject
+        ? { input: { path: [input.subject.key], equals: input.subject.value } }
+        : {}),
+    },
   });
   if (existing) throw new JobServiceError("This step is already queued or running.");
   const needsApproval = (input.costEstimateUsd ?? 0) > 0;
+  if (needsApproval && !input.projectId) {
+    throw new JobServiceError("Paid steps need a project with a budget.");
+  }
   const job = await db.productionJob.create({
     data: {
       projectId: input.projectId,

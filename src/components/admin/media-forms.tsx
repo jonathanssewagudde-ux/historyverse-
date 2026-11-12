@@ -13,6 +13,7 @@ import { FormMessage } from "@/components/auth/field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { keepValues } from "@/components/ui/keep-values";
 
 type License = { id: string; name: string; publishable: boolean };
 export type MediaCardData = {
@@ -170,7 +171,7 @@ export function MediaCard({
             AI reconstructions are labelled and managed in the AI Image Studio.
           </p>
         ) : (
-          <form action={act} className="space-y-3">
+          <form onSubmit={keepValues(act)} className="space-y-3">
             <input type="hidden" name="op" value="update" />
             <input type="hidden" name="mediaId" value={asset.id} />
             <div className="grid gap-3 sm:grid-cols-2">
@@ -258,7 +259,7 @@ export function UploadForm({ licenses }: { licenses: License[] }) {
     null,
   );
   return (
-    <form action={upload} className="space-y-3">
+    <form onSubmit={keepValues(upload)} className="space-y-3">
       <div className="space-y-1.5">
         <Label htmlFor={`${id}-f`}>Image file (JPEG, PNG, WebP or GIF, up to 10 MB)</Label>
         <Input

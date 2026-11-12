@@ -39,6 +39,8 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
+      - name: Install eSpeak NG (free local narration engine used by integration tests)
+        run: sudo apt-get update && sudo apt-get install -y espeak-ng
       - run: pnpm install --frozen-lockfile
       - run: pnpm lint
       - run: pnpm typecheck

@@ -2,6 +2,31 @@
 
 All notable changes to HISTORYVERSE are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.10.0] - 2026-11-12: Milestone 10, Documentary Scripts and Narration
+
+### Added
+
+- Documentary Script Studio (`/admin/scripts`):
+  - builds a script from an article's reviewed text in documentary order (hook, background, origins, key developments, important figures, turning points from cited key dates, consequences, significance, conclusion);
+  - every scene keeps its paragraph's citations, and nothing is written by AI;
+  - parts of the structure with no material are left out.
+- Scene planner (`/admin/documentaries/[id]`): narration, visual description, on-screen text, duration, images (approved and publishable only) and citations (the article's own only); reorder, add and remove scenes
+- Script review: submit, approve (editors; the article must be published, and every scene needs narration, a citation and an image), send back with a note, revise as a new version; superseded versions are kept
+- Narration:
+  - engines: eSpeak NG and Piper (free, local), OpenAI and ElevenLabs (paid, stock voices only, a price per million characters required);
+  - a `NARRATION` job narrates approved scripts, scene by scene, with a pronunciation guide;
+  - scene durations follow the audio, and costs are recorded as each scene is spoken.
+- Recorded narration upload (WAV/MP3) with the speaker's consent to publication recorded on the take
+- Every take records its voice licence; earlier takes are kept as history (one current take per scene, enforced by the database)
+- Voiceover Studio (`/admin/voiceovers`), staff-only `/audio/[id]` with byte ranges, live speech-engine test on the Integrations page
+- Project page steps 5–7; paid narration is approved there like images and drafts
+
+### Changed
+
+- Studio editing forms keep what was typed when an action fails (React 19 otherwise resets them)
+- Jobs can belong to no project (free steps); paid steps still require a project budget
+- CI installs eSpeak NG for the narration integration tests
+
 ## [0.9.0] - 2026-11-12: Milestone 9, Image and AI Reconstruction Studio
 
 ### Added

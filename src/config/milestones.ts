@@ -64,13 +64,13 @@ export const milestones: Milestone[] = [
   {
     number: 9,
     title: "Image and AI Reconstruction Studio",
-    status: "in_review",
+    status: "complete",
     summary: "Media library, archival imports, licensing metadata, labelled AI reconstructions.",
   },
   {
     number: 10,
     title: "Documentary Scripts and Narration",
-    status: "planned",
+    status: "in_review",
     summary: "Script generator, scene planner, configurable text-to-speech, audio storage.",
   },
   {

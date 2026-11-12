@@ -144,6 +144,8 @@ model Documentary {
   containsSyntheticMedia Boolean    @default(false)
   /// Sources and licences of everything used, generated at render time.
   manifest        Json?
+  /// Pronunciation guide for narration, e.g. { "Kabaka": "kah-BAH-kah" }.
+  lexicon         Json?
   publishedAt     DateTime?
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
@@ -206,6 +208,9 @@ model DocumentaryScene {
   scriptId          String
   script            DocumentaryScript @relation(fields: [scriptId], references: [id], onDelete: Cascade)
   position          Int
+  /// Part of the documentary structure: hook, background, origins, developments, figures,
+  /// turning-points, consequences, significance or conclusion.
+  beat              String?
   narration         String
   visualDescription String?
   /// Title, date or location label shown on screen.
@@ -273,7 +278,12 @@ model Voiceover {
   language   String            @default("en")
   speed      Decimal           @default(1) @db.Decimal(3, 2)
   storageKey String?
+  mimeType   String?
   durationMs Int?
+  /// The exact text that was spoken (after the pronunciation guide was applied).
+  text       String?
+  /// Licence of the voice itself (synthetic voice model or recording consent), shown before publishing.
+  voiceLicense String?
   status     AssetStatus       @default(PENDING)
   costUsd    Decimal?          @db.Decimal(10, 4)
   /// Superseded takes are kept for narration history.

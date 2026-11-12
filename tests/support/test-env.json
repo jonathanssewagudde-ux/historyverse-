@@ -4,5 +4,8 @@
   "AUTH_RATE_LIMIT_ENABLED": "false",
   "STORAGE_LOCAL_DIR": "./storage-test",
   "REDIS_URL": "redis://127.0.0.1:6379/1",
-  "QUEUE_PREFIX": "historyverse-test"
+  "QUEUE_PREFIX": "historyverse-test",
+  "AI_PROVIDER": "none",
+  "IMAGE_PROVIDER": "none",
+  "TTS_PROVIDER": "none"
 }

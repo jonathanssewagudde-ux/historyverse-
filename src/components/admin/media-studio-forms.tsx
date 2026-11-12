@@ -12,6 +12,7 @@ import { FormMessage } from "@/components/auth/field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { keepValues } from "@/components/ui/keep-values";
 
 const textareaClass =
   "w-full rounded-xl border border-input bg-transparent px-4 py-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 dark:bg-input/30";
@@ -51,7 +52,7 @@ export function CandidateDecision({ candidateId, title }: { candidateId: string;
   const id = useId();
   const [state, act, pending] = useActionState<MediaStudioState, FormData>(discoveryAction, null);
   return (
-    <form action={act} className="space-y-2">
+    <form onSubmit={keepValues(act)} className="space-y-2">
       <input type="hidden" name="candidateId" value={candidateId} />
       <label className="flex items-start gap-2 text-xs">
         <input
@@ -141,7 +142,7 @@ export function ReconstructionPromptForm({ projects }: { projects: PromptFormPro
     );
   }
   return (
-    <form action={act} className="space-y-4">
+    <form onSubmit={keepValues(act)} className="space-y-4">
       <div className="flex flex-wrap items-end gap-2">
         <div className="space-y-1.5">
           <Label htmlFor={`${id}-project`}>Project</Label>
@@ -291,7 +292,7 @@ export function UploadReconstructionForm({ reconstructionId }: { reconstructionI
     null,
   );
   return (
-    <form action={act} className="space-y-2">
+    <form onSubmit={keepValues(act)} className="space-y-2">
       <input type="hidden" name="intent" value="upload" />
       <input type="hidden" name="reconstructionId" value={reconstructionId} />
       <div className="grid gap-2 sm:grid-cols-2">
@@ -334,7 +335,7 @@ export function ReviewReconstructionForm({ reconstructionId }: { reconstructionI
     null,
   );
   return (
-    <form action={act} className="space-y-2">
+    <form onSubmit={keepValues(act)} className="space-y-2">
       <input type="hidden" name="reconstructionId" value={reconstructionId} />
       <Label htmlFor={`${id}-alt`} className="text-xs">
         Describe what the image shows (alt text)

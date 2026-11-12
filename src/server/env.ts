@@ -99,6 +99,17 @@ export const serverEnvSchema = {
     .default("none"),
   TTS_API_KEY: optionalString,
   TTS_BASE_URL: optionalUrl,
+  /** Voice name or id for the provider (e.g. "en-gb" for eSpeak, "alloy" for OpenAI). */
+  TTS_VOICE: optionalString,
+  TTS_MODEL: optionalString,
+  /** USD per million characters for paid speech (required for openai and elevenlabs). */
+  TTS_USD_PER_MILLION_CHARS: z.coerce.number().min(0).optional(),
+  /** The licence of the voice itself, e.g. from a Piper voice's model card. Shown before publishing. */
+  TTS_VOICE_LICENSE: optionalString,
+  ESPEAK_PATH: z.string().default("espeak-ng"),
+  PIPER_PATH: z.string().default("piper"),
+  /** Path to a Piper voice model (.onnx, with its .onnx.json next to it). */
+  PIPER_MODEL: optionalString,
   VIDEO_GEN_PROVIDER: z.enum(["none", "runway", "kling", "google"]).default("none"),
   VIDEO_GEN_API_KEY: optionalString,
 

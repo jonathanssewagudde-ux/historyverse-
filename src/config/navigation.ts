@@ -28,6 +28,8 @@ export const availableRoutes: ReadonlySet<string> = new Set([
   "/admin/events",
   "/admin/media",
   "/admin/ai-images",
+  "/admin/scripts",
+  "/admin/voiceovers",
   "/admin/categories",
   "/admin/citations",
   "/admin/reviews",
