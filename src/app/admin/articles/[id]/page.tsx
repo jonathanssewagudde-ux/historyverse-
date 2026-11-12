@@ -37,15 +37,19 @@ async function Preview({ params }: { params: Promise<{ id: string }> }) {
       ? [s.heading ?? (s.kind === "INTRODUCTION" ? "Introduction" : `section ${i + 1}`)]
       : [],
   );
-  const review = await getDb().editorialReview.findFirst({
-    where: {
-      articleId: id,
-      notes: { not: null },
-      decision: { in: ["CHANGES_REQUESTED", "APPROVED"] },
-    },
+  // The latest decision, shown only when it explains the current state: why a draft was sent
+  // back, or what the research reviewer noted before editorial approval.
+  const latest = await getDb().editorialReview.findFirst({
+    where: { articleId: id, decision: { in: ["CHANGES_REQUESTED", "APPROVED"] } },
     orderBy: { decidedAt: "desc" },
     include: { reviewer: { select: { name: true } } },
   });
+  const review =
+    latest?.notes &&
+    ((article.status === "DRAFT" && latest.decision === "CHANGES_REQUESTED") ||
+      (article.status === "EDITORIAL_APPROVAL" && latest.stage === "RESEARCH_REVIEW"))
+      ? latest
+      : null;
   const role = auth.user.role;
 
   return (

@@ -361,4 +361,9 @@ test("an editor can unpublish with a reason, and the page disappears", async ({ 
   await page.getByRole("button", { name: "Unpublish" }).click();
   await expect(page.locator("#main").getByRole("status")).toHaveText(/Unpublished/);
   expect((await page.goto("/kingdoms/buganda"))?.status()).toBe(404);
+  // Back in draft, the old publication decision is not presented as a current note.
+  await page.goto(`/admin/articles/${await articleId()}`);
+  const workflow = page.getByRole("region", { name: "Draft" });
+  await expect(workflow.getByRole("button", { name: "Submit for research review" })).toBeVisible();
+  await expect(workflow).not.toContainText("Approved ·");
 });
