@@ -86,7 +86,12 @@ export const serverEnvSchema = {
   EMBEDDING_MODEL: optionalString,
 
   // AI: media
-  IMAGE_PROVIDER: z.enum(["none", "openai", "gemini", "stability", "comfyui"]).default("none"),
+  IMAGE_PROVIDER: z
+    .enum(["none", "openai", "openai-compatible", "gemini", "stability", "comfyui"])
+    .default("none"),
+  IMAGE_MODEL: optionalString,
+  /** USD per generated image, required before any image provider can be used (0 for local). */
+  IMAGE_USD_PER_IMAGE: z.coerce.number().min(0).optional(),
   IMAGE_API_KEY: optionalString,
   IMAGE_BASE_URL: optionalUrl,
   TTS_PROVIDER: z

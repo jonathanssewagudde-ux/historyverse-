@@ -2,6 +2,32 @@
 
 All notable changes to HISTORYVERSE are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.9.0] - 2026-11-12: Milestone 9, Image and AI Reconstruction Studio
+
+### Added
+
+- Archival media discovery (pipeline step 3): a job searches Wikimedia Commons (and the Library of Congress when enabled) for the project's subject, recording each image with the licence and rights wording its archive states
+- Selecting a discovered image requires confirming the licence on the source page. The image then enters the media library unclassified and pending, linked to the subject, with who checked the licence. Rejecting needs a reason
+- AI Image Studio (`/admin/ai-images`):
+  - each reconstruction prompt must link at least one source and say what it supports;
+  - it must state what rests on evidence and what is interpretation;
+  - a starting prompt is built from the subject, with placeholders that must be filled from the sources.
+- Image generation (`IMAGE_GENERATION` job):
+  - adapters for OpenAI, any OpenAI-compatible server, and Stability AI;
+  - a per-image price (`IMAGE_USD_PER_IMAGE`) is required, and administrators approve spending within the budgets;
+  - each image is stored as `AI_RECONSTRUCTION`, with variations recorded and the cost recorded.
+- Upload an image made with another tool as a reconstruction (labelled identically; no generator or spending needed)
+- Editor review of reconstructions: approval requires a description, and the alt text always starts with "AI reconstruction:"
+- Approved reconstructions can be attached to articles; their label cannot be changed in the editor
+- S3-compatible storage driver (`STORAGE_DRIVER=s3`) with signed URLs, tested against a local S3 server (s3rver)
+- Media library shows who checked each licence; approving an upload records the editor's check
+- `IMAGE_MODEL`, `IMAGE_USD_PER_IMAGE`; `IMAGE_PROVIDER=openai-compatible`
+
+### Changed
+
+- Publishing never approves an AI reconstruction in bulk: an unreviewed reconstruction stays hidden
+- An image generator without a per-image price counts as not configured
+
 ## [0.8.0] - 2026-11-12: Milestone 8, AI Historical Research Engine
 
 ### Added

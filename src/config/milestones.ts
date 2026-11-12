@@ -58,13 +58,13 @@ export const milestones: Milestone[] = [
   {
     number: 8,
     title: "AI Historical Research Engine",
-    status: "in_review",
+    status: "complete",
     summary: "Generate History Project, source retrieval, evidence tracking, AI drafts, job queue.",
   },
   {
     number: 9,
     title: "Image and AI Reconstruction Studio",
-    status: "planned",
+    status: "in_review",
     summary: "Media library, archival imports, licensing metadata, labelled AI reconstructions.",
   },
   {

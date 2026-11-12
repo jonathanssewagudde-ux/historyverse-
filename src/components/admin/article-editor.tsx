@@ -726,27 +726,36 @@ export function ArticleEditor({
                   {asset && !asset.stored && " · file not downloaded"}
                 </p>
                 <div className="grid gap-3 sm:grid-cols-[14rem_1fr]">
-                  <div className="space-y-1.5">
-                    <Label htmlFor={f(`m-kind-${i}`)}>What it is</Label>
-                    <select
-                      id={f(`m-kind-${i}`)}
-                      className={selectClass}
-                      value={m.kind}
-                      onChange={(e) =>
-                        update({
-                          media: draft.media.map((x, j) =>
-                            j === i ? { ...x, kind: e.target.value as typeof m.kind } : x,
-                          ),
-                        })
-                      }
-                    >
-                      {MEDIA_KINDS.map((k) => (
-                        <option key={k} value={k}>
-                          {label(k)}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                  {asset?.kind === "AI_RECONSTRUCTION" ? (
+                    <div className="space-y-1.5">
+                      <p className="text-sm font-medium">What it is</p>
+                      <p className="rounded-xl border border-dashed border-amber-500 px-3 py-2 text-sm">
+                        AI reconstruction — always labelled, cannot be changed
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="space-y-1.5">
+                      <Label htmlFor={f(`m-kind-${i}`)}>What it is</Label>
+                      <select
+                        id={f(`m-kind-${i}`)}
+                        className={selectClass}
+                        value={m.kind}
+                        onChange={(e) =>
+                          update({
+                            media: draft.media.map((x, j) =>
+                              j === i ? { ...x, kind: e.target.value as typeof m.kind } : x,
+                            ),
+                          })
+                        }
+                      >
+                        {MEDIA_KINDS.map((k) => (
+                          <option key={k} value={k}>
+                            {label(k)}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
                   <TextField
                     id={`m-cap-${i}`}
                     label="Caption"

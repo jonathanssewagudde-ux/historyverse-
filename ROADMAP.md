@@ -12,8 +12,8 @@ The milestone list in `src/config/milestones.ts` mirrors this file.
 | 5   | Historical Article System                  | ✅ Complete                  |
 | 6   | Historical Search Engine                   | ✅ Complete                  |
 | 7   | Administrator CMS                          | ✅ Complete                  |
-| 8   | AI Historical Research Engine              | 🔍 Complete, awaiting review |
-| 9   | Image and AI Reconstruction Studio         | Planned                      |
+| 8   | AI Historical Research Engine              | ✅ Complete                  |
+| 9   | Image and AI Reconstruction Studio         | 🔍 Complete, awaiting review |
 | 10  | Documentary Scripts and Narration          | Planned                      |
 | 11  | Documentary Video Production Studio        | Planned                      |
 | 12  | YouTube Integration                        | Planned                      |
@@ -175,7 +175,7 @@ At the owner's request after review, the UI moved from the original editorial "m
 - Settings are environment-based; there is no in-browser settings editor, by design.
 - No email notifications for reviews or reader reports yet (no email provider is configured).
 
-## Milestone 8: AI Historical Research Engine 🔍 (in review)
+## Milestone 8: AI Historical Research Engine ✅
 
 - **Job system:** Redis + BullMQ (`pnpm worker`). The `production_jobs` row is the source of truth. A queue delivery only asks a worker to run that row; the row decides whether it runs, so duplicates are harmless.
   - Progress and the current step are recorded.
@@ -216,9 +216,39 @@ At the owner's request after review, the UI moved from the original editorial "m
 - Steps 3–11 of the pipeline (media discovery, reconstructions, script, narration, video, YouTube): Milestones 9–12.
 - Retrieval from scholarly full text (JSTOR, archives with OCR) and semantic search: later milestones, and they need licensed access.
 
-## Milestone 9: next steps
+## Milestone 9: Image and AI Reconstruction Studio 🔍 (in review)
 
-Image and AI Reconstruction Studio: archival media discovery for a project (Wikimedia Commons, Library of Congress, Europeana with a key), licence verification, and evidence-based reconstruction prompts. Images are generated only with a configured provider and an approved budget, and always labelled as AI reconstructions.
+- **Archival media discovery (pipeline step 3):** a `MEDIA_SEARCH` job searches Wikimedia Commons for the subject (and the Library of Congress when `LOC_ENABLED`; its search results carry no licence, so those images are marked UNKNOWN).
+  - Each image is a **candidate** with the archive's stated licence, rights wording, creator, date and a link to its page.
+  - **Selecting** one requires confirming the licence was checked on the source page. It then enters the media library as unclassified and pending, linked to the subject, recording who checked the licence. **Rejecting** needs a reason.
+  - The database refuses a decision without a reviewer.
+  - Live run on the Buganda project: 30 Commons images (17 CC0, 9 CC BY-SA 4.0, 3 CC BY 2.0, 1 public domain). Some show why a person must check: a kingdom logo labelled CC0 by its uploader.
+- **AI Image Studio (`/admin/ai-images`, pipeline step 4):**
+  - A reconstruction prompt must link at least one source, saying what each supports, and state what rests on evidence and what is interpretation. These notes travel with every image made from it.
+  - "Start from the subject" builds a starting prompt from the subject, place and period, with `[describe …]` placeholders that must be replaced from the sources before saving.
+- **Generation (`IMAGE_GENERATION` job):** adapters for `openai`, `openai-compatible` (for example a local server) and `stability`. `gemini` and `comfyui` are not built.
+  - A per-image price is required (`IMAGE_USD_PER_IMAGE`; 0 for a free local server).
+  - Paid generation waits for an administrator's approval within the project budget and the monthly ceiling. Cost is recorded per image returned.
+  - Images are stored as `AI_RECONSTRUCTION` (licence HISTORYVERSE original), with an attribution that says "Not an authentic image". Variations are recorded with the same prompt and evidence.
+- **Without a generator:** write the prompt, make the image with any tool and upload it. It is labelled exactly the same, and the tool is named in the attribution.
+- **Review:** editors approve a reconstruction only with a description. Its alt text always starts with "AI reconstruction:". Publication never approves reconstructions in bulk, so an unreviewed one stays hidden. The database already prevents relabelling a reconstruction as authentic (Milestone 3 trigger).
+- **Articles:** approved reconstructions can be attached in the editor, where their label is fixed. Public pages show the label on the image and in the caption.
+- **Storage:** an S3-compatible driver (`STORAGE_DRIVER=s3`: AWS S3, R2, MinIO and similar) with private objects and short-lived signed URLs. It is tested against s3rver, a local S3 server, with no cloud account involved.
+- **Tests:** 218 unit/component, 115 integration (including a recorded Commons search response, image generation with a test double, and S3), 100 end-to-end.
+
+### Not verified, and why
+
+- **No image generator has been configured or called.** Generation is tested end to end with a test double: approval, storage, labelling, variations, costs and failure. It has never run against a real image API, because that needs an API key and a budget (the owner's decision) or a local server.
+- The S3 driver is tested against a local emulator, not a real cloud bucket.
+
+### Not done (planned)
+
+- Gemini and ComfyUI image adapters; Europeana and Smithsonian search (they need API keys).
+- Documentary scripts, scene plans and narration: Milestone 10.
+
+## Milestone 10: next steps
+
+Documentary Scripts and Narration: script generator following the documentary structure (hook → … → conclusion), scene planner with references per scene, configurable text-to-speech (local Piper/eSpeak free, or paid with approval), uploaded recordings, audio storage.
 
 ## Continuation notes (for the next coding session)
 

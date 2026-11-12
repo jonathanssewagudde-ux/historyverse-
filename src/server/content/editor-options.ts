@@ -13,7 +13,14 @@ export async function loadEditorOptions(db: PrismaClient): Promise<EditorOptions
       take: 2000,
     }),
     db.mediaAsset.findMany({
-      where: { deletedAt: null, kind: { not: "AI_RECONSTRUCTION" } },
+      // Reconstructions are offered once an editor has approved them in the AI Image Studio.
+      where: {
+        deletedAt: null,
+        OR: [
+          { kind: { not: "AI_RECONSTRUCTION" } },
+          { kind: "AI_RECONSTRUCTION", reviewStatus: "APPROVED" },
+        ],
+      },
       orderBy: { createdAt: "desc" },
       include: { license: true },
       take: 500,

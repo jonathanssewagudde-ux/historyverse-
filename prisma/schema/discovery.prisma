@@ -1,0 +1,64 @@
+// Media discovery and reconstruction evidence (Milestone 9).
+
+enum MediaCandidateStatus {
+  CANDIDATE
+  SELECTED
+  REJECTED
+}
+
+/// An image found in an archive for a project. A candidate, not a library asset: it enters the
+/// media library only when a person selects it and confirms its licence on the source page.
+model MediaCandidate {
+  id          String               @id @default(cuid())
+  projectId   String
+  project     ContentProject       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  /// "commons" or "loc".
+  provider    String
+  /// Identifier in the provider, e.g. "File:Mutesa I.jpg" or a loc.gov item URL.
+  sourceRef   String
+  title       String
+  /// Page describing the item and its rights (where the licence is checked).
+  sourceUrl   String
+  /// Small preview served by the provider (never stored by HISTORYVERSE).
+  thumbnailUrl String?
+  mimeType    String?
+  width       Int?
+  height      Int?
+  creator     String?
+  dateText    String?
+  description String?
+  /// Licence as stated by the provider, mapped to a MediaLicense code when recognised.
+  licenseCode String
+  licenseName String
+  /// Rights wording exactly as the provider states it.
+  rightsStatement String?
+  attribution String
+  retrievedAt DateTime
+  status      MediaCandidateStatus @default(CANDIDATE)
+  mediaId     String?              @unique
+  media       MediaAsset?          @relation(fields: [mediaId], references: [id], onDelete: SetNull)
+  reviewedById String?
+  reviewedBy  User?                @relation("MediaCandidateReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+  reviewedAt  DateTime?
+  note        String?
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+
+  @@unique([projectId, provider, sourceRef])
+  @@index([projectId, status])
+  @@map("media_candidates")
+}
+
+/// Evidence a reconstruction rests on: the sources a person linked to it, with what each supports.
+model ReconstructionSource {
+  reconstructionId String
+  reconstruction   AIReconstruction @relation(fields: [reconstructionId], references: [id], onDelete: Cascade)
+  sourceId         String
+  source           Source           @relation(fields: [sourceId], references: [id], onDelete: Restrict)
+  /// What this source tells us about the scene (clothing, architecture, place…).
+  note             String
+
+  @@id([reconstructionId, sourceId])
+  @@index([sourceId])
+  @@map("reconstruction_sources")
+}

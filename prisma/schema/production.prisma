@@ -35,6 +35,7 @@ model ContentProject {
 
   jobs            ProductionJob[]
   researchSources ResearchSource[]
+  mediaCandidates MediaCandidate[]
   documentaries   Documentary[]
   reconstructions AIReconstruction[]
 

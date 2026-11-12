@@ -49,6 +49,21 @@ Implemented in Milestone 8:
 
 Example: `AI_PROVIDER=anthropic`, `AI_MODEL=claude-opus-5-5`, `AI_API_KEY=…`. Nothing paid runs until an administrator sets a project budget and `AI_MONTHLY_BUDGET_USD`, and approves each job's estimate.
 
+### Image generation providers (Milestone 9)
+
+| `IMAGE_PROVIDER`    | Adapter                                     | Needs                                                              |
+| ------------------- | ------------------------------------------- | ------------------------------------------------------------------ |
+| `openai`            | Images API                                  | `IMAGE_API_KEY`, `IMAGE_MODEL`, `IMAGE_USD_PER_IMAGE`              |
+| `openai-compatible` | Images API at `IMAGE_BASE_URL` (e.g. local) | `IMAGE_BASE_URL`, `IMAGE_MODEL`, `IMAGE_USD_PER_IMAGE` (0 if free) |
+| `stability`         | Stable Image API                            | `IMAGE_API_KEY`, `IMAGE_USD_PER_IMAGE`                             |
+| `gemini`, `comfyui` | Not built yet                               | —                                                                  |
+
+Every generated image is stored and shown as an AI reconstruction. Without a provider, images made elsewhere can be uploaded and are labelled the same way.
+
+### Storage (Milestone 9)
+
+`STORAGE_DRIVER=local` (default) or `s3` with `S3_REGION`, `S3_BUCKET`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY` and, for S3-compatible services, `S3_ENDPOINT`. Objects stay private.
+
 ### Text-to-speech providers
 
 `piper` and `espeak` (local, free) · `openai`, `elevenlabs`, `google` (paid). No real person's voice is cloned without documented authorization.
