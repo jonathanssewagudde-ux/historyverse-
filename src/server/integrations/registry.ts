@@ -1,3 +1,4 @@
+import { priceFor } from "@/server/ai/pricing";
 import type { EnvKey, ServerEnv } from "@/server/env";
 import type { IntegrationDefinition } from "./types";
 
@@ -98,6 +99,7 @@ export const integrations: IntegrationDefinition[] = [
     secretEnvKeys: ["REDIS_URL"],
     missing: (env) => need(env, "REDIS_URL"),
     fallback: "Site browsing and manual editing keep working; production jobs cannot run.",
+    implemented: true,
   },
   {
     id: "ffmpeg",
@@ -193,17 +195,32 @@ export const integrations: IntegrationDefinition[] = [
     milestone: 8,
     capabilities: ["Drafting", "Summarisation", "Retrieval-augmented answers"],
     billable: true,
-    envKeys: ["AI_PROVIDER", "AI_MODEL", "AI_BASE_URL", "AI_API_KEY"],
+    envKeys: [
+      "AI_PROVIDER",
+      "AI_MODEL",
+      "AI_BASE_URL",
+      "AI_API_KEY",
+      "AI_INPUT_USD_PER_MTOK",
+      "AI_OUTPUT_USD_PER_MTOK",
+    ],
     secretEnvKeys: ["AI_API_KEY"],
-    missing: (env) =>
-      provider(env, "AI_PROVIDER", {
+    missing: (env) => {
+      const missing = provider(env, "AI_PROVIDER", {
         ollama: ["AI_MODEL"],
         "openai-compatible": ["AI_BASE_URL", "AI_MODEL"],
         anthropic: ["AI_API_KEY", "AI_MODEL"],
         openai: ["AI_API_KEY", "AI_MODEL"],
         gemini: ["AI_API_KEY", "AI_MODEL"],
-      }),
-    fallback: "Manual article editing, source retrieval and search keep working.",
+      });
+      // A paid model needs a known price, or costs could not be estimated before spending.
+      if (missing.length === 0 && !priceFor(env)) {
+        missing.push("AI_INPUT_USD_PER_MTOK", "AI_OUTPUT_USD_PER_MTOK");
+      }
+      return missing;
+    },
+    fallback:
+      "Manual article editing, research and source review keep working; AI drafts are unavailable.",
+    implemented: true,
   },
   {
     id: "tts",

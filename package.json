@@ -1,6 +1,6 @@
 {
   "name": "historyverse",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -28,12 +28,16 @@
     "ingest:wikidata": "tsx --conditions=react-server scripts/ingest-wikidata.ts",
     "article:load": "tsx --conditions=react-server scripts/load-article.ts",
     "media:fetch": "tsx --conditions=react-server scripts/fetch-media.ts",
-    "search:reindex": "tsx --conditions=react-server scripts/reindex-search.ts"
+    "search:reindex": "tsx --conditions=react-server scripts/reindex-search.ts",
+    "worker": "tsx --conditions=react-server scripts/worker.ts",
+    "project:create": "tsx --conditions=react-server scripts/create-project.ts"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^1.8.0",
     "@prisma/adapter-pg": "7.10.1",
     "@prisma/client": "7.10.1",
     "better-auth": "1.7.19",
+    "bullmq": "^5.81.5",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^1.70.0",

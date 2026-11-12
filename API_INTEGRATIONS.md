@@ -37,6 +37,18 @@ Wikimedia requires a descriptive User-Agent with contact information ([policy](h
 
 `ollama` (local, free), `openai-compatible` (any self-hosted server such as vLLM or llama.cpp), `anthropic`, `openai`, `gemini`. A ChatGPT, Claude or Gemini _subscription_ does not include API credits: API keys are billed separately.
 
+Implemented in Milestone 8:
+
+| `AI_PROVIDER`       | Adapter                                            | Price used for estimates                                    |
+| ------------------- | -------------------------------------------------- | ----------------------------------------------------------- |
+| `anthropic`         | Official SDK (`@anthropic-ai/sdk`), streamed       | Built-in list price for current Claude models, or the env   |
+| `ollama`            | OpenAI-compatible endpoint on localhost            | Free (local)                                                |
+| `openai`            | Chat Completions over HTTPS                        | `AI_INPUT_USD_PER_MTOK` / `AI_OUTPUT_USD_PER_MTOK` required |
+| `openai-compatible` | Chat Completions at `AI_BASE_URL`                  | `AI_INPUT_USD_PER_MTOK` / `AI_OUTPUT_USD_PER_MTOK` required |
+| `gemini`            | Not built; use Gemini's OpenAI-compatible endpoint | —                                                           |
+
+Example: `AI_PROVIDER=anthropic`, `AI_MODEL=claude-opus-5-5`, `AI_API_KEY=…`. Nothing paid runs until an administrator sets a project budget and `AI_MONTHLY_BUDGET_USD`, and approves each job's estimate.
+
 ### Text-to-speech providers
 
 `piper` and `espeak` (local, free) · `openai`, `elevenlabs`, `google` (paid). No real person's voice is cloned without documented authorization.

@@ -7,7 +7,7 @@ HISTORYVERSE is an AI-assisted historical knowledge platform made of two applica
 - **Public platform:** a sourced historical encyclopedia with articles, archival media, maps, timelines, family trees, documentaries and a grounded AI history assistant.
 - **HISTORYVERSE AI Studio** (`/admin`): a private studio for research, article editing, media licensing, documentary scripting, narration, video rendering and YouTube publishing.
 
-> **Status:** Milestones 1–6 are complete. Milestone 7 (Administrator CMS) is awaiting review. See [ROADMAP.md](./ROADMAP.md).
+> **Status:** Milestones 1–7 are complete. Milestone 8 (AI Historical Research Engine) is awaiting review. See [ROADMAP.md](./ROADMAP.md).
 > No historical content is published yet. Content arrives from Milestone 4 onward, sourced and reviewed.
 
 ## Requirements
@@ -29,21 +29,24 @@ cp .env.example .env.local   # set DATABASE_URL and AUTH_SECRET (openssl rand -b
 pnpm db:migrate && pnpm db:seed
 ADMIN_EMAIL=you@example.com ADMIN_PASSWORD='a long passphrase' pnpm admin:create
 pnpm dev                     # http://localhost:3000
+pnpm worker                  # background jobs (research, drafts); needs REDIS_URL
 ```
 
 ## Scripts
 
-| Command          | What it does                                                             |
-| ---------------- | ------------------------------------------------------------------------ |
-| `pnpm dev`       | Development server (Turbopack)                                           |
-| `pnpm build`     | Production build                                                         |
-| `pnpm start`     | Serve the production build                                               |
-| `pnpm lint`      | ESLint (zero warnings allowed)                                           |
-| `pnpm typecheck` | Generate route types, then `tsc --noEmit`                                |
-| `pnpm format`    | Prettier (with Tailwind class sorting)                                   |
-| `pnpm test`      | Vitest unit and component tests                                          |
-| `pnpm test:e2e`  | Playwright end-to-end tests, desktop and mobile (run `pnpm build` first) |
-| `pnpm check`     | lint + typecheck + format check + unit tests                             |
+| Command                                    | What it does                                                             |
+| ------------------------------------------ | ------------------------------------------------------------------------ |
+| `pnpm dev`                                 | Development server (Turbopack)                                           |
+| `pnpm build`                               | Production build                                                         |
+| `pnpm start`                               | Serve the production build                                               |
+| `pnpm lint`                                | ESLint (zero warnings allowed)                                           |
+| `pnpm typecheck`                           | Generate route types, then `tsc --noEmit`                                |
+| `pnpm format`                              | Prettier (with Tailwind class sorting)                                   |
+| `pnpm test`                                | Vitest unit and component tests                                          |
+| `pnpm test:e2e`                            | Playwright end-to-end tests, desktop and mobile (run `pnpm build` first) |
+| `pnpm check`                               | lint + typecheck + format check + unit tests                             |
+| `pnpm worker`                              | Background job worker (research, AI drafts)                              |
+| `pnpm project:create "Topic" [--qid Q123]` | Start a Generate History Project from the command line                   |
 
 Health probe: `GET /api/health`.
 
@@ -63,9 +66,10 @@ Health probe: `GET /api/health`.
 
 ## Known limitations
 
-- Public pages: homepage, kingdoms, countries, people, search, explore, sign-in, sign-up and profile. The AI Studio (`/admin`) has the CMS modules of Milestone 7. Navigation shows every later route as unavailable, with the milestone that delivers it.
+- Public pages: homepage, kingdoms, countries, people, search, explore, sign-in, sign-up and profile. The AI Studio (`/admin`) has the CMS of Milestone 7 and the research engine of Milestone 8. Navigation shows every later route as unavailable, with the milestone that delivers it.
 - No email delivery yet, so there is no email verification or self-service password reset. Super Administrators assign roles at `/admin/users` (or with `pnpm user:role`).
 - The first article (Buganda) is a draft awaiting editorial approval; until an editor publishes it, the public sections show empty states.
 - Homepage topic cards are planned subjects (name and region only). Search covers published articles only, so it stays small until more articles are approved.
 - Scheduled publishing needs a scheduler calling `POST /api/cron/publish` with `CRON_SECRET`; without one, editors run due publications from the calendar.
+- AI drafting needs a language model: an API key plus an approved budget, or a free local model (Ollama). None is configured by default, so drafting reports that it is unavailable; research and source review work without one.
 - The shadcn/ui CLI could not reach `ui.shadcn.com` from the build environment, so the components in `src/components/ui` were written by hand to the shadcn source conventions. `pnpm dlx shadcn add <component>` works on any network that allows that host.

@@ -11,8 +11,8 @@ The milestone list in `src/config/milestones.ts` mirrors this file.
 | 4   | Historical Data Integration                | ✅ Complete                  |
 | 5   | Historical Article System                  | ✅ Complete                  |
 | 6   | Historical Search Engine                   | ✅ Complete                  |
-| 7   | Administrator CMS                          | 🔍 Complete, awaiting review |
-| 8   | AI Historical Research Engine              | Planned                      |
+| 7   | Administrator CMS                          | ✅ Complete                  |
+| 8   | AI Historical Research Engine              | 🔍 Complete, awaiting review |
 | 9   | Image and AI Reconstruction Studio         | Planned                      |
 | 10  | Documentary Scripts and Narration          | Planned                      |
 | 11  | Documentary Video Production Studio        | Planned                      |
@@ -140,7 +140,7 @@ At the owner's request after review, the UI moved from the original editorial "m
 - Searching unpublished, imported records: that belongs in the Studio (Milestone 7).
 - "Popular searches" ranked by real usage requires analytics (Milestone 15).
 
-## Milestone 7: Administrator CMS 🔍 (in review)
+## Milestone 7: Administrator CMS ✅
 
 - **Editorial workflow:** articles move draft → research review → editorial approval → published.
   - Researchers submit drafts. Editors approve the research, request changes (with a note the author sees) or publish.
@@ -175,9 +175,50 @@ At the owner's request after review, the UI moved from the original editorial "m
 - Settings are environment-based; there is no in-browser settings editor, by design.
 - No email notifications for reviews or reader reports yet (no email provider is configured).
 
-## Milestone 8: next steps
+## Milestone 8: AI Historical Research Engine 🔍 (in review)
 
-AI Historical Research Engine: Generate History Project, source retrieval with evidence tracking, AI-assisted drafts that enter this editorial workflow as unreviewed drafts, and the job queue (Redis + BullMQ).
+- **Job system:** Redis + BullMQ (`pnpm worker`). The `production_jobs` row is the source of truth. A queue delivery only asks a worker to run that row; the row decides whether it runs, so duplicates are harmless.
+  - Progress and the current step are recorded.
+  - People can cancel a job; it stops at its next safe point.
+  - Transient failures (rate limits, network) are retried with backoff. Other failures, and exhausted attempts, end as `FAILED` with the reason.
+  - When a worker starts, it re-queues jobs that were waiting or interrupted.
+  - `QUEUE_PREFIX` keeps environments that share a Redis server apart.
+- **Generate History Project** (administrators): topic, optional Wikidata id, budget (default $0).
+- **Step 1, research:** free sources only, no AI.
+  - It finds the subject on Wikidata, or uses the id given, and shows the other matches.
+  - It imports the subject with provenance, reads the Wikipedia article by section (CC BY-SA, a research input only), and finds books in Open Library. Other editions count once. The Library of Congress is searched when `LOC_ENABLED`.
+  - The report lists the dated statements and any **differing accounts**: two different values for a property that holds one date (founding, dissolution, birth, death). These are presented side by side, not resolved.
+  - A live run on "The Complete History of the Buganda Kingdom" found Q473748 by search, imported it, and gathered 14 Wikipedia sections and 10 catalogue books, waiting out a Wikidata rate limit along the way.
+- **Source-set review (checkpoint):** a person accepts or rejects each source (rejecting needs a reason), then approves the set. Approval locks it. Reopening it cancels draft jobs based on it. The database refuses a decision without a reviewer.
+- **Step 2, AI article draft:**
+  - The model sees only the accepted evidence: Wikipedia sections and imported Wikidata statements. Books are cited only as further reading, never for facts.
+  - After generation the draft is checked, whatever the model was told:
+    - every sentence must cite an existing excerpt;
+    - sentences that don't are removed and listed for the reviewer;
+    - key dates whose year is not in the cited excerpt are removed;
+    - passages of ten or more words copied from the sources are flagged.
+  - The draft is saved as an **unreviewed AI draft** (`containsUnreviewedAi`, claims `AI_DRAFT`/`UNVERIFIED`) in the normal editorial workflow, so it cannot be published without research review and editorial approval.
+- **Language models:** `anthropic` (official SDK; structured JSON output; refusals stop the job), `ollama`, `openai`, `openai-compatible`.
+- **Spending:**
+  - Every paid job gets an estimate first. It is an upper bound: estimated prompt tokens plus the full output budget.
+  - It waits in `AWAITING_APPROVAL` until an administrator approves it, within the project budget **and** `AI_MONTHLY_BUDGET_USD`. Both default to $0.
+  - Actual cost is computed from the provider's reported usage and recorded as soon as the call returns, even if the job then fails. Paid jobs are not retried automatically.
+  - Prices: built in for current Claude models; otherwise `AI_INPUT_USD_PER_MTOK` / `AI_OUTPUT_USD_PER_MTOK` are required. An unknown price means the model counts as not configured.
+- **Tests:** 215 unit/component, 102 integration (including a real BullMQ worker round-trip and research against recorded API responses), 96 end-to-end.
+
+### Not verified, and why
+
+- **No language model has been configured or called.** Drafting is tested end to end with a test-double model, including the grounding checks, cost recording, refusals and invalid output. It has never run against a real model, because that needs either an API key and an approved budget (owner's decision) or a local model (Ollama could not be downloaded in this environment).
+- Automatic server-side "refusal fallback" to another model is deliberately not enabled: it would bill a different model than the one whose cost was approved.
+
+### Not done (planned)
+
+- Steps 3–11 of the pipeline (media discovery, reconstructions, script, narration, video, YouTube): Milestones 9–12.
+- Retrieval from scholarly full text (JSTOR, archives with OCR) and semantic search: later milestones, and they need licensed access.
+
+## Milestone 9: next steps
+
+Image and AI Reconstruction Studio: archival media discovery for a project (Wikimedia Commons, Library of Congress, Europeana with a key), licence verification, and evidence-based reconstruction prompts. Images are generated only with a configured provider and an approved budget, and always labelled as AI reconstructions.
 
 ## Continuation notes (for the next coding session)
 
@@ -187,3 +228,4 @@ AI Historical Research Engine: Generate History Project, source retrieval with e
 - Local services: start PostgreSQL with `service postgresql start` if the container restarted; the dev database is `historyverse`, the test database `historyverse_test`.
 - Network: Wikidata, Wikipedia and Commons are reachable, but Commons often answers HTTP 429 (throttling); scripts wait for its Retry-After. Node `fetch` needs `NODE_USE_ENV_PROXY=1` to use the environment's proxy. `ui.shadcn.com` was blocked.
 - The Buganda article draft (`data/articles/buganda-kingdom.json`) still awaits the owner's editorial approval. It has never been published in the development database.
+- Background jobs: start Redis (`service redis-server start`) and a worker (`pnpm worker`). The dev `.env.local` has `REDIS_URL=redis://127.0.0.1:6379`; tests use database 1 and the `historyverse-test` prefix.

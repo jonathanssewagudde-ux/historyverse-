@@ -1,0 +1,62 @@
+// Research engine (Milestone 8): the candidate source set gathered for a project.
+
+enum ResearchSourceKind {
+  /// Structured statements (Wikidata item).
+  STRUCTURED_DATA
+  /// Encyclopedia article (e.g. Wikipedia): a tertiary source, used for leads and orientation.
+  ENCYCLOPEDIA
+  /// A published book found in a library catalogue.
+  BOOK
+  /// An item in an archive or library collection (documents, maps, photographs).
+  ARCHIVE_ITEM
+}
+
+/// How close a source is to the events: primary (from the time), secondary (scholarship),
+/// tertiary (summaries of summaries). Decided from the source type, never by a model.
+enum SourceTier {
+  PRIMARY
+  SECONDARY
+  TERTIARY
+  UNKNOWN
+}
+
+enum ResearchSourceStatus {
+  CANDIDATE
+  ACCEPTED
+  REJECTED
+}
+
+/// One source the research step found. Nothing here is a fact: it is a lead with provenance,
+/// accepted or rejected by a person before any draft may use it.
+model ResearchSource {
+  id          String               @id @default(cuid())
+  projectId   String
+  project     ContentProject       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  kind        ResearchSourceKind
+  tier        SourceTier           @default(UNKNOWN)
+  /// Where it was found: "wikidata", "wikipedia", "openlibrary", "loc".
+  provider    String
+  title       String
+  authors     String[]
+  publishedYear Int?
+  url         String
+  /// Licence of the retrieved text itself (e.g. CC BY-SA 4.0 for Wikipedia excerpts).
+  licenseNote String?
+  /// Retrieved text kept as research evidence (never copied into articles verbatim).
+  excerpts    Json?
+  retrievedAt DateTime
+  status      ResearchSourceStatus @default(CANDIDATE)
+  /// The bibliographic Source row created when the source is accepted.
+  sourceId    String?
+  source      Source?              @relation(fields: [sourceId], references: [id], onDelete: SetNull)
+  reviewedById String?
+  reviewedBy  User?                @relation("ResearchSourceReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+  reviewedAt  DateTime?
+  note        String?
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+
+  @@unique([projectId, url])
+  @@index([projectId, status])
+  @@map("research_sources")
+}

@@ -52,13 +52,13 @@ export const milestones: Milestone[] = [
   {
     number: 7,
     title: "Administrator CMS",
-    status: "in_review",
+    status: "complete",
     summary: "Dashboard, article editor, entity/media/citation management, editorial workflow.",
   },
   {
     number: 8,
     title: "AI Historical Research Engine",
-    status: "planned",
+    status: "in_review",
     summary: "Generate History Project, source retrieval, evidence tracking, AI drafts, job queue.",
   },
   {

@@ -18,6 +18,8 @@ export const availableRoutes: ReadonlySet<string> = new Set([
   "/profile",
   "/admin",
   "/admin/imports",
+  "/admin/research",
+  "/admin/projects/new",
   "/admin/articles",
   "/admin/countries",
   "/admin/people",
