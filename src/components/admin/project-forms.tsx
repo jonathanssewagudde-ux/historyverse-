@@ -12,6 +12,7 @@ import { FormMessage } from "@/components/auth/field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { keepValues } from "@/components/ui/keep-values";
 
 /** Re-render the page every few seconds while a job is queued or running. */
 export function AutoRefresh({
@@ -37,7 +38,7 @@ export function NewProjectForm({ canBudget }: { canBudget: boolean }) {
     null,
   );
   return (
-    <form action={act} className="space-y-4">
+    <form onSubmit={keepValues(act)} className="space-y-4">
       <div className="space-y-1.5">
         <Label htmlFor={`${id}-topic`}>Topic</Label>
         <Input
@@ -138,7 +139,7 @@ export function SourceDecision({
   const [state, act, pending] = useActionState<ProjectActionState, FormData>(projectAction, null);
   if (locked) return null;
   return (
-    <form action={act} className="flex flex-wrap items-end gap-2">
+    <form onSubmit={keepValues(act)} className="flex flex-wrap items-end gap-2">
       <input type="hidden" name="projectId" value={projectId} />
       <input type="hidden" name="intent" value="review_source" />
       <input type="hidden" name="sourceId" value={sourceId} />

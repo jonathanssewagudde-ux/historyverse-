@@ -7,6 +7,7 @@ import { FormMessage } from "@/components/auth/field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { keepValues } from "@/components/ui/keep-values";
 
 /** "Report an error" for readers. Signing in is checked when the report is sent. */
 export function CorrectionForm({ articleId }: { articleId: string }) {
@@ -28,7 +29,7 @@ export function CorrectionForm({ articleId }: { articleId: string }) {
   return (
     <details className="rounded-3xl border p-5">
       <summary className="cursor-pointer font-semibold">Spotted an error? Report it</summary>
-      <form action={send} className="mt-4 space-y-3">
+      <form onSubmit={keepValues(send)} className="mt-4 space-y-3">
         <input type="hidden" name="articleId" value={articleId} />
         <div className="space-y-1.5">
           <Label htmlFor={`${id}-m`}>What is wrong?</Label>

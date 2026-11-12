@@ -96,6 +96,10 @@ export async function getProjectView(db: PrismaClient, id: string) {
         include: { reviewedBy: { select: { name: true } } },
       },
       _count: { select: { reconstructions: true } },
+      documentaries: {
+        select: { id: true, title: true, status: true },
+        orderBy: { createdAt: "desc" },
+      },
       researchSources: {
         orderBy: [{ status: "asc" }, { kind: "asc" }, { publishedYear: "asc" }],
         include: { reviewedBy: { select: { name: true } } },
@@ -109,6 +113,7 @@ export async function getProjectView(db: PrismaClient, id: string) {
     const output = (j.output ?? {}) as Record<string, unknown>;
     return {
       id: j.id,
+      type: j.type,
       status: j.status,
       progress: j.progress,
       attempts: j.attempts,
@@ -134,7 +139,11 @@ export async function getProjectView(db: PrismaClient, id: string) {
   const research = job("RESEARCH");
   const mediaSearch = job("MEDIA_SEARCH");
   const imageApprovals = project.jobs
-    .filter((j) => j.type === "IMAGE_GENERATION" && j.status === "AWAITING_APPROVAL")
+    .filter(
+      (j) =>
+        (j.type === "IMAGE_GENERATION" || j.type === "NARRATION") &&
+        j.status === "AWAITING_APPROVAL",
+    )
     .map((j) => describe(j)!);
   const draft = job("ARTICLE_DRAFT");
   const { env } = getServerEnv();
@@ -158,6 +167,7 @@ export async function getProjectView(db: PrismaClient, id: string) {
     research,
     mediaSearch,
     imageApprovals,
+    documentaries: project.documentaries,
     reconstructions: project._count.reconstructions,
     candidates: project.mediaCandidates.map((c) => ({
       id: c.id,

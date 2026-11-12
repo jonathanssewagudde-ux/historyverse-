@@ -13,8 +13,8 @@ The milestone list in `src/config/milestones.ts` mirrors this file.
 | 6   | Historical Search Engine                   | ✅ Complete                  |
 | 7   | Administrator CMS                          | ✅ Complete                  |
 | 8   | AI Historical Research Engine              | ✅ Complete                  |
-| 9   | Image and AI Reconstruction Studio         | 🔍 Complete, awaiting review |
-| 10  | Documentary Scripts and Narration          | Planned                      |
+| 9   | Image and AI Reconstruction Studio         | ✅ Complete                  |
+| 10  | Documentary Scripts and Narration          | 🔍 Complete, awaiting review |
 | 11  | Documentary Video Production Studio        | Planned                      |
 | 12  | YouTube Integration                        | Planned                      |
 | 13  | Maps, Timelines and Family Trees           | Planned                      |
@@ -216,7 +216,7 @@ At the owner's request after review, the UI moved from the original editorial "m
 - Steps 3–11 of the pipeline (media discovery, reconstructions, script, narration, video, YouTube): Milestones 9–12.
 - Retrieval from scholarly full text (JSTOR, archives with OCR) and semantic search: later milestones, and they need licensed access.
 
-## Milestone 9: Image and AI Reconstruction Studio 🔍 (in review)
+## Milestone 9: Image and AI Reconstruction Studio ✅
 
 - **Archival media discovery (pipeline step 3):** a `MEDIA_SEARCH` job searches Wikimedia Commons for the subject (and the Library of Congress when `LOC_ENABLED`; its search results carry no licence, so those images are marked UNKNOWN).
   - Each image is a **candidate** with the archive's stated licence, rights wording, creator, date and a link to its page.
@@ -246,9 +246,48 @@ At the owner's request after review, the UI moved from the original editorial "m
 - Gemini and ComfyUI image adapters; Europeana and Smithsonian search (they need API keys).
 - Documentary scripts, scene plans and narration: Milestone 10.
 
-## Milestone 10: next steps
+## Milestone 10: Documentary Scripts and Narration 🔍 (in review)
 
-Documentary Scripts and Narration: script generator following the documentary structure (hook → … → conclusion), scene planner with references per scene, configurable text-to-speech (local Piper/eSpeak free, or paid with approval), uploaded recordings, audio storage.
+- **Script generator (pipeline step 5):** builds a script from an article's **reviewed text**, in the documentary structure: hook → background → origins → key developments → important figures → turning points → consequences → significance → conclusion.
+  - Each paragraph becomes one or more scenes of up to about 90 words, keeping that paragraph's citations.
+  - Turning points come from the article's cited key dates.
+  - A part of the structure with no material is left out, never invented.
+  - Nothing is written by AI.
+  - Uncited text (such as an editorial note) stays uncited and blocks approval until an editor cites, rewrites or removes it.
+  - The live Buganda article gives 24 scenes, about 8½ minutes.
+- **Scene planner (step 6):** narration, visual description, on-screen text and duration per scene.
+  - Images: only approved, publishable ones.
+  - Citations: only the article's own, from sections or key dates.
+  - Scenes can be reordered, added and removed.
+- **Review:** an editor approves a script only when the article is published (so the narration is editorially approved text) and every scene has narration, a citation and an image. Scripts are versioned; approved versions are revised as new drafts and superseded versions are kept.
+- **Narration (step 7):** narrates approved scripts only, so paid narration is never wasted on text that will change.
+  - **Free engines:**
+    - eSpeak NG (formant synthesis, no recorded-voice dataset);
+    - Piper (neural; each voice has its own licence: the `en_GB-alan` card says only "See URL", and its base voice comes from a dataset under research-type terms, so Piper voices are not assumed publishable).
+  - **Paid engines:** OpenAI and ElevenLabs, stock voices only, with a required price per million characters, approval within budgets, and cost recorded as each scene is spoken.
+  - A pronunciation guide applies to whole words.
+  - Scene durations grow to fit the audio plus a short pause.
+- **Recordings:** WAV or MP3 per scene. The uploader confirms the speaker consented to publication, and this is stored with the take.
+- **Voice licence:** every take records it. The Studio flags takes whose licence nobody has stated; the YouTube step (Milestone 12) will check it. Earlier takes are kept; the database allows one current take per scene.
+- **Live checks:**
+  - eSpeak narrated the whole Buganda script in the integration test (real audio, durations read from the WAV files).
+  - The Piper adapter produced real speech with the `en_GB-alan-medium` voice.
+  - Both are available in this development environment (`TTS_PROVIDER=espeak` in `.env.local`).
+- **Tests:** 224 unit/component, 123 integration, 104 end-to-end.
+
+### Not verified, and why
+
+- OpenAI and ElevenLabs speech were not called (they need keys and a budget).
+- The Buganda documentary in the development database is a draft: its script cannot be approved and narrated until the article is published, which is the owner's decision.
+
+### Not done (planned)
+
+- An AI pass that restructures narration (it would need a language model and a budget); a Google speech adapter.
+- Video rendering with Remotion and FFmpeg, captions and music: Milestone 11.
+
+## Milestone 11: next steps
+
+Documentary Video Production Studio: Remotion composition from the scene plan (images with camera moves, on-screen text, labelled reconstructions), narration and licensed music mixing with FFmpeg, captions from the narration text, 16:9 and 9:16 renders as jobs, and the source and licence manifest.
 
 ## Continuation notes (for the next coding session)
 
@@ -258,4 +297,5 @@ Documentary Scripts and Narration: script generator following the documentary st
 - Local services: start PostgreSQL with `service postgresql start` if the container restarted; the dev database is `historyverse`, the test database `historyverse_test`.
 - Network: Wikidata, Wikipedia and Commons are reachable, but Commons often answers HTTP 429 (throttling); scripts wait for its Retry-After. Node `fetch` needs `NODE_USE_ENV_PROXY=1` to use the environment's proxy. `ui.shadcn.com` was blocked.
 - The Buganda article draft (`data/articles/buganda-kingdom.json`) still awaits the owner's editorial approval. It has never been published in the development database.
+- Narration engines: `apt-get install espeak-ng` (free). Piper: `pip install piper-tts` plus a voice model (`.onnx` and `.onnx.json`) from huggingface.co/rhasspy/piper-voices, then set `PIPER_PATH` and `PIPER_MODEL`. Check the voice's model card before publishing.
 - Background jobs: start Redis (`service redis-server start`) and a worker (`pnpm worker`). The dev `.env.local` has `REDIS_URL=redis://127.0.0.1:6379`; tests use database 1 and the `historyverse-test` prefix.

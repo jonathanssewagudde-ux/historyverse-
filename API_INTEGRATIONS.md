@@ -64,9 +64,17 @@ Every generated image is stored and shown as an AI reconstruction. Without a pro
 
 `STORAGE_DRIVER=local` (default) or `s3` with `S3_REGION`, `S3_BUCKET`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY` and, for S3-compatible services, `S3_ENDPOINT`. Objects stay private.
 
-### Text-to-speech providers
+### Text-to-speech providers (Milestone 10)
 
-`piper` and `espeak` (local, free) · `openai`, `elevenlabs`, `google` (paid). No real person's voice is cloned without documented authorization.
+| `TTS_PROVIDER` | Adapter                        | Needs                                                                | Voice licence                                            |
+| -------------- | ------------------------------ | -------------------------------------------------------------------- | -------------------------------------------------------- |
+| `espeak`       | eSpeak NG (local, free)        | `espeak-ng` installed (`ESPEAK_PATH`)                                | Formant synthesis; no recorded-voice dataset             |
+| `piper`        | Piper (local, free)            | `PIPER_PATH`, `PIPER_MODEL`                                          | Per voice: check its model card; set `TTS_VOICE_LICENSE` |
+| `openai`       | Speech API (WAV)               | `TTS_API_KEY`, `TTS_MODEL`, `TTS_VOICE`, `TTS_USD_PER_MILLION_CHARS` | Stock voice under the provider's terms                   |
+| `elevenlabs`   | Text-to-speech API (PCM → WAV) | `TTS_API_KEY`, `TTS_VOICE`, `TTS_USD_PER_MILLION_CHARS`              | Stock voice under the provider's terms                   |
+| `google`       | Not built                      | —                                                                    | —                                                        |
+
+Voices are stock synthetic voices; no one's voice is cloned. Recorded narration can always be uploaded with the speaker's consent.
 
 ## Optional enhancements
 

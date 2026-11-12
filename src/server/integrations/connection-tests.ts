@@ -7,6 +7,7 @@ import { createSourceHttpClient } from "@/server/sources/http";
 import { createCommonsClient } from "@/server/sources/commons/client";
 import { createWikidataClient } from "@/server/sources/wikidata/client";
 import { createWikipediaClient } from "@/server/sources/wikipedia/client";
+import { getSpeech } from "@/server/ai/speech";
 import { pingQueue } from "@/server/jobs/queue";
 import { getStorage } from "@/server/storage";
 
@@ -62,6 +63,21 @@ const TESTS: Record<string, () => Promise<string>> = {
     await storage.delete(key);
     if (!back || back.byteLength !== body.byteLength) throw new Error("Read-back did not match.");
     return `Wrote, read back and deleted a probe file (${storage.id} driver).`;
+  },
+  async tts() {
+    const { provider, voiceId } = getSpeech();
+    // Only free local engines are exercised; a paid voice is never charged for a test.
+    if (provider.estimateCost({ text: "test", voiceId, language: "en" }).amount > 0) {
+      throw new Error(
+        "Paid voices are not tested here, to avoid charges. Narrate a scene instead.",
+      );
+    }
+    const audio = await provider.synthesize({
+      text: "HISTORYVERSE narration test.",
+      voiceId,
+      language: "en",
+    });
+    return `${provider.id} spoke a test phrase (${(audio.durationMs / 1000).toFixed(1)} s of audio).`;
   },
   async redis() {
     const counts = await pingQueue();

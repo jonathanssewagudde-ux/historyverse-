@@ -170,13 +170,13 @@ async function Project({ params }: { params: Promise<{ id: string }> }) {
             <li
               key={name}
               className={
-                milestone <= 9
+                milestone <= 10
                   ? "rounded-full border border-primary px-3 py-1"
                   : "rounded-full border px-3 py-1 text-muted-foreground"
               }
             >
               {i + 1}. {name}
-              {milestone > 9 && ` · M${milestone}`}
+              {milestone > 10 && ` · M${milestone}`}
             </li>
           ))}
         </ol>
@@ -626,7 +626,8 @@ async function Project({ params }: { params: Promise<{ id: string }> }) {
         {project.imageApprovals.map((job) => (
           <div key={job.id} className="space-y-3 rounded-2xl border border-dashed border-pink p-4">
             <p className="font-semibold">
-              Image generation waiting for approval: up to {usd(job.costEstimateUsd ?? 0)}
+              {job.type === "NARRATION" ? "Narration" : "Image generation"} waiting for approval: up
+              to {usd(job.costEstimateUsd ?? 0)}
             </p>
             {job.estimateBasis && (
               <p className="text-sm text-muted-foreground">{job.estimateBasis}</p>
@@ -641,7 +642,7 @@ async function Project({ params }: { params: Promise<{ id: string }> }) {
                 projectId={project.id}
                 jobId={job.id}
                 amount={job.costEstimateUsd ?? 0}
-                what="these images"
+                what={job.type === "NARRATION" ? "this narration" : "these images"}
               />
             ) : (
               <p className="text-sm">An administrator must approve this spending.</p>
@@ -659,8 +660,47 @@ async function Project({ params }: { params: Promise<{ id: string }> }) {
         ))}
       </section>
 
+      {/* Steps 5–7 --------------------------------------------------------------------------- */}
+      <section
+        aria-labelledby="step-documentary"
+        className="space-y-3 rounded-3xl border bg-card p-6"
+      >
+        <h2 id="step-documentary" className="text-2xl font-bold">
+          5–7. Documentary script, scenes and narration
+        </h2>
+        {project.documentaries.length > 0 ? (
+          <ul className="space-y-1 text-sm">
+            {project.documentaries.map((d) => (
+              <li key={d.id}>
+                <Link
+                  href={`/admin/documentaries/${d.id}` as Route}
+                  className="font-semibold text-primary underline underline-offset-4"
+                >
+                  {d.title}
+                </Link>{" "}
+                · {label(d.status)}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-sm">
+            {project.article
+              ? "No documentary yet. Build one from the article in the "
+              : "A documentary is built from the project's article, once there is one. See the "}
+            <Link
+              href={"/admin/scripts" as Route}
+              className="text-primary underline underline-offset-4"
+            >
+              Documentary Script Studio
+            </Link>
+            .
+          </p>
+        )}
+      </section>
+
       <p className="px-1 text-sm text-muted-foreground">
-        Steps 5–11 (documentary, narration, video, YouTube) arrive in Milestones 10–12.
+        Steps 8–11 (video render, YouTube assets, review and publication) arrive in Milestones
+        11–12.
       </p>
     </div>
   );

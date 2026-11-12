@@ -7,6 +7,7 @@ import { FormMessage } from "@/components/auth/field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { keepValues } from "@/components/ui/keep-values";
 
 const TYPES = [
   "BOOK",
@@ -56,7 +57,7 @@ export function SourceForm({ source }: { source: SourceFormData }) {
     </div>
   );
   return (
-    <form action={save} className="space-y-3">
+    <form onSubmit={keepValues(save)} className="space-y-3">
       <input type="hidden" name="sourceId" value={source.id} />
       <div className="grid gap-3 sm:grid-cols-[1fr_14rem]">
         {field("title", "Title", source.title)}

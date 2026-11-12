@@ -245,8 +245,8 @@ test.describe("AI Studio", () => {
     await setRole(email, "ADMINISTRATOR");
     await page.goto("/admin");
     const nav = page.getByRole("navigation", { name: "Studio" });
-    // Milestones 3–9 modules are links; later ones are labelled with their milestone.
-    await expect(nav.getByRole("link")).toHaveCount(19);
+    // Milestones 3–10 modules are links; later ones are labelled with their milestone.
+    await expect(nav.getByRole("link")).toHaveCount(21);
     await expect(nav.getByRole("link", { name: "Overview" })).toHaveAttribute(
       "aria-current",
       "page",

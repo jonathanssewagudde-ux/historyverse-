@@ -12,6 +12,7 @@ import { FormMessage } from "@/components/auth/field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { keepValues } from "@/components/ui/keep-values";
 
 export function ImportEntityForm({ defaultKind }: { defaultKind: string }) {
   const [state, act, pending] = useActionState<EntityActionState, FormData>(
@@ -20,7 +21,7 @@ export function ImportEntityForm({ defaultKind }: { defaultKind: string }) {
   );
   const id = useId();
   return (
-    <form action={act} className="space-y-3">
+    <form onSubmit={keepValues(act)} className="space-y-3">
       <input type="hidden" name="kind" value={defaultKind} />
       <div className="flex flex-wrap items-end gap-2">
         <div className="space-y-1.5">
@@ -111,7 +112,7 @@ export function SummaryForm({ entityId, summary }: { entityId: string; summary: 
   );
   const id = useId();
   return (
-    <form action={act} className="space-y-3">
+    <form onSubmit={keepValues(act)} className="space-y-3">
       <input type="hidden" name="entityId" value={entityId} />
       <Label htmlFor={`${id}-summary`}>Summary (neutral, one or two sentences)</Label>
       <textarea

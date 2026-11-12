@@ -7,6 +7,7 @@ import { FormMessage } from "@/components/auth/field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { keepValues } from "@/components/ui/keep-values";
 
 type Option = { id: string; name: string };
 
@@ -26,7 +27,7 @@ export function CategoryForm({
   const id = useId();
   const [state, act, pending] = useActionState<CategoryState, FormData>(saveCategoryAction, null);
   return (
-    <form action={act} className="space-y-3">
+    <form onSubmit={keepValues(act)} className="space-y-3">
       <input type="hidden" name="categoryId" value={category?.id ?? ""} />
       <div className="grid gap-3 sm:grid-cols-[1fr_1fr_14rem]">
         <div className="space-y-1.5">

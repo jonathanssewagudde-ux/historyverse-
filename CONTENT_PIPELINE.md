@@ -1,6 +1,6 @@
 # Content pipeline
 
-> **Status:** steps 1–4 (research, grounded article draft, archival media discovery, reconstruction prompts and labelled image generation) and the job infrastructure are implemented (Milestones 8–9). Steps 5–11 follow in Milestones 10–12. See ROADMAP.md for how each rule below is enforced.
+> **Status:** steps 1–7 are implemented (Milestones 8–10): research, grounded article draft, archival media discovery, reconstruction prompts and labelled image generation, the documentary script built from the reviewed article, the scene plan and narration. Steps 8–11 follow in Milestones 11–12. See ROADMAP.md for how each rule below is enforced.
 
 ## Generate History Project
 

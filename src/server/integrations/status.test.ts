@@ -68,11 +68,13 @@ describe("resolveIntegrationStates", () => {
       "postgres",
       "redis",
       "storage",
+      "tts",
       "wikidata",
       "wikimedia-commons",
       "wikipedia",
     ]);
-    for (const s of states.filter((x) => x.implemented)) expect(s.milestone).toBeLessThanOrEqual(8);
+    for (const s of states.filter((x) => x.implemented))
+      expect(s.milestone).toBeLessThanOrEqual(10);
   });
 
   it("needs both a secret and a database for authentication", () => {
@@ -103,7 +105,16 @@ describe("resolveIntegrationStates", () => {
   });
 
   it("allows key-free local TTS engines", () => {
-    expect(stateOf({ TTS_PROVIDER: "piper" }, "tts").status).toBe("configured");
+    expect(stateOf({ TTS_PROVIDER: "espeak" }, "tts").status).toBe("configured");
+    // Piper needs a voice model file.
+    expect(stateOf({ TTS_PROVIDER: "piper" }, "tts").missingEnv).toEqual(["PIPER_MODEL"]);
+    expect(stateOf({ TTS_PROVIDER: "piper", PIPER_MODEL: "/voices/v.onnx" }, "tts").status).toBe(
+      "configured",
+    );
+    // Paid speech needs a price before anything is spoken.
+    expect(
+      stateOf({ TTS_PROVIDER: "openai", TTS_API_KEY: "k", TTS_MODEL: "m" }, "tts").missingEnv,
+    ).toEqual(["TTS_USD_PER_MILLION_CHARS"]);
     expect(stateOf({ TTS_PROVIDER: "elevenlabs" }, "tts").status).toBe("not_configured");
   });
 

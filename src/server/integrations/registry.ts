@@ -231,17 +231,35 @@ export const integrations: IntegrationDefinition[] = [
     milestone: 10,
     capabilities: ["Per-scene narration", "Voice selection", "Speed control"],
     billable: true,
-    envKeys: ["TTS_PROVIDER", "TTS_API_KEY", "TTS_BASE_URL"],
+    envKeys: [
+      "TTS_PROVIDER",
+      "TTS_API_KEY",
+      "TTS_BASE_URL",
+      "TTS_VOICE",
+      "TTS_MODEL",
+      "TTS_USD_PER_MILLION_CHARS",
+      "TTS_VOICE_LICENSE",
+      "ESPEAK_PATH",
+      "PIPER_PATH",
+      "PIPER_MODEL",
+    ],
     secretEnvKeys: ["TTS_API_KEY"],
-    missing: (env) =>
-      provider(env, "TTS_PROVIDER", {
-        piper: [],
+    missing: (env) => {
+      const missing = provider(env, "TTS_PROVIDER", {
+        piper: ["PIPER_MODEL"],
         espeak: [],
-        openai: ["TTS_API_KEY"],
-        elevenlabs: ["TTS_API_KEY"],
+        openai: ["TTS_API_KEY", "TTS_MODEL"],
+        elevenlabs: ["TTS_API_KEY", "TTS_VOICE"],
         google: ["TTS_API_KEY"],
-      }),
+      });
+      const paid = env.TTS_PROVIDER === "openai" || env.TTS_PROVIDER === "elevenlabs";
+      if (missing.length === 0 && paid && env.TTS_USD_PER_MILLION_CHARS === undefined) {
+        missing.push("TTS_USD_PER_MILLION_CHARS");
+      }
+      return missing;
+    },
     fallback: "Upload recorded narration instead.",
+    implemented: true,
   },
   {
     id: "youtube",

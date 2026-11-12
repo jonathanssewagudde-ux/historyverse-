@@ -14,7 +14,7 @@
 
 Video rendering and narration run only on dedicated workers. Serverless request timeouts are too short, and those functions lack FFmpeg.
 
-From Milestone 8, run at least one worker next to the web app: `pnpm worker`, with the same environment and `REDIS_URL`. It processes research and drafting jobs and re-queues interrupted jobs when it starts. Several workers can share one queue. `QUEUE_PREFIX` keeps environments that share a Redis server apart.
+From Milestone 8, run at least one worker next to the web app: `pnpm worker`, with the same environment and `REDIS_URL`. It processes research, drafting, media, image and narration jobs, and re-queues interrupted jobs when it starts. Free local narration needs `espeak-ng` (or Piper and a voice model) installed on the worker. Several workers can share one queue. `QUEUE_PREFIX` keeps environments that share a Redis server apart.
 
 ## Build and run
 
