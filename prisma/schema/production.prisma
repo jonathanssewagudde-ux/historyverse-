@@ -24,10 +24,17 @@ model ContentProject {
   spentUsd        Decimal       @default(0) @db.Decimal(10, 4)
   createdById     String?
   createdBy       User?         @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  /// Optional Wikidata id the administrator gave for the subject.
+  subjectQid      String?
+  /// Set when a person approves the reviewed source set (checkpoint before any draft).
+  sourceSetApprovedAt   DateTime?
+  sourceSetApprovedById String?
+  sourceSetApprovedBy   User?   @relation("SourceSetApprover", fields: [sourceSetApprovedById], references: [id], onDelete: SetNull)
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
 
   jobs            ProductionJob[]
+  researchSources ResearchSource[]
   documentaries   Documentary[]
   reconstructions AIReconstruction[]
 

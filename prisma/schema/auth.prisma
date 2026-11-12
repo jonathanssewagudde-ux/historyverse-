@@ -39,6 +39,8 @@ model User {
   projectsCreated     ContentProject[]
   jobsRequested       ProductionJob[]      @relation("JobRequester")
   jobsApproved        ProductionJob[]      @relation("JobApprover")
+  researchReviewed    ResearchSource[]     @relation("ResearchSourceReviewer")
+  sourceSetsApproved  ContentProject[]     @relation("SourceSetApprover")
   reviewsRequested    EditorialReview[]    @relation("ReviewRequester")
   reviewsAssigned     EditorialReview[]    @relation("ReviewReviewer")
   schedulesCreated    PublicationSchedule[] @relation("ScheduleCreator")

@@ -64,13 +64,15 @@ describe("resolveIntegrationStates", () => {
     expect(implemented.sort()).toEqual([
       "auth",
       "google-signin",
+      "llm",
       "postgres",
+      "redis",
       "storage",
       "wikidata",
       "wikimedia-commons",
       "wikipedia",
     ]);
-    for (const s of states.filter((x) => x.implemented)) expect(s.milestone).toBeLessThanOrEqual(7);
+    for (const s of states.filter((x) => x.implemented)) expect(s.milestone).toBeLessThanOrEqual(8);
   });
 
   it("needs both a secret and a database for authentication", () => {
@@ -90,6 +92,14 @@ describe("resolveIntegrationStates", () => {
     expect(stateOf({ AI_PROVIDER: "ollama", AI_MODEL: "llama3.1" }, "llm").status).toBe(
       "configured",
     );
+    // A paid model without a known price cannot be used: costs must be estimable first.
+    expect(
+      stateOf({ AI_PROVIDER: "openai", AI_API_KEY: "k", AI_MODEL: "some-model" }, "llm").missingEnv,
+    ).toEqual(["AI_INPUT_USD_PER_MTOK", "AI_OUTPUT_USD_PER_MTOK"]);
+    expect(
+      stateOf({ AI_PROVIDER: "anthropic", AI_API_KEY: "k", AI_MODEL: "claude-opus-5-5" }, "llm")
+        .status,
+    ).toBe("configured");
   });
 
   it("allows key-free local TTS engines", () => {

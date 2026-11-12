@@ -2,6 +2,36 @@
 
 All notable changes to HISTORYVERSE are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.8.0] - 2026-11-12: Milestone 8, AI Historical Research Engine
+
+### Added
+
+- Generate History Project (`/admin/projects/new`) and the research overview (`/admin/research`)
+- Job system: Redis + BullMQ queue with the database row as the source of truth. It supports progress, cancellation, retries (transient errors only), recovery after restarts, and `pnpm worker`
+- Research step from free sources:
+  - finds the subject on Wikidata (with alternatives shown) and imports it;
+  - reads Wikipedia by section and searches Open Library (and, optionally, the Library of Congress);
+  - writes a report of dates and differing accounts.
+- Source-set review: accept or reject each candidate (a reason is required to reject), then approve the set, which locks it
+- Grounded AI article draft:
+  - uses only accepted evidence;
+  - every sentence must cite an existing excerpt, and unsupported sentences are removed and listed;
+  - a key date is kept only if its year appears in the cited excerpt;
+  - copied passages are flagged;
+  - the result is saved as an unreviewed AI draft.
+- Language-model adapters: Anthropic (official SDK), Ollama, OpenAI and any OpenAI-compatible server
+- Cost controls:
+  - estimates are made before any paid call;
+  - an administrator approves each paid job within the project budget and `AI_MONTHLY_BUDGET_USD`;
+  - actual spend is recorded even when a job fails.
+- Live connection test for Redis; `pnpm project:create`; `QUEUE_PREFIX`, `AI_INPUT_USD_PER_MTOK`, `AI_OUTPUT_USD_PER_MTOK`
+- Recorded API responses for research tests (`tests/fixtures/research`)
+
+### Changed
+
+- A paid language model with no known price counts as not configured, so spending can never be estimated as zero by accident
+- CI runs a Redis service
+
 ## [0.7.0] - 2026-11-12: Milestone 7, Administrator CMS
 
 ### Added

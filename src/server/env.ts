@@ -23,6 +23,11 @@ export const serverEnvSchema = {
     .string()
     .regex(/^postgres(ql)?:\/\//, "must be a postgres:// or postgresql:// connection string")
     .optional(),
+  /** Key prefix for the job queue, so environments sharing one Redis server stay apart. */
+  QUEUE_PREFIX: z
+    .string()
+    .regex(/^[a-z0-9-]+$/, "lowercase letters, digits and hyphens")
+    .default("historyverse"),
   REDIS_URL: z
     .string()
     .regex(/^rediss?:\/\//, "must be a redis:// or rediss:// URL")
@@ -72,6 +77,9 @@ export const serverEnvSchema = {
   AI_MODEL: optionalString,
   AI_BASE_URL: optionalUrl,
   AI_API_KEY: optionalString,
+  /** USD per million tokens. Required for paid models without a built-in price; 0 for free local models. */
+  AI_INPUT_USD_PER_MTOK: z.coerce.number().min(0).optional(),
+  AI_OUTPUT_USD_PER_MTOK: z.coerce.number().min(0).optional(),
   EMBEDDING_PROVIDER: z
     .enum(["none", "ollama", "openai-compatible", "openai", "gemini"])
     .default("none"),

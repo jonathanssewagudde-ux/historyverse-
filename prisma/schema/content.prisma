@@ -238,6 +238,7 @@ model Source {
   updatedAt     DateTime   @updatedAt
 
   citations Citation[]
+  researchSources ResearchSource[]
 
   @@index([title])
   @@index([repository])

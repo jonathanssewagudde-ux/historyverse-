@@ -1,6 +1,6 @@
 # Content pipeline
 
-> **Status:** design plan. Implemented across Milestones 8–12. Job infrastructure (Redis + BullMQ workers) starts in Milestone 8.
+> **Status:** steps 1–2 (research and the grounded article draft) and the job infrastructure are implemented (Milestone 8). Steps 3–11 follow in Milestones 9–12. See ROADMAP.md for how each rule below is enforced.
 
 ## Generate History Project
 

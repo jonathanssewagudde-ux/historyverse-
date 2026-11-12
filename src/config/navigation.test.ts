@@ -18,6 +18,8 @@ describe("navigation", () => {
       "/admin/kingdoms",
       "/admin/media",
       "/admin/people",
+      "/admin/projects/new",
+      "/admin/research",
       "/admin/reviews",
       "/admin/settings",
       "/admin/users",

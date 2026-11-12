@@ -7,6 +7,7 @@ import { createSourceHttpClient } from "@/server/sources/http";
 import { createCommonsClient } from "@/server/sources/commons/client";
 import { createWikidataClient } from "@/server/sources/wikidata/client";
 import { createWikipediaClient } from "@/server/sources/wikipedia/client";
+import { pingQueue } from "@/server/jobs/queue";
 import { getStorage } from "@/server/storage";
 
 export interface ConnectionTestResult {
@@ -61,6 +62,10 @@ const TESTS: Record<string, () => Promise<string>> = {
     await storage.delete(key);
     if (!back || back.byteLength !== body.byteLength) throw new Error("Read-back did not match.");
     return `Wrote, read back and deleted a probe file (${storage.id} driver).`;
+  },
+  async redis() {
+    const counts = await pingQueue();
+    return `Queue reachable: ${counts.waiting} waiting, ${counts.active} running, ${counts.failed} failed.`;
   },
   async wikidata() {
     const entity = await createWikidataClient(wikimediaHttp()).getEntity("Q1036");
