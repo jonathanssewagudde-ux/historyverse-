@@ -110,7 +110,11 @@ export async function saveArticleDraftAction(
     if (!payload.slug && typeof payload.title === "string")
       payload.slug = slugify(payload.title, "article");
 
-    const report = await loadArticle(getDb(), payload, actor, { mode: "lenient", articleId, createOnly: !articleId });
+    const report = await loadArticle(getDb(), payload, actor, {
+      mode: "lenient",
+      articleId,
+      createOnly: !articleId,
+    });
     const sections = (payload.sections ?? []) as { kind: string; heading?: string; body: string }[];
     const uncited = uncitedSections({ sections: sections as never }).map(
       (i) =>

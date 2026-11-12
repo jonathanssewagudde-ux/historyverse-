@@ -4,11 +4,7 @@ import type { Prisma, PrismaClient } from "@/generated/prisma/client";
 import { compileCitations } from "@/lib/content/citations";
 import { chronologicalSortKey, type HistoricalDate } from "@/lib/history/dates";
 import { recordAudit } from "@/server/audit";
-import {
-  articleDraftSchema,
-  articleFileSchema,
-  type ArticleDraft,
-} from "./article-file";
+import { articleDraftSchema, articleFileSchema, type ArticleDraft } from "./article-file";
 
 export class ArticleLoadError extends Error {
   constructor(message: string) {
