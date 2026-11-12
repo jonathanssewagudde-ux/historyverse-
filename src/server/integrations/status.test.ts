@@ -65,11 +65,12 @@ describe("resolveIntegrationStates", () => {
       "auth",
       "google-signin",
       "postgres",
+      "storage",
       "wikidata",
       "wikimedia-commons",
       "wikipedia",
     ]);
-    for (const s of states.filter((x) => x.implemented)) expect(s.milestone).toBeLessThanOrEqual(4);
+    for (const s of states.filter((x) => x.implemented)) expect(s.milestone).toBeLessThanOrEqual(7);
   });
 
   it("needs both a secret and a database for authentication", () => {

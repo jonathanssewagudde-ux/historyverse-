@@ -107,6 +107,9 @@ export const serverEnvSchema = {
   // Cost controls: monthly ceiling (USD) for all billable providers combined. 0 = never spend.
   AI_MONTHLY_BUDGET_USD: z.coerce.number().min(0).default(0),
 
+  // Scheduled publishing: bearer token a scheduler sends to POST /api/cron/publish.
+  CRON_SECRET: z.string().min(32, "must be at least 32 characters").optional(),
+
   // Comma-separated integration ids an operator has switched off.
   INTEGRATIONS_DISABLED: z
     .string()

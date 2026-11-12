@@ -34,6 +34,7 @@ export async function exportArticle(
         include: { entity: { select: { id: true, wikidataId: true } } },
       },
       media: { orderBy: { position: "asc" }, include: { media: true } },
+      categories: { select: { slug: true }, orderBy: { name: "asc" } },
     },
   });
   if (!article || !article.primaryEntity) return null;
@@ -125,6 +126,7 @@ export async function exportArticle(
     })),
     sections,
     keyDates,
+    categories: article.categories.map((c) => c.slug),
     entities: article.entities.map((e) => ({
       entityId: e.entity.id,
       wikidataId: e.entity.wikidataId ?? undefined,

@@ -19,6 +19,7 @@ const blank: ArticleDraft = {
   sources: [],
   sections: [{ kind: "INTRODUCTION", body: "" }],
   keyDates: [],
+  categories: [],
   entities: [],
   media: [],
 } as unknown as ArticleDraft;

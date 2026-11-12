@@ -5,7 +5,7 @@ import type { EditorOptions } from "@/components/admin/article-editor";
 
 /** Choices offered by the article editor: entities, library media and existing sources. */
 export async function loadEditorOptions(db: PrismaClient): Promise<EditorOptions> {
-  const [entities, media, sources] = await Promise.all([
+  const [entities, media, sources, categories] = await Promise.all([
     db.entity.findMany({
       where: { deletedAt: null },
       orderBy: { name: "asc" },
@@ -23,6 +23,10 @@ export async function loadEditorOptions(db: PrismaClient): Promise<EditorOptions
       select: { id: true, title: true, type: true, url: true },
       take: 1000,
     }),
+    db.category.findMany({
+      orderBy: [{ position: "asc" }, { name: "asc" }],
+      select: { slug: true, name: true },
+    }),
   ]);
   return {
     entities,
@@ -35,5 +39,6 @@ export async function loadEditorOptions(db: PrismaClient): Promise<EditorOptions
       stored: Boolean(m.storageKey),
     })),
     sources,
+    categories,
   };
 }

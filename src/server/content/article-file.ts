@@ -137,6 +137,8 @@ function buildSchema(strict: boolean) {
           }),
         )
         .default([]),
+      /** Category slugs. Leaving it out keeps the article's current categories. */
+      categories: z.array(slug).max(20).optional(),
       entities: z
         .array(entityRef.and(z.object({ role: z.enum(["people", "places", "events", "related"]) })))
         .default([]),

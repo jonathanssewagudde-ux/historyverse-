@@ -3,23 +3,23 @@
 Each milestone is implemented, tested, documented and **reviewed by the project owner before the next begins**.
 The milestone list in `src/config/milestones.ts` mirrors this file.
 
-| #   | Milestone                                  | Status                                                                                                 |
-| --- | ------------------------------------------ | ------------------------------------------------------------------------------------------------------ |
-| 1   | Project Foundation                         | ✅ Complete, awaiting review                                                                           |
-| 2   | Homepage and Design System                 | Planned                                                                                                |
-| 3   | Database and Authentication                | Planned                                                                                                |
-| 4   | Historical Data Integration                | Planned (**blocked by network:** Wikimedia hosts are not reachable from the current build environment) |
-| 5   | Historical Article System                  | Planned                                                                                                |
-| 6   | Historical Search Engine                   | Planned                                                                                                |
-| 7   | Administrator CMS                          | Planned                                                                                                |
-| 8   | AI Historical Research Engine              | Planned                                                                                                |
-| 9   | Image and AI Reconstruction Studio         | Planned                                                                                                |
-| 10  | Documentary Scripts and Narration          | Planned                                                                                                |
-| 11  | Documentary Video Production Studio        | Planned                                                                                                |
-| 12  | YouTube Integration                        | Planned                                                                                                |
-| 13  | Maps, Timelines and Family Trees           | Planned                                                                                                |
-| 14  | AI Assistant and Global Features           | Planned                                                                                                |
-| 15  | Testing, Optimization and Launch Readiness | Planned                                                                                                |
+| #   | Milestone                                  | Status                       |
+| --- | ------------------------------------------ | ---------------------------- |
+| 1   | Project Foundation                         | ✅ Complete                  |
+| 2   | Homepage and Design System                 | ✅ Complete                  |
+| 3   | Database and Authentication                | ✅ Complete                  |
+| 4   | Historical Data Integration                | ✅ Complete                  |
+| 5   | Historical Article System                  | ✅ Complete                  |
+| 6   | Historical Search Engine                   | ✅ Complete                  |
+| 7   | Administrator CMS                          | 🔍 Complete, awaiting review |
+| 8   | AI Historical Research Engine              | Planned                      |
+| 9   | Image and AI Reconstruction Studio         | Planned                      |
+| 10  | Documentary Scripts and Narration          | Planned                      |
+| 11  | Documentary Video Production Studio        | Planned                      |
+| 12  | YouTube Integration                        | Planned                      |
+| 13  | Maps, Timelines and Family Trees           | Planned                      |
+| 14  | AI Assistant and Global Features           | Planned                      |
+| 15  | Testing, Optimization and Launch Readiness | Planned                      |
 
 ## Milestone 1: Project Foundation ✅
 
@@ -140,9 +140,44 @@ At the owner's request after review, the UI moved from the original editorial "m
 - Searching unpublished, imported records: that belongs in the Studio (Milestone 7).
 - "Popular searches" ranked by real usage requires analytics (Milestone 15).
 
-## Milestone 7: next steps
+## Milestone 7: Administrator CMS 🔍 (in review)
 
-Administrator CMS: article editor (edit drafts in the Studio instead of files), entity managers, media library with classification and licence review, citation manager, editorial review queue, publishing calendar, users and roles UI, and the full Integrations page with live connection tests.
+- **Editorial workflow:** articles move draft → research review → editorial approval → published.
+  - Researchers submit drafts. Editors approve the research, request changes (with a note the author sees) or publish.
+  - Publishing re-checks everything: editorial approval, a citation in every factual section, image licences and classification.
+  - Each decision is an `EditorialReview` row and an audit entry. Requesting changes cancels any scheduled publication.
+- **Article editor:** create and edit drafts in the Studio.
+  - Sources, citation insertion (`[@key|locator]`), sections, key dates (historical numbering, precision, circa), linked entities, images and categories.
+  - Unfinished drafts can be saved; missing citations show as warnings and still block publication.
+  - Drafts round-trip unchanged through the same format as `data/articles/*.json` (tested).
+- **Entity managers** (countries, people, kingdoms and states, civilizations, events):
+  - Search by name, alias or Wikidata id, and import an item by Wikidata id.
+  - Each imported claim is shown with its source. Editors verify or reject claims; verification needs a cited source.
+- **Media library:**
+  - Upload: the file type is read from the file's bytes, with a 10 MB cap and duplicate detection.
+  - Classify what the image is, record its licence, attribution and alt text, and download imported Commons files.
+  - Editors approve an image only if it is classified, publishable, stored and described. Changing the kind or licence sends it back to review.
+- **References:** correct a source once; every citation to it follows, and published pages refresh.
+- **Editorial reviews:** queue of articles awaiting review, reader error reports (submitted from published articles by signed-in readers, rate-limited), and counts of images and claims to check.
+- **Publishing calendar:** an editor schedules an approved article, confirming the source check at that moment.
+  - Due articles are published by `POST /api/cron/publish` (bearer `CRON_SECRET`, disabled without it) or by "Publish due articles now".
+  - Each run republishes with every check, as the approving editor, who must still hold the role. Failures are recorded, never retried silently.
+- **Categories:** nesting with loop prevention, stable addresses after renames, deletion only when unused.
+- **Users:** Super Administrators assign roles. The last Super Administrator cannot be demoted, and nobody changes their own role.
+- **Integrations:** live connection tests. These are real, free, read-only requests; "Connected" only ever comes from a passing test. Integrations without an adapter offer no test.
+- **Settings and audit log:** read-only platform settings (from the environment; secrets never shown) and a filterable view of the append-only audit log.
+- **Tests:** 204 unit/component, 90 integration, 90 end-to-end (including axe scans of 11 Studio pages in both themes).
+
+### Not done (planned)
+
+- Timeline Manager (Milestone 13) and Analytics (Milestone 15) remain labelled in the Studio navigation.
+- AI reconstructions are managed in the AI Image Studio (Milestone 9); the library refuses to reclassify them.
+- Settings are environment-based; there is no in-browser settings editor, by design.
+- No email notifications for reviews or reader reports yet (no email provider is configured).
+
+## Milestone 8: next steps
+
+AI Historical Research Engine: Generate History Project, source retrieval with evidence tracking, AI-assisted drafts that enter this editorial workflow as unreviewed drafts, and the job queue (Redis + BullMQ).
 
 ## Continuation notes (for the next coding session)
 
@@ -150,4 +185,5 @@ Administrator CMS: article editor (edit drafts in the Studio instead of files), 
 - Read `AGENTS.md`: Next 16 differs from older versions. Its bundled docs live in `node_modules/next/dist/docs/`.
 - In this environment, Playwright must stay pinned to `@playwright/test@1.63.0` to match the pre-installed Chromium.
 - Local services: start PostgreSQL with `service postgresql start` if the container restarted; the dev database is `historyverse`, the test database `historyverse_test`.
-- Hosts blocked by the current environment's network policy: `ui.shadcn.com`, `*.wikipedia.org`, `www.wikidata.org`, `query.wikidata.org`, `commons.wikimedia.org`. Reachable: npm registry and Google Fonts.
+- Network: Wikidata, Wikipedia and Commons are reachable, but Commons often answers HTTP 429 (throttling); scripts wait for its Retry-After. Node `fetch` needs `NODE_USE_ENV_PROXY=1` to use the environment's proxy. `ui.shadcn.com` was blocked.
+- The Buganda article draft (`data/articles/buganda-kingdom.json`) still awaits the owner's editorial approval. It has never been published in the development database.

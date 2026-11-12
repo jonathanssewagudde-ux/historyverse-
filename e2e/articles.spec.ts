@@ -223,6 +223,14 @@ test("readers see the published article with sources and only the approved image
     main.getByRole("region", { name: "Watch the HISTORYVERSE Documentary" }),
   ).toContainText("No documentary yet");
 
+  // Readers can report an error; signing in is required to send it.
+  await main.getByText("Spotted an error? Report it").click();
+  await main.getByLabel("What is wrong?").fill("Testing the report form while signed out.");
+  await main.getByRole("button", { name: "Send report" }).click();
+  await expect(main.getByRole("alert").filter({ hasText: "Sign in" })).toHaveText(
+    "Sign in to report an error.",
+  );
+
   await page.goto("/kingdoms");
   await page.getByRole("link", { name: /The Complete History of the Buganda Kingdom/ }).click();
   await expect(page).toHaveURL(/\/kingdoms\/buganda$/);

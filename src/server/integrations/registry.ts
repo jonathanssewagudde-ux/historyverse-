@@ -83,6 +83,7 @@ export const integrations: IntegrationDefinition[] = [
         ? need(env, "S3_REGION", "S3_BUCKET", "S3_ACCESS_KEY_ID", "S3_SECRET_ACCESS_KEY")
         : need(env, "STORAGE_LOCAL_DIR"),
     fallback: "Local filesystem storage for development.",
+    implemented: true,
   },
   {
     id: "redis",

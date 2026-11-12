@@ -154,6 +154,21 @@ export async function loadArticle(
         ...(isUser ? { lastEditedById: actor!.id } : {}),
       };
 
+      let categoryIds: string[] | undefined;
+      if (file.categories) {
+        const found = await tx.category.findMany({
+          where: { slug: { in: file.categories } },
+          select: { id: true, slug: true },
+        });
+        const unknown = file.categories.filter((c) => !found.some((f) => f.slug === c));
+        if (unknown.length > 0)
+          throw new ArticleLoadError(`Unknown category: ${unknown.join(", ")}.`);
+        categoryIds = found.map((f) => f.id);
+      }
+      const categoryData = categoryIds
+        ? { categories: { set: categoryIds.map((id) => ({ id })) } }
+        : {};
+
       let articleId: string;
       let version: number;
       if (existing) {
@@ -165,13 +180,23 @@ export async function loadArticle(
         await tx.articleMedia.deleteMany({ where: { articleId: existing.id } });
         version = existing.version + 1;
         articleId = (
-          await tx.article.update({ where: { id: existing.id }, data: { ...articleData, version } })
+          await tx.article.update({
+            where: { id: existing.id },
+            data: { ...articleData, ...categoryData, version },
+          })
         ).id;
       } else {
         version = 1;
         articleId = (
           await tx.article.create({
-            data: { ...articleData, version, ...(isUser ? { authorId: actor!.id } : {}) },
+            data: {
+              ...articleData,
+              ...(categoryIds
+                ? { categories: { connect: categoryIds.map((id) => ({ id })) } }
+                : {}),
+              version,
+              ...(isUser ? { authorId: actor!.id } : {}),
+            },
           })
         ).id;
       }

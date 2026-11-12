@@ -336,6 +336,33 @@ describe("editor round trip", () => {
     );
   });
 
+  it("assigns categories by slug and keeps them when a file omits them", async () => {
+    const { exportArticle } = await import("@/server/content/export-article");
+    const category = await db.category.create({
+      data: { slug: "kingdoms-test", name: "Kingdoms" },
+    });
+    const article = await db.article.findUniqueOrThrow({ where: { slug: "unfinished-draft" } });
+    if (article.status !== "DRAFT")
+      await requestChanges(db, editor, article.id, "Back to draft for categories.");
+    const draft = (await exportArticle(db, article.id))!;
+    await loadArticle(db, { ...draft, categories: ["kingdoms-test"] }, null, {
+      mode: "lenient",
+      articleId: article.id,
+    });
+    expect((await exportArticle(db, article.id))!.categories).toEqual(["kingdoms-test"]);
+    const { categories: _omit, ...withoutCategories } = draft;
+    await loadArticle(db, withoutCategories, null, { mode: "lenient", articleId: article.id });
+    expect((await exportArticle(db, article.id))!.categories).toEqual(["kingdoms-test"]);
+    await expect(
+      loadArticle(db, { ...draft, categories: ["no-such-category"] }, null, {
+        mode: "lenient",
+        articleId: article.id,
+      }),
+    ).rejects.toThrow(/Unknown category: no-such-category/);
+    await db.article.update({ where: { id: article.id }, data: { categories: { set: [] } } });
+    await db.category.delete({ where: { id: category.id } });
+  });
+
   it("refuses to create a new article over an existing address", async () => {
     const draft = structuredClone(bugandaFile);
     draft.slug = "unfinished-draft";
@@ -347,7 +374,9 @@ describe("editor round trip", () => {
   it("keeps sources that are listed but not cited yet", async () => {
     const { exportArticle } = await import("@/server/content/export-article");
     const article = await db.article.findUniqueOrThrow({ where: { slug: "unfinished-draft" } });
-    await requestChanges(db, editor, article.id, "Add citations before this goes further.");
+    if (article.status !== "DRAFT") {
+      await requestChanges(db, editor, article.id, "Add citations before this goes further.");
+    }
     const draft = (await exportArticle(db, article.id))!;
     draft.sources.push({ key: "later", type: "BOOK", title: "A book to cite later", authors: [] });
     await loadArticle(db, draft, null, { mode: "lenient", articleId: article.id });
@@ -371,6 +400,73 @@ describe("editor round trip", () => {
     });
     expect((await db.article.findUniqueOrThrow({ where: { id: article.id } })).slug).toBe(
       "kingdom-of-buganda",
+    );
+  });
+});
+
+describe("publishing calendar", () => {
+  it("publishes an approved article when it is due, as the approving editor", async () => {
+    const { runDuePublications, scheduleArticle } = await import("@/server/content/schedule");
+    const { articleId } = await loadArticle(db, { ...bugandaFile, slug: "scheduled-buganda" });
+    const now = new Date("2030-01-01T09:00:00Z");
+    await expect(
+      scheduleArticle(db, editor, articleId, new Date("2030-01-01T10:00:00Z"), now),
+    ).rejects.toThrow(/awaiting editorial approval/);
+    await submitForReview(db, researcher, articleId);
+    await approveResearch(db, editor, articleId);
+    await expect(
+      scheduleArticle(db, researcher, articleId, new Date("2030-01-01T10:00:00Z"), now),
+    ).rejects.toThrow(/Only editors/);
+    await expect(
+      scheduleArticle(db, editor, articleId, new Date("2030-01-01T09:01:00Z"), now),
+    ).rejects.toThrow(/at least 5 minutes/);
+    await scheduleArticle(db, editor, articleId, new Date("2030-01-01T10:00:00Z"), now);
+    await expect(
+      scheduleArticle(db, editor, articleId, new Date("2030-01-01T11:00:00Z"), now),
+    ).rejects.toThrow(/already scheduled/);
+
+    // Not yet due.
+    expect(await runDuePublications(db, new Date("2030-01-01T09:59:00Z"))).toEqual({
+      published: [],
+      failed: [],
+    });
+    const run = await runDuePublications(db, new Date("2030-01-01T10:00:30Z"));
+    expect(run.published).toEqual([{ scheduleId: expect.any(String), slug: "scheduled-buganda" }]);
+    const article = await db.article.findUniqueOrThrow({ where: { id: articleId } });
+    expect(article.status).toBe("PUBLISHED");
+    const schedule = await db.publicationSchedule.findFirstOrThrow({ where: { articleId } });
+    expect(schedule).toMatchObject({ status: "PUBLISHED", approvedById: editor.id });
+    // Running again does nothing.
+    expect((await runDuePublications(db, new Date("2030-01-02T00:00:00Z"))).published).toHaveLength(
+      0,
+    );
+    await unpublishArticle(db, editor, articleId, "Test cleanup");
+  });
+
+  it("cancels the schedule when changes are requested, and fails honestly when it cannot publish", async () => {
+    const { runDuePublications, scheduleArticle } = await import("@/server/content/schedule");
+    const article = await db.article.findUniqueOrThrow({ where: { slug: "scheduled-buganda" } });
+    await submitForReview(db, researcher, article.id);
+    await approveResearch(db, editor, article.id);
+    const now = new Date("2030-02-01T09:00:00Z");
+    await scheduleArticle(db, editor, article.id, new Date("2030-02-01T10:00:00Z"), now);
+    await requestChanges(db, editor, article.id, "One more source for the 1966 crisis.");
+    expect(
+      await db.publicationSchedule.count({ where: { articleId: article.id, status: "CANCELLED" } }),
+    ).toBe(1);
+
+    // An editor who loses the role cannot have their old approvals executed.
+    await submitForReview(db, researcher, article.id);
+    await approveResearch(db, editor, article.id);
+    await scheduleArticle(db, editor, article.id, new Date("2030-02-01T10:00:00Z"), now);
+    await db.user.update({ where: { id: editor.id }, data: { role: "RESEARCHER" } });
+    const run = await runDuePublications(db, new Date("2030-02-01T10:05:00Z"));
+    await db.user.update({ where: { id: editor.id }, data: { role: "EDITOR" } });
+    expect(run.failed).toEqual([
+      { scheduleId: expect.any(String), reason: expect.stringMatching(/no longer has permission/) },
+    ]);
+    expect((await db.article.findUniqueOrThrow({ where: { id: article.id } })).status).toBe(
+      "EDITORIAL_APPROVAL",
     );
   });
 });

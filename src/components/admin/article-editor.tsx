@@ -31,6 +31,7 @@ export type EditorOptions = {
     stored: boolean;
   }[];
   sources: { id: string; title: string; type: string; url: string | null }[];
+  categories: { slug: string; name: string }[];
 };
 
 const TEMPLATES = [
@@ -606,6 +607,36 @@ export function ArticleEditor({
           >
             <Plus aria-hidden /> Add key date
           </Button>
+        </Card>
+
+        <Card id="categories" title="Categories" description="Topics this article belongs to.">
+          <fieldset className="flex flex-wrap gap-2">
+            <legend className="sr-only">Categories</legend>
+            {options.categories.map((c) => {
+              const checked = (draft.categories ?? []).includes(c.slug);
+              return (
+                <label
+                  key={c.slug}
+                  className="flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm has-[:checked]:border-primary has-[:checked]:bg-primary/10"
+                >
+                  <input
+                    type="checkbox"
+                    checked={checked}
+                    onChange={(e) => {
+                      const current = draft.categories ?? [];
+                      update({
+                        categories: e.target.checked
+                          ? [...current, c.slug]
+                          : current.filter((x) => x !== c.slug),
+                      });
+                    }}
+                    className="size-4 accent-[var(--primary)]"
+                  />
+                  {c.name}
+                </label>
+              );
+            })}
+          </fieldset>
         </Card>
 
         <Card

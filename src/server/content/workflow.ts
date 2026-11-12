@@ -147,6 +147,11 @@ export async function requestChanges(
       },
     }),
     db.article.update({ where: { id: articleId }, data: { status: "DRAFT" } }),
+    // A scheduled publication covered the article as approved; it no longer applies.
+    db.publicationSchedule.updateMany({
+      where: { articleId, status: { in: ["PENDING_APPROVAL", "APPROVED"] } },
+      data: { status: "CANCELLED" },
+    }),
   ]);
   await recordAudit({
     action: "article.changes_requested",
